@@ -1,0 +1,28 @@
+instructions:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'instructions/**'
+
+skills:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'skills/**'
+
+shared:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'pkg/**'
+      - 'go.mod'
+      - 'go.sum'
+
+ci:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.github/**'
+
+documentation:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '*.md'
+      - 'instructions/*.md'
+      - 'skills/*.md'

@@ -1,192 +1,123 @@
-# mcp-instructions
+# Arkestone MCP Servers
 
-[![CI](https://github.com/YOUR_ORG/mcp-instructions/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_ORG/mcp-instructions/actions/workflows/ci.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/YOUR_ORG/mcp-instructions)](https://goreportcard.com/report/github.com/YOUR_ORG/mcp-instructions)
-[![Go Reference](https://pkg.go.dev/badge/github.com/YOUR_ORG/mcp-instructions.svg)](https://pkg.go.dev/github.com/YOUR_ORG/mcp-instructions)
+[![CI](https://github.com/Arkestone/mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Arkestone/mcp/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/Arkestone/mcp/graph/badge.svg)](https://codecov.io/gh/Arkestone/mcp)
+[![Go Report Card](https://goreportcard.com/badge/github.com/Arkestone/mcp)](https://goreportcard.com/report/github.com/Arkestone/mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## Overview
 
-An MCP server that dynamically serves [GitHub Copilot custom instructions](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions) from local directories and GitHub repositories.
+A monorepo hosting [Model Context Protocol](https://modelcontextprotocol.io) (MCP) servers for [GitHub Copilot](https://github.com/features/copilot) customization. Each server implements the MCP specification to dynamically serve different types of Copilot configuration — custom instructions, skills, and more — from local directories and GitHub repositories.
 
-It discovers `.github/copilot-instructions.md` and `.github/instructions/**/*.instructions.md` files from configured sources and exposes them via the [Model Context Protocol](https://modelcontextprotocol.io).
+## Servers
 
-## Features
+| Server | Description | Docs |
+|--------|-------------|------|
+| [mcp-instructions](./instructions/) | Serves Copilot custom instructions | [README](./instructions/README.md) |
+| [mcp-skills](./skills/) | Serves Copilot skills | [README](./skills/README.md) |
 
-- **On-demand loading** — local directories are read live; no eager loading
-- **GitHub repo caching** — remote repos are cached locally and synced periodically in the background
-- **LLM optimization** — optionally merge/deduplicate instructions from multiple sources via an OpenAI-compatible endpoint
-- **Dual transport** — supports both stdio (for Copilot CLI / local tools) and Streamable HTTP (for remote deployments)
-- **MCP primitives** — instructions are exposed as Resources, Prompts, and Tools
+## Shared Components
+
+- **`pkg/optimizer`** — OpenAI-compatible LLM optimization layer shared by all servers. Optionally merges, deduplicates, and consolidates content from multiple sources via any OpenAI-compatible endpoint.
+- **`pkg/config`** — Unified configuration loading (YAML → env vars → CLI flags).
+- **`pkg/github`** — GitHub Contents API client with proxy and header pass-through.
+- **`pkg/httputil`** — Shared HTTP infrastructure: proxy support, custom TLS/CA, header propagation.
+- **`pkg/syncer`** — Background periodic sync for remote repositories.
+- **`pkg/server`** — MCP server bootstrap helpers.
+
+## Quick Start
+
+### mcp-instructions
+
+```bash
+make build-instructions
+./bin/mcp-instructions -dirs /path/to/repo
+```
+
+### mcp-skills
+
+```bash
+make build-skills
+./bin/mcp-skills -repos github/awesome-copilot
+```
+
+See each server's README for full configuration and usage details.
 
 ## Architecture
 
-The server is organized into four layers:
-
-1. **Config** — loads settings from YAML → environment variables → CLI flags (each layer overrides the previous).
-2. **Loader** — discovers instruction files. Local directories are read on every request; GitHub repos are cached locally and synced in the background on a configurable interval.
-3. **Optimizer** — optionally consolidates multiple instruction files into a single output via an OpenAI-compatible LLM endpoint, deduplicating and merging content.
-4. **MCP Server** — exposes the loaded (and optionally optimized) instructions as MCP Resources, Prompts, and Tools over stdio or Streamable HTTP.
-
-## Getting Started
-
-```bash
-# Build
-go build -o mcp-instructions ./cmd/mcp-instructions
-
-# Serve instructions from a local directory (stdio)
-mcp-instructions -dirs /path/to/repo
-
-# Serve from a GitHub repo with HTTP transport
-export GITHUB_TOKEN=ghp_...
-mcp-instructions -repos github/awesome-copilot -transport http -addr :8080
+```
+.
+├── instructions/           # mcp-instructions server
+│   ├── cmd/mcp-instructions/
+│   └── internal/loader/
+├── skills/                 # mcp-skills server
+│   ├── cmd/mcp-skills/
+│   └── internal/scanner/
+├── pkg/
+│   ├── config/             # shared configuration loading
+│   ├── github/             # GitHub Contents API client
+│   ├── httputil/           # proxy, TLS, header propagation
+│   ├── optimizer/          # shared LLM optimization layer
+│   ├── server/             # MCP server helpers
+│   └── syncer/             # background sync
+├── docs/
+│   └── network.md          # network / proxy / firewall guide
+├── Makefile
+├── go.mod
+└── go.sum
 ```
 
-## Configuration
+Each server follows the same layered design:
 
-Configuration is loaded in layers (each overrides the previous):
-
-1. **YAML file** — `config.yaml` in the working directory, or specify with `-config path/to/config.yaml`
-2. **Environment variables**
-3. **CLI flags**
-
-See [`config.example.yaml`](config.example.yaml) for all options.
-
-### Environment variables
-
-| Variable | Description |
-|---|---|
-| `INSTRUCTIONS_CONFIG` | Path to YAML config file |
-| `INSTRUCTIONS_DIRS` | Comma-separated local directories |
-| `INSTRUCTIONS_REPOS` | Comma-separated GitHub repos (`owner/repo` or `owner/repo@ref`) |
-| `INSTRUCTIONS_TRANSPORT` | `stdio` (default) or `http` |
-| `INSTRUCTIONS_ADDR` | HTTP listen address (default `:8080`) |
-| `INSTRUCTIONS_CACHE_DIR` | Local cache directory (default `~/.cache/mcp-instructions`) |
-| `INSTRUCTIONS_SYNC_INTERVAL` | Sync interval for remote repos (default `5m`) |
-| `GITHUB_TOKEN` | GitHub API token for private repos |
-| `LLM_ENDPOINT` | OpenAI-compatible API endpoint |
-| `LLM_MODEL` | Model name (e.g. `gpt-4o-mini`) |
-| `LLM_API_KEY` | LLM API key |
-| `LLM_ENABLED` | `true` to enable LLM optimization by default |
-
-### CLI flags
-
-```
--config          Path to YAML config file
--dirs            Comma-separated local directories
--repos           Comma-separated GitHub repos (owner/repo[@ref])
--transport       Transport: stdio (default) or http
--addr            HTTP listen address (default :8080)
--cache-dir       Local cache directory
--sync-interval   Sync interval (e.g. 5m, 1h)
--llm-endpoint    OpenAI-compatible endpoint URL
--llm-model       LLM model name
-```
-
-## MCP Primitives
-
-### Resources
-
-| URI | Description |
-|---|---|
-| `instructions://{source}/{name}` | Individual instruction file content |
-| `instructions://optimized` | All instructions merged via LLM (or concatenated) |
-| `instructions://index` | List of all available instruction URIs |
-
-### Prompts
-
-| Name | Arguments | Description |
-|---|---|---|
-| `get-instructions` | `source` (optional), `optimize` (optional: `true`/`false`) | Get instructions as a prompt, optionally filtered and optimized |
-
-### Tools
-
-| Name | Arguments | Description |
-|---|---|---|
-| `refresh` | — | Force-sync all remote repo caches |
-| `list-instructions` | — | List all available instruction files |
-| `optimize-instructions` | `source` (optional), `optimize` (optional: `true`/`false`) | Get consolidated instructions with optional LLM optimization |
-
-## Instruction File Format
-
-The server discovers two kinds of instruction files from each configured source:
-
-| Path | Scope |
-|---|---|
-| `.github/copilot-instructions.md` | Repository-wide instructions applied to every conversation |
-| `.github/instructions/*.instructions.md` | Path-specific instructions (the file's front-matter `applyTo` glob controls which files they apply to) |
-
-For details on authoring instruction files, see [Customizing Copilot with custom instructions](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions).
-
-## Sample Repository
-
-The [`github/awesome-copilot`](https://github.com/github/awesome-copilot) repository is a curated collection of Copilot instructions. Point `mcp-instructions` at it to get started quickly:
-
-```bash
-mcp-instructions -repos github/awesome-copilot
-```
-
-## Docker
-
-```bash
-docker build -t mcp-instructions .
-
-# stdio mode (pipe to MCP client)
-docker run -i mcp-instructions -dirs /data
-
-# HTTP mode
-docker run -p 8080:8080 \
-  -e INSTRUCTIONS_REPOS=github/awesome-copilot \
-  -e GITHUB_TOKEN=ghp_... \
-  -e INSTRUCTIONS_TRANSPORT=http \
-  mcp-instructions
-```
-
-## MCP Client Configuration
-
-### Copilot CLI / VS Code
-
-Add to your MCP client settings:
-
-```json
-{
-  "mcpServers": {
-    "instructions": {
-      "command": "mcp-instructions",
-      "args": ["-dirs", "/path/to/repo"]
-    }
-  }
-}
-```
-
-### Remote (HTTP)
-
-```json
-{
-  "mcpServers": {
-    "instructions": {
-      "url": "http://localhost:8080"
-    }
-  }
-}
-```
+1. **Config** — YAML → environment variables → CLI flags (each layer overrides the previous)
+2. **Loader / Scanner** — discovers content from local directories and GitHub repositories
+3. **Optimizer** — optional LLM-based consolidation via `pkg/optimizer`
+4. **MCP Server** — exposes content as Resources, Prompts, and Tools over stdio or Streamable HTTP
 
 ## Development
 
 ```bash
-go build ./...          # build all packages
-go test ./...           # run tests
-go vet ./...            # lint
+make build              # build all servers
+make test               # run unit tests
+make test-integration   # run integration tests
+make docker             # build Docker images for all servers
+make lint               # run golangci-lint
+make cover              # generate coverage report
 ```
 
-If a `Makefile` is present, you can also use `make build`, `make test`, and `make lint`.
+## Configuration
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines (if available).
+Each server supports configuration via YAML files, environment variables, and CLI flags. See the individual server READMEs for details:
+
+- [mcp-instructions configuration](./instructions/README.md#configuration)
+- [mcp-skills configuration](./skills/README.md#configuration)
+
+### GitHub Authentication (Optional)
+
+A GitHub token is **optional**. Public repositories work without authentication. For private repositories, provide a token via any of these methods (highest priority first):
+
+| Method | Example |
+|--------|---------|
+| CLI flag | `--github-token ghp_xxx` |
+| Prefixed env var | `INSTRUCTIONS_GITHUB_TOKEN=ghp_xxx` / `SKILLS_GITHUB_TOKEN=ghp_xxx` |
+| Global env var | `GITHUB_TOKEN=ghp_xxx` |
+| YAML config | `github_token: ghp_xxx` |
+
+When a repository returns HTTP 401/403/404 without a token configured, the error message will hint that authentication may be required.
+
+## Network & Proxy
+
+All servers work on-premise, in private/public cloud, with direct internet or through HTTP/HTTPS proxies. See the **[Network & Proxy Guide](docs/network.md)** for:
+
+- Firewall rules to open
+- Proxy and custom CA certificate configuration
+- HTTP header pass-through from incoming requests to outbound calls
+- Deployment scenarios (direct, proxy, air-gapped, Kubernetes)
+
+## Contributing
+
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
-
-## Contributing
-
-Contributions are welcome! Please open an issue or submit a pull request. If a [CONTRIBUTING.md](CONTRIBUTING.md) file is present, review it before submitting.

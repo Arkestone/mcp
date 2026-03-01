@@ -1,0 +1,40 @@
+version: "2"
+
+linters:
+  enable:
+    - errcheck
+    - govet
+    - staticcheck
+    - gosimple
+    - ineffassign
+    - unused
+    - gofmt
+    - goimports
+    - misspell
+    - godot
+  disable:
+    - wrapcheck
+    - exhaustruct
+    - godox
+    - ireturn
+    - varnamelen
+    - funlen
+    - cyclop
+    - gocognit
+    - maintidx
+
+issues:
+  exclude-rules:
+    - path: "_test\\.go"
+      linters:
+        - errcheck
+        - funlen
+    - path: "cmd/"
+      linters:
+        - funlen
+
+linters-settings:
+  goimports:
+    local-prefixes: github.com/Arkestone/mcp
+  misspell:
+    locale: US
