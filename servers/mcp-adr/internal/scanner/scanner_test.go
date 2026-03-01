@@ -154,6 +154,9 @@ func TestHumanize_Basic(t *testing.T) {
 		{"no-dashes", "no Dashes"},
 		{"single", "single"},
 		{"", ""},
+		// Consecutive hyphens produce an empty part; it must be skipped,
+		// not accessed (kills scanner:147 CONDITIONALS_BOUNDARY len>0 → len>=0).
+		{"0001--foo", "0001  Foo"},
 	}
 	for _, tc := range tests {
 		got := humanize(tc.input)
