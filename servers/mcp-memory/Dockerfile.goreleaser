@@ -11,5 +11,6 @@ RUN apk add --no-cache ca-certificates && \
 RUN mkdir -p /home/mcp/.local/share/mcp-memory && chown mcp:mcp /home/mcp/.local/share/mcp-memory
 
 USER mcp
-COPY mcp-memory /usr/local/bin/mcp-memory
+ARG TARGETPLATFORM
+COPY $TARGETPLATFORM/mcp-memory /usr/local/bin/mcp-memory
 ENTRYPOINT ["mcp-memory"]

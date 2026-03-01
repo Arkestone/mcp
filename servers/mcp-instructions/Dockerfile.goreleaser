@@ -9,5 +9,6 @@ RUN apk add --no-cache ca-certificates && \
     adduser -D -u 1000 mcp
 
 USER mcp
-COPY mcp-instructions /usr/local/bin/mcp-instructions
+ARG TARGETPLATFORM
+COPY $TARGETPLATFORM/mcp-instructions /usr/local/bin/mcp-instructions
 ENTRYPOINT ["mcp-instructions"]

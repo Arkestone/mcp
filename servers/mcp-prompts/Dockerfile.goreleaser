@@ -9,5 +9,6 @@ RUN apk add --no-cache ca-certificates && \
     adduser -D -u 1000 mcp
 
 USER mcp
-COPY mcp-prompts /usr/local/bin/mcp-prompts
+ARG TARGETPLATFORM
+COPY $TARGETPLATFORM/mcp-prompts /usr/local/bin/mcp-prompts
 ENTRYPOINT ["mcp-prompts"]

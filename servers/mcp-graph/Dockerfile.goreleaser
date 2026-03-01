@@ -11,5 +11,6 @@ RUN apk add --no-cache ca-certificates && \
 RUN mkdir -p /home/mcp/.local/share/mcp-graph && chown mcp:mcp /home/mcp/.local/share/mcp-graph
 
 USER mcp
-COPY mcp-graph /usr/local/bin/mcp-graph
+ARG TARGETPLATFORM
+COPY $TARGETPLATFORM/mcp-graph /usr/local/bin/mcp-graph
 ENTRYPOINT ["mcp-graph"]

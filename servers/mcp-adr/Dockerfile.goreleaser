@@ -9,5 +9,6 @@ RUN apk add --no-cache ca-certificates && \
     adduser -D -u 1000 mcp
 
 USER mcp
-COPY mcp-adr /usr/local/bin/mcp-adr
+ARG TARGETPLATFORM
+COPY $TARGETPLATFORM/mcp-adr /usr/local/bin/mcp-adr
 ENTRYPOINT ["mcp-adr"]
