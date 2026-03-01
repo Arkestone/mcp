@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"sort"
 	"strings"
 	"syscall"
 	"time"
@@ -18,6 +19,8 @@ import (
 	"github.com/Arkestone/mcp/pkg/server"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
+
+var version = "dev" // set at build time via -ldflags
 
 func main() {
 	cfg := config.Load(config.Options{
@@ -187,6 +190,7 @@ func registerTools(srv *mcp.Server, ldr *loader.Loader, opt *optimizer.Optimizer
 			for s := range sourceSet {
 				sources = append(sources, s)
 			}
+			sort.Strings(sources)
 			return nil, RefreshOutput{
 				Message: "All instruction sources refreshed successfully",
 				Count:   len(instructions),
