@@ -1,12 +1,32 @@
-instructions:
+mcp-instructions:
   - changed-files:
     - any-glob-to-any-file:
-      - 'instructions/**'
+      - 'servers/mcp-instructions/**'
 
-skills:
+mcp-skills:
   - changed-files:
     - any-glob-to-any-file:
-      - 'skills/**'
+      - 'servers/mcp-skills/**'
+
+mcp-adr:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'servers/mcp-adr/**'
+
+mcp-memory:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'servers/mcp-memory/**'
+
+mcp-prompts:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'servers/mcp-prompts/**'
+
+mcp-graph:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'servers/mcp-graph/**'
 
 shared:
   - changed-files:
@@ -24,5 +44,4 @@ documentation:
   - changed-files:
     - any-glob-to-any-file:
       - '*.md'
-      - 'instructions/*.md'
-      - 'skills/*.md'
+      - 'docs/**'

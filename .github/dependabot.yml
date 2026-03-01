@@ -31,7 +31,7 @@ updates:
     open-pull-requests-limit: 10
 
   - package-ecosystem: "docker"
-    directory: "/servers/mcp-skills"
+    directory: "/servers/mcp-adr"
     schedule:
       interval: "weekly"
     labels:
@@ -39,3 +39,34 @@ updates:
     commit-message:
       prefix: "chore(deps):"
     open-pull-requests-limit: 10
+
+  - package-ecosystem: "docker"
+    directory: "/servers/mcp-memory"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps):"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "docker"
+    directory: "/servers/mcp-prompts"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps):"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "docker"
+    directory: "/servers/mcp-graph"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps):"
+    open-pull-requests-limit: 10
+
