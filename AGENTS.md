@@ -4,25 +4,31 @@ This file provides structured guidance for AI coding assistants (GitHub Copilot,
 
 ## Repository Overview
 
-This is a Go monorepo hosting two MCP (Model Context Protocol) servers:
+This is a Go monorepo hosting five MCP (Model Context Protocol) servers:
 
-| Server | Directory | Binary |
-|--------|-----------|--------|
-| Instructions | `servers/mcp-instructions/` | `mcp-instructions` |
-| Skills | `servers/mcp-skills/` | `mcp-skills` |
+| Server | Directory | Binary | Default Port |
+|--------|-----------|--------|-------------|
+| Instructions | `servers/mcp-instructions/` | `mcp-instructions` | `:8080` |
+| Skills | `servers/mcp-skills/` | `mcp-skills` | `:8081` |
+| Prompts | `servers/mcp-prompts/` | `mcp-prompts` | `:8082` |
+| ADR | `servers/mcp-adr/` | `mcp-adr` | `:8083` |
+| Memory | `servers/mcp-memory/` | `mcp-memory` | `:8084` |
 
 Shared packages live in `pkg/`. Never put server-specific code in `pkg/`.
 
 ## Build Commands
 
 ```bash
-# Build both servers (requires Go 1.24+)
+# Build all servers (requires Go 1.24+)
 export PATH=$PATH:~/go-install/go/bin   # if go not in PATH
 make build
 
 # Build individual servers
 go build -buildvcs=false -o mcp-instructions ./servers/mcp-instructions/cmd/mcp-instructions
 go build -buildvcs=false -o mcp-skills       ./servers/mcp-skills/cmd/mcp-skills
+go build -buildvcs=false -o mcp-prompts      ./servers/mcp-prompts/cmd/mcp-prompts
+go build -buildvcs=false -o mcp-adr          ./servers/mcp-adr/cmd/mcp-adr
+go build -buildvcs=false -o mcp-memory       ./servers/mcp-memory/cmd/mcp-memory
 
 # Run all tests
 go test -buildvcs=false ./...
@@ -36,7 +42,7 @@ gofmt -l .
 ```
 mcp/
 ├── servers/
-│   ├── mcp-instructions/          # Instructions MCP server
+│   ├── mcp-instructions/          # Instructions MCP server      (:8080)
 │   │   ├── cmd/mcp-instructions/  # Entry point (main.go)
 │   │   ├── internal/
 │   │   │   ├── config/            # Config loading (YAML + env + flags)
@@ -45,10 +51,29 @@ mcp/
 │   │   ├── Dockerfile
 │   │   ├── README.md
 │   │   └── CHANGELOG.md
-│   └── mcp-skills/                # Skills MCP server
-│       ├── cmd/mcp-skills/        # Entry point (main.go)
+│   ├── mcp-skills/                # Skills MCP server            (:8081)
+│   │   ├── cmd/mcp-skills/        # Entry point (main.go)
+│   │   ├── internal/
+│   │   │   └── scanner/           # SKILL.md frontmatter scanner
+│   │   ├── Dockerfile
+│   │   ├── README.md
+│   │   └── CHANGELOG.md
+│   ├── mcp-prompts/               # Prompts MCP server           (:8082)
+│   │   ├── cmd/mcp-prompts/
+│   │   ├── internal/
+│   │   ├── Dockerfile
+│   │   ├── README.md
+│   │   └── CHANGELOG.md
+│   ├── mcp-adr/                   # ADR MCP server               (:8083)
+│   │   ├── cmd/mcp-adr/
+│   │   ├── internal/
+│   │   ├── Dockerfile
+│   │   ├── README.md
+│   │   └── CHANGELOG.md
+│   └── mcp-memory/                # Memory MCP server            (:8084)
+│       ├── cmd/mcp-memory/
 │       ├── internal/
-│       │   └── scanner/           # SKILL.md frontmatter scanner
+│       │   └── store/             # On-disk memory store
 │       ├── Dockerfile
 │       ├── README.md
 │       └── CHANGELOG.md

@@ -1,0 +1,7 @@
+# MCP Memory Server Configuration
+
+# Directory where memories are stored on disk
+memory_dir: ~/.local/share/mcp-memory
+
+transport: stdio   # stdio | http
+addr: ":8084"
