@@ -1,4 +1,4 @@
-.PHONY: all build build-instructions build-skills build-adr build-memory build-prompts test test-race test-integration cover lint fmt vet clean docker docker-instructions docker-skills docker-adr docker-memory docker-prompts
+.PHONY: all build build-instructions build-skills build-adr build-memory build-prompts build-graph test test-race test-integration cover lint fmt vet clean docker docker-instructions docker-skills docker-adr docker-memory docker-prompts docker-graph
 
 GOBIN    ?= bin
 MODULE   := github.com/Arkestone/mcp
@@ -6,7 +6,7 @@ MODULE   := github.com/Arkestone/mcp
 all: lint test build
 
 # Build targets
-build: build-instructions build-skills build-adr build-memory build-prompts
+build: build-instructions build-skills build-adr build-memory build-prompts build-graph
 
 build-instructions:
 	go build -buildvcs=false -trimpath -o $(GOBIN)/mcp-instructions ./servers/mcp-instructions/cmd/mcp-instructions
@@ -22,6 +22,9 @@ build-memory:
 
 build-prompts:
 	go build -buildvcs=false -trimpath -o $(GOBIN)/mcp-prompts ./servers/mcp-prompts/cmd/mcp-prompts
+
+build-graph:
+	go build -buildvcs=false -trimpath -o $(GOBIN)/mcp-graph ./servers/mcp-graph/cmd/mcp-graph
 
 # Test targets
 test:
@@ -56,7 +59,7 @@ vet:
 	go vet ./...
 
 # Docker targets
-docker: docker-instructions docker-skills docker-adr docker-memory docker-prompts
+docker: docker-instructions docker-skills docker-adr docker-memory docker-prompts docker-graph
 
 docker-instructions:
 	docker build -f servers/mcp-instructions/Dockerfile -t ghcr.io/arkestone/mcp-instructions:latest .
@@ -72,6 +75,9 @@ docker-memory:
 
 docker-prompts:
 	docker build -f servers/mcp-prompts/Dockerfile -t ghcr.io/arkestone/mcp-prompts:latest .
+
+docker-graph:
+	docker build -f servers/mcp-graph/Dockerfile -t ghcr.io/arkestone/mcp-graph:latest .
 
 # Clean
 clean:

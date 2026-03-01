@@ -14,6 +14,7 @@ A suite of [Model Context Protocol](https://modelcontextprotocol.io) (MCP) serve
 | [mcp-instructions](./servers/mcp-instructions/) | Serves Copilot custom instruction files (`.github/copilot-instructions.md`, `.github/instructions/**/*.instructions.md`) | `:8080` | [README](./servers/mcp-instructions/README.md) · [CHANGELOG](./servers/mcp-instructions/CHANGELOG.md) |
 | [mcp-skills](./servers/mcp-skills/) | Serves Copilot skills (`SKILL.md`) with frontmatter metadata | `:8081` | [README](./servers/mcp-skills/README.md) · [CHANGELOG](./servers/mcp-skills/CHANGELOG.md) |
 | [mcp-prompts](./servers/mcp-prompts/) | Serves VS Code Copilot prompt files (`.github/prompts/*.prompt.md`) and chat mode files | `:8082` | [README](./servers/mcp-prompts/README.md) · [CHANGELOG](./servers/mcp-prompts/CHANGELOG.md) |
+| [mcp-graph](./servers/mcp-graph/) | Knowledge graph MCP server — store entities and relationships, query neighbors and shortest paths | `:8085` | [README](./servers/mcp-graph/README.md) · [CHANGELOG](./servers/mcp-graph/CHANGELOG.md) |
 | [mcp-adr](./servers/mcp-adr/) | Serves Architecture Decision Records from `docs/adr/`, `docs/decisions/`, or `doc/adr/` | `:8083` | [README](./servers/mcp-adr/README.md) · [CHANGELOG](./servers/mcp-adr/CHANGELOG.md) |
 | [mcp-memory](./servers/mcp-memory/) | Persistent memory store — remember, recall, and forget information across sessions | `:8084` | [README](./servers/mcp-memory/README.md) · [CHANGELOG](./servers/mcp-memory/CHANGELOG.md) |
 
@@ -132,6 +133,7 @@ volumes:
 │   ├── mcp-instructions/   # custom instructions server  (:8080)
 │   ├── mcp-skills/         # skills server               (:8081)
 │   ├── mcp-prompts/        # prompt files server         (:8082)
+│   └── mcp-graph/          # knowledge graph server      (:8085)
 │   ├── mcp-adr/            # ADR server                  (:8083)
 │   └── mcp-memory/         # persistent memory server    (:8084)
 ├── pkg/
