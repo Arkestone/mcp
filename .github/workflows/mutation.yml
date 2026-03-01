@@ -1,0 +1,59 @@
+name: Mutation Testing
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**.go'
+      - 'go.mod'
+      - 'go.sum'
+  schedule:
+    - cron: '0 3 * * 1'  # Weekly on Monday at 03:00 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: mutation-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  mutation:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CGO_ENABLED: 0
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: mcp-memory/store
+            package: ./servers/mcp-memory/internal/store/...
+          - name: mcp-graph/graph
+            package: ./servers/mcp-graph/internal/graph/...
+          - name: mcp-skills/scanner
+            package: ./servers/mcp-skills/internal/scanner/...
+          - name: mcp-prompts/loader
+            package: ./servers/mcp-prompts/internal/loader/...
+          - name: mcp-adr/scanner
+            package: ./servers/mcp-adr/internal/scanner/...
+          - name: mcp-instructions/loader
+            package: ./servers/mcp-instructions/internal/loader/...
+          - name: pkg/optimizer
+            package: ./pkg/optimizer/...
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          cache: true
+          cache-dependency-path: go.sum
+
+      - name: Install gremlins
+        run: go install github.com/go-gremlins/gremlins/cmd/gremlins@latest
+
+      - name: Run mutation tests — ${{ matrix.name }}
+        run: gremlins unleash --timeout 60s ${{ matrix.package }}

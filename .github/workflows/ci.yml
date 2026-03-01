@@ -50,7 +50,15 @@ jobs:
           go-version: ${{ matrix.go-version }}
           cache: true
       - name: Run tests
-        run: go test -race -count=1 -coverprofile=coverage.out ./...
+        run: go test -race -count=1 -coverprofile=coverage.out -covermode=atomic ./...
+      - name: Coverage summary
+        run: |
+          total=$(go tool cover -func=coverage.out | grep ^total | awk '{print $3}')
+          echo "Total coverage: $total"
+          pct=${total%\%}
+          if awk "BEGIN { exit !($pct < 60) }"; then
+            echo "::warning title=Low Coverage::Coverage is $total (below 60%)"
+          fi
       - name: Upload coverage
         uses: actions/upload-artifact@v4
         with:
