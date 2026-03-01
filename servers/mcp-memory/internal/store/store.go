@@ -4,12 +4,14 @@ package store
 
 import (
 	"fmt"
-	"math/rand"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/adrg/frontmatter"
+	"github.com/google/uuid"
 )
 
 // Memory represents a single stored memory.
@@ -155,47 +157,33 @@ func (s *Store) write(m Memory) error {
 	return os.WriteFile(filepath.Join(s.dir, m.ID+".md"), []byte(sb.String()), 0o644)
 }
 
+type memoryFrontmatter struct {
+	Tags      []string `yaml:"tags"`
+	CreatedAt string   `yaml:"created_at"`
+	UpdatedAt string   `yaml:"updated_at"`
+}
+
 // parse reads a Memory from its file contents.
 func parse(id, content string) (Memory, error) {
 	m := Memory{ID: id}
 
-	if !strings.HasPrefix(content, "---\n") {
+	if !strings.HasPrefix(content, "---") {
 		m.Content = content
 		return m, nil
 	}
 
-	rest := content[4:]
-	idx := strings.Index(rest, "\n---\n")
-	if idx < 0 {
-		m.Content = content
-		return m, nil
+	var meta memoryFrontmatter
+	rest, _ := frontmatter.Parse(strings.NewReader(content), &meta)
+
+	m.Tags = meta.Tags
+	body := strings.TrimPrefix(string(rest), "\n")
+	m.Content = strings.TrimRight(body, "\n")
+
+	if t, err := time.Parse(time.RFC3339Nano, meta.CreatedAt); err == nil {
+		m.CreatedAt = t
 	}
-
-	frontmatter := rest[:idx]
-	m.Content = strings.TrimRight(strings.TrimPrefix(rest[idx+5:], "\n"), "\n")
-
-	for _, line := range strings.Split(frontmatter, "\n") {
-		line = strings.TrimSpace(line)
-		if strings.HasPrefix(line, "tags:") {
-			val := strings.TrimSpace(strings.TrimPrefix(line, "tags:"))
-			val = strings.Trim(val, "[]")
-			for _, tag := range strings.Split(val, ",") {
-				tag = strings.TrimSpace(tag)
-				if tag != "" {
-					m.Tags = append(m.Tags, tag)
-				}
-			}
-		} else if strings.HasPrefix(line, "created_at:") {
-			val := strings.TrimSpace(strings.TrimPrefix(line, "created_at:"))
-			if t, err := time.Parse(time.RFC3339Nano, val); err == nil {
-				m.CreatedAt = t
-			}
-		} else if strings.HasPrefix(line, "updated_at:") {
-			val := strings.TrimSpace(strings.TrimPrefix(line, "updated_at:"))
-			if t, err := time.Parse(time.RFC3339Nano, val); err == nil {
-				m.UpdatedAt = t
-			}
-		}
+	if t, err := time.Parse(time.RFC3339Nano, meta.UpdatedAt); err == nil {
+		m.UpdatedAt = t
 	}
 
 	return m, nil
@@ -217,12 +205,7 @@ func matchesTags(m Memory, tags []string) bool {
 	return true
 }
 
-// generateID generates a short random alphanumeric ID (8 chars).
+// generateID returns a new random UUID string.
 func generateID() string {
-	const chars = "abcdefghijklmnopqrstuvwxyz0123456789"
-	b := make([]byte, 8)
-	for i := range b {
-		b[i] = chars[rand.Intn(len(chars))]
-	}
-	return string(b)
+	return uuid.New().String()
 }

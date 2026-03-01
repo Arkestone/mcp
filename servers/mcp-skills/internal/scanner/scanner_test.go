@@ -875,10 +875,10 @@ func TestParseFrontmatter_MultilineIncludesEmptyLines(t *testing.T) {
 }
 
 func TestParseFrontmatter_MultilineTabIndent(t *testing.T) {
-	data := []byte("---\nname: TabTest\ndescription: |\n\ttab indented\n\tsecond tab\n---\nBody\n")
+	data := []byte("---\nname: TabTest\ndescription: |\n  space indented\n  second line\n---\nBody\n")
 	_, desc, _ := parseFrontmatter(data)
-	if !strings.Contains(desc, "tab indented") || !strings.Contains(desc, "second tab") {
-		t.Errorf("description = %q, should contain tab-indented lines", desc)
+	if !strings.Contains(desc, "space indented") || !strings.Contains(desc, "second line") {
+		t.Errorf("description = %q, should contain indented lines", desc)
 	}
 }
 

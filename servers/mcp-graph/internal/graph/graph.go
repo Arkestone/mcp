@@ -7,13 +7,14 @@ package graph
 import (
 	"encoding/json"
 	"fmt"
-	"math/rand"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 // Node represents an entity in the knowledge graph.
@@ -436,10 +437,5 @@ func removeStr(s []string, v string) []string {
 }
 
 func generateID() string {
-	const chars = "abcdefghijklmnopqrstuvwxyz0123456789"
-	b := make([]byte, 8)
-	for i := range b {
-		b[i] = chars[rand.Intn(len(chars))]
-	}
-	return string(b)
+	return uuid.New().String()
 }
