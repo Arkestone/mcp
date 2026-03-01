@@ -20,8 +20,8 @@ import (
 // Node represents an entity in the knowledge graph.
 type Node struct {
 	ID        string            `json:"id"`
-	Label     string            `json:"label"`  // e.g. "Person", "Concept", "Technology"
-	Name      string            `json:"name"`   // display name
+	Label     string            `json:"label"` // e.g. "Person", "Concept", "Technology"
+	Name      string            `json:"name"`  // display name
 	Props     map[string]string `json:"props,omitempty"`
 	CreatedAt time.Time         `json:"created_at"`
 }

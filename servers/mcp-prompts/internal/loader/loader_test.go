@@ -346,59 +346,59 @@ func TestLoaderGet_ByURI(t *testing.T) {
 // ---------------------------------------------------------------------------
 
 func TestScanDir_RootLevelPrompts(t *testing.T) {
-dir := createTestDir(t, map[string]string{
-"prompts/rootprompt.prompt.md": "---\ndescription: Root prompt\nmode: ask\n---\nbody",
-})
-prompts := scanDir(dir, "rootrepo")
-if len(prompts) != 1 {
-t.Fatalf("got %d prompts, want 1", len(prompts))
-}
-if prompts[0].Name != "rootprompt" {
-t.Errorf("Name = %q", prompts[0].Name)
-}
-if prompts[0].Type != TypePrompt {
-t.Errorf("Type = %q", prompts[0].Type)
-}
-if prompts[0].URI != "prompts://rootrepo/rootprompt" {
-t.Errorf("URI = %q", prompts[0].URI)
-}
+	dir := createTestDir(t, map[string]string{
+		"prompts/rootprompt.prompt.md": "---\ndescription: Root prompt\nmode: ask\n---\nbody",
+	})
+	prompts := scanDir(dir, "rootrepo")
+	if len(prompts) != 1 {
+		t.Fatalf("got %d prompts, want 1", len(prompts))
+	}
+	if prompts[0].Name != "rootprompt" {
+		t.Errorf("Name = %q", prompts[0].Name)
+	}
+	if prompts[0].Type != TypePrompt {
+		t.Errorf("Type = %q", prompts[0].Type)
+	}
+	if prompts[0].URI != "prompts://rootrepo/rootprompt" {
+		t.Errorf("URI = %q", prompts[0].URI)
+	}
 }
 
 func TestScanDir_RootLevelChatmodes(t *testing.T) {
-dir := createTestDir(t, map[string]string{
-"chatmodes/rootmode.chatmode.md": "---\ndescription: Root chatmode\n---\nbody",
-})
-prompts := scanDir(dir, "rootrepo")
-if len(prompts) != 1 {
-t.Fatalf("got %d prompts, want 1", len(prompts))
-}
-if prompts[0].Type != TypeChatmode {
-t.Errorf("Type = %q", prompts[0].Type)
-}
+	dir := createTestDir(t, map[string]string{
+		"chatmodes/rootmode.chatmode.md": "---\ndescription: Root chatmode\n---\nbody",
+	})
+	prompts := scanDir(dir, "rootrepo")
+	if len(prompts) != 1 {
+		t.Fatalf("got %d prompts, want 1", len(prompts))
+	}
+	if prompts[0].Type != TypeChatmode {
+		t.Errorf("Type = %q", prompts[0].Type)
+	}
 }
 
 func TestScanDir_GithubTakesPriorityOverRoot(t *testing.T) {
-// When same prompt exists in .github/ and root, .github/ wins.
-dir := createTestDir(t, map[string]string{
-".github/prompts/foo.prompt.md": "---\ndescription: From github\n---\nbody",
-"prompts/foo.prompt.md":         "---\ndescription: From root\n---\nbody",
-})
-prompts := scanDir(dir, "repo")
-if len(prompts) != 1 {
-t.Fatalf("got %d prompts, want 1 (deduplication)", len(prompts))
-}
-if prompts[0].Description != "From github" {
-t.Errorf("expected .github/ version to win, got %q", prompts[0].Description)
-}
+	// When same prompt exists in .github/ and root, .github/ wins.
+	dir := createTestDir(t, map[string]string{
+		".github/prompts/foo.prompt.md": "---\ndescription: From github\n---\nbody",
+		"prompts/foo.prompt.md":         "---\ndescription: From root\n---\nbody",
+	})
+	prompts := scanDir(dir, "repo")
+	if len(prompts) != 1 {
+		t.Fatalf("got %d prompts, want 1 (deduplication)", len(prompts))
+	}
+	if prompts[0].Description != "From github" {
+		t.Errorf("expected .github/ version to win, got %q", prompts[0].Description)
+	}
 }
 
 func TestScanDir_BothGithubAndRootDifferentFiles(t *testing.T) {
-dir := createTestDir(t, map[string]string{
-".github/prompts/a.prompt.md": "---\ndescription: A\n---\nbody",
-"prompts/b.prompt.md":         "---\ndescription: B\n---\nbody",
-})
-prompts := scanDir(dir, "repo")
-if len(prompts) != 2 {
-t.Fatalf("got %d prompts, want 2", len(prompts))
-}
+	dir := createTestDir(t, map[string]string{
+		".github/prompts/a.prompt.md": "---\ndescription: A\n---\nbody",
+		"prompts/b.prompt.md":         "---\ndescription: B\n---\nbody",
+	})
+	prompts := scanDir(dir, "repo")
+	if len(prompts) != 2 {
+		t.Fatalf("got %d prompts, want 2", len(prompts))
+	}
 }
