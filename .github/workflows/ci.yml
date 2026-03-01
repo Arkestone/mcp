@@ -86,12 +86,12 @@ jobs:
           cache: true
       - name: Run integration tests
         run: go test -tags integration -race -count=1 ./...
-      - name: Run LLM integration tests (Scaleway)
+      - name: Run LLM integration tests
         run: go test -tags integration -v -run TestLLMEndpointIntegration -count=1 ./pkg/optimizer/
         env:
-          LLM_ENDPOINT: https://api.scaleway.ai/v1
-          LLM_API_KEY: ${{ secrets.SCW_SECRET_KEY }}
-          LLM_MODEL: llama-3.1-8b-instruct
+          LLM_ENDPOINT: ${{ secrets.LLM_ENDPOINT }}
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_MODEL: ${{ secrets.LLM_MODEL }}
 
   build:
     name: Build
