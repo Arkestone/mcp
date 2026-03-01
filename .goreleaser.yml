@@ -101,7 +101,7 @@ dockers:
       - ghcr.io/arkestone/mcp-instructions:{{ .Version }}-amd64
       - ghcr.io/arkestone/mcp-instructions:latest-amd64
     use: buildx
-    dockerfile: servers/mcp-instructions/Dockerfile
+    dockerfile: servers/mcp-instructions/Dockerfile.goreleaser
     build_flag_templates:
       - --platform=linux/amd64
     goarch: amd64
@@ -111,7 +111,7 @@ dockers:
       - ghcr.io/arkestone/mcp-instructions:{{ .Version }}-arm64
       - ghcr.io/arkestone/mcp-instructions:latest-arm64
     use: buildx
-    dockerfile: servers/mcp-instructions/Dockerfile
+    dockerfile: servers/mcp-instructions/Dockerfile.goreleaser
     build_flag_templates:
       - --platform=linux/arm64
     goarch: arm64
@@ -121,7 +121,7 @@ dockers:
       - ghcr.io/arkestone/mcp-skills:{{ .Version }}-amd64
       - ghcr.io/arkestone/mcp-skills:latest-amd64
     use: buildx
-    dockerfile: servers/mcp-skills/Dockerfile
+    dockerfile: servers/mcp-skills/Dockerfile.goreleaser
     build_flag_templates:
       - --platform=linux/amd64
     goarch: amd64
@@ -131,7 +131,7 @@ dockers:
       - ghcr.io/arkestone/mcp-skills:{{ .Version }}-arm64
       - ghcr.io/arkestone/mcp-skills:latest-arm64
     use: buildx
-    dockerfile: servers/mcp-skills/Dockerfile
+    dockerfile: servers/mcp-skills/Dockerfile.goreleaser
     build_flag_templates:
       - --platform=linux/arm64
     goarch: arm64
@@ -141,7 +141,7 @@ dockers:
       - ghcr.io/arkestone/mcp-adr:{{ .Version }}-amd64
       - ghcr.io/arkestone/mcp-adr:latest-amd64
     use: buildx
-    dockerfile: servers/mcp-adr/Dockerfile
+    dockerfile: servers/mcp-adr/Dockerfile.goreleaser
     build_flag_templates:
       - --platform=linux/amd64
     goarch: amd64
@@ -151,7 +151,7 @@ dockers:
       - ghcr.io/arkestone/mcp-adr:{{ .Version }}-arm64
       - ghcr.io/arkestone/mcp-adr:latest-arm64
     use: buildx
-    dockerfile: servers/mcp-adr/Dockerfile
+    dockerfile: servers/mcp-adr/Dockerfile.goreleaser
     build_flag_templates:
       - --platform=linux/arm64
     goarch: arm64
@@ -161,7 +161,7 @@ dockers:
       - ghcr.io/arkestone/mcp-memory:{{ .Version }}-amd64
       - ghcr.io/arkestone/mcp-memory:latest-amd64
     use: buildx
-    dockerfile: servers/mcp-memory/Dockerfile
+    dockerfile: servers/mcp-memory/Dockerfile.goreleaser
     build_flag_templates:
       - --platform=linux/amd64
     goarch: amd64
@@ -171,7 +171,7 @@ dockers:
       - ghcr.io/arkestone/mcp-memory:{{ .Version }}-arm64
       - ghcr.io/arkestone/mcp-memory:latest-arm64
     use: buildx
-    dockerfile: servers/mcp-memory/Dockerfile
+    dockerfile: servers/mcp-memory/Dockerfile.goreleaser
     build_flag_templates:
       - --platform=linux/arm64
     goarch: arm64
@@ -181,7 +181,7 @@ dockers:
       - ghcr.io/arkestone/mcp-prompts:{{ .Version }}-amd64
       - ghcr.io/arkestone/mcp-prompts:latest-amd64
     use: buildx
-    dockerfile: servers/mcp-prompts/Dockerfile
+    dockerfile: servers/mcp-prompts/Dockerfile.goreleaser
     build_flag_templates:
       - --platform=linux/amd64
     goarch: amd64
@@ -191,7 +191,7 @@ dockers:
       - ghcr.io/arkestone/mcp-prompts:{{ .Version }}-arm64
       - ghcr.io/arkestone/mcp-prompts:latest-arm64
     use: buildx
-    dockerfile: servers/mcp-prompts/Dockerfile
+    dockerfile: servers/mcp-prompts/Dockerfile.goreleaser
     build_flag_templates:
       - --platform=linux/arm64
     goarch: arm64

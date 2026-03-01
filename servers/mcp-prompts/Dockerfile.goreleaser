@@ -1,0 +1,13 @@
+FROM alpine:3.21
+
+LABEL org.opencontainers.image.title="mcp-prompts" \
+      org.opencontainers.image.description="MCP server for Copilot prompt files" \
+      org.opencontainers.image.source="https://github.com/Arkestone/mcp" \
+      org.opencontainers.image.license="MIT"
+
+RUN apk add --no-cache ca-certificates && \
+    adduser -D -u 1000 mcp
+
+USER mcp
+COPY mcp-prompts /usr/local/bin/mcp-prompts
+ENTRYPOINT ["mcp-prompts"]
