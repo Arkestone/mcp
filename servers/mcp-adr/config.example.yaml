@@ -1,0 +1,22 @@
+# MCP ADR Server Configuration
+
+sources:
+  # Local directories containing docs/adr/*.md files
+  dirs:
+    - ./my-repo
+
+  # GitHub repositories (owner/repo or owner/repo@ref)
+  repos:
+    - myorg/my-project
+
+cache:
+  dir: ~/.cache/mcp-adr
+  sync_interval: 5m
+
+llm:
+  endpoint: ""
+  model: gpt-4o-mini
+  enabled: false
+
+transport: stdio
+addr: ":8083"
