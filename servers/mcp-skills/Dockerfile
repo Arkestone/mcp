@@ -11,7 +11,7 @@ ARG TARGETOS TARGETARCH
 RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
     go build -ldflags="-s -w" -o /mcp-skills ./servers/mcp-skills/cmd/mcp-skills
 
-FROM alpine:3.21
+FROM alpine:3.23
 
 LABEL org.opencontainers.image.title="mcp-skills" \
       org.opencontainers.image.description="MCP server for Copilot skills" \
