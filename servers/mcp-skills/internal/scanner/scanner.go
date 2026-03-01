@@ -57,10 +57,19 @@ func (s *Scanner) Stop() { s.syncer.Stop() }
 func (s *Scanner) ForceSync() { s.syncer.ForceSync() }
 
 // List returns all skills. Local dirs are read from disk; repos from cache.
+// When no dirs are configured, the current working directory is used as default
+// so the server works out-of-the-box when run from a repository root.
+// Each dir is scanned at both root level and inside its .github/ subdirectory.
 func (s *Scanner) List() []Skill {
+	dirs := s.cfg.Sources.Dirs
+	if len(dirs) == 0 {
+		dirs = []string{"."}
+	}
 	var out []Skill
-	for _, dir := range s.cfg.Sources.Dirs {
-		out = append(out, scanDir(dir, filepath.Base(dir))...)
+	for _, dir := range dirs {
+		src := sourceFor(dir)
+		out = append(out, scanDir(dir, src)...)
+		out = append(out, scanDir(filepath.Join(dir, ".github"), src)...)
 	}
 	for _, ref := range s.cfg.ParsedRepos() {
 		cacheDir := repoCacheDir(s.cfg.Cache.Dir, ref)
@@ -253,4 +262,15 @@ func repoCacheDir(cacheBase string, ref config.RepoRef) string {
 		key += "_" + ref.Ref
 	}
 	return filepath.Join(cacheBase, key)
+}
+
+// sourceFor returns the source label for a directory.
+// For relative paths (e.g. ".") it resolves to the absolute path first so the
+// label is a meaningful directory name rather than ".".
+func sourceFor(dir string) string {
+	abs, err := filepath.Abs(dir)
+	if err != nil {
+		return filepath.Base(dir)
+	}
+	return filepath.Base(abs)
 }

@@ -1111,3 +1111,68 @@ func TestLoaderForceSyncWithRemote(t *testing.T) {
 		t.Error("second ForceSync should make additional API calls")
 	}
 }
+
+// ---------------------------------------------------------------------------
+// Root-level scanning (not just .github/)
+// ---------------------------------------------------------------------------
+
+func TestScanDir_RootLevelCopilotInstructions(t *testing.T) {
+// copilot-instructions.md at root (no .github/ prefix)
+dir := createTestDir(t, map[string]string{
+"copilot-instructions.md": "root instructions",
+})
+instructions := scanDir(dir, "rootrepo")
+if len(instructions) != 1 {
+t.Fatalf("got %d instructions, want 1", len(instructions))
+}
+if instructions[0].Content != "root instructions" {
+t.Errorf("Content = %q", instructions[0].Content)
+}
+if instructions[0].URI != "instructions://rootrepo/copilot-instructions" {
+t.Errorf("URI = %q", instructions[0].URI)
+}
+}
+
+func TestScanDir_RootLevelInstructionsDir(t *testing.T) {
+// instructions/*.instructions.md at root (no .github/ prefix)
+dir := createTestDir(t, map[string]string{
+"instructions/style.instructions.md": "root style guide",
+})
+instructions := scanDir(dir, "rootrepo")
+if len(instructions) != 1 {
+t.Fatalf("got %d instructions, want 1", len(instructions))
+}
+if instructions[0].Content != "root style guide" {
+t.Errorf("Content = %q", instructions[0].Content)
+}
+if instructions[0].URI != "instructions://rootrepo/style" {
+t.Errorf("URI = %q", instructions[0].URI)
+}
+}
+
+func TestScanDir_GithubTakesPriorityOverRoot(t *testing.T) {
+// When the same file exists in both .github/ and root, .github/ wins.
+dir := createTestDir(t, map[string]string{
+".github/copilot-instructions.md": "from github",
+"copilot-instructions.md":         "from root",
+})
+instructions := scanDir(dir, "repo")
+if len(instructions) != 1 {
+t.Fatalf("got %d instructions, want 1 (deduplication)", len(instructions))
+}
+if instructions[0].Content != "from github" {
+t.Errorf("expected .github/ version to win, got %q", instructions[0].Content)
+}
+}
+
+func TestScanDir_BothGithubAndRootDifferentFiles(t *testing.T) {
+// Files in .github/ and different files at root are both included.
+dir := createTestDir(t, map[string]string{
+".github/copilot-instructions.md":          "main instructions",
+"instructions/extra.instructions.md":       "extra root guide",
+})
+instructions := scanDir(dir, "repo")
+if len(instructions) != 2 {
+t.Fatalf("got %d instructions, want 2", len(instructions))
+}
+}
