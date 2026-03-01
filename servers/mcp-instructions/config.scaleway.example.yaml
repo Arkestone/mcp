@@ -1,0 +1,31 @@
+# Configuration example for mcp-instructions using Scaleway Generative APIs.
+# Scaleway provides an OpenAI-compatible endpoint with open-source models.
+#
+# Required environment variables:
+#   SCW_SECRET_KEY  – Scaleway secret key (used as the LLM API key)
+#
+# Or set via CLI flag:
+#   mcp-instructions --llm-api-key "$SCW_SECRET_KEY"
+
+sources:
+  dirs:
+    - /path/to/local/repo
+
+cache:
+  dir: ~/.cache/mcp-instructions
+  sync_interval: 5m
+
+llm:
+  # Scaleway Generative APIs – OpenAI-compatible
+  endpoint: https://api.scaleway.ai/v1
+  # Available models (as of 2025):
+  #   llama-3.1-8b-instruct     – fast, lightweight
+  #   llama-3.3-70b-instruct    – higher quality
+  #   mistral-nemo-instruct-2407
+  #   deepseek-r1-distill-llama-70b
+  model: llama-3.1-8b-instruct
+  enabled: true
+  # API key is read from LLM_API_KEY env var at runtime (never put secrets here)
+
+transport: stdio
+addr: ":8080"
