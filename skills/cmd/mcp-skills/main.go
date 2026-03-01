@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"sort"
 	"strings"
 	"syscall"
 	"time"
@@ -18,6 +19,8 @@ import (
 	"github.com/Arkestone/mcp/skills/internal/scanner"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
+
+var version = "dev" // set at build time via -ldflags
 
 func main() {
 	cfg := config.Load(config.Options{
@@ -205,6 +208,7 @@ func registerTools(srv *mcp.Server, scn *scanner.Scanner, opt *optimizer.Optimiz
 			for s := range sourceSet {
 				sources = append(sources, s)
 			}
+			sort.Strings(sources)
 			return nil, RefreshOutput{
 				Message: "All skill sources refreshed successfully",
 				Count:   len(skills),
