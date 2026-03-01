@@ -33,7 +33,7 @@ jobs:
       - name: Build mcp-instructions image
         run: docker build -f servers/mcp-instructions/Dockerfile -t arkestone/mcp-instructions:scan .
       - name: Run Trivy (mcp-instructions)
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@0.34.1
         with:
           image-ref: arkestone/mcp-instructions:scan
           format: sarif
@@ -53,7 +53,7 @@ jobs:
       - name: Build mcp-skills image
         run: docker build -f servers/mcp-skills/Dockerfile -t arkestone/mcp-skills:scan .
       - name: Run Trivy (mcp-skills)
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@0.34.1
         with:
           image-ref: arkestone/mcp-skills:scan
           format: sarif
