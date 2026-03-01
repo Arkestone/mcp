@@ -1,0 +1,25 @@
+# CODEOWNERS — automatically assigns reviewers to pull requests based on
+# which files are modified. Each line maps a file pattern to one or more
+# owners. Later rules take precedence over earlier ones.
+#
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for everything
+* @Arkestone/mcp-maintainers
+
+# Core server
+/cmd/ @Arkestone/mcp-maintainers
+/internal/ @Arkestone/mcp-maintainers
+
+# Configuration
+/internal/config/ @Arkestone/mcp-maintainers
+/config.example.yaml @Arkestone/mcp-maintainers
+
+# CI/CD and infrastructure
+/.github/ @Arkestone/mcp-maintainers
+/Dockerfile @Arkestone/mcp-maintainers
+/Makefile @Arkestone/mcp-maintainers
+/.goreleaser.yml @Arkestone/mcp-maintainers
+
+# Documentation
+/*.md @Arkestone/mcp-maintainers

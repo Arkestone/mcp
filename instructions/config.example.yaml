@@ -1,0 +1,31 @@
+# Example configuration for mcp-instructions server.
+# All values can be overridden by environment variables and CLI flags.
+
+sources:
+  # Local directories containing .github/copilot-instructions.md
+  # and/or .github/instructions/*.instructions.md
+  dirs:
+    - /path/to/local/repo
+
+  # GitHub repositories (owner/repo or owner/repo@branch)
+  repos:
+    - github/awesome-copilot
+    - github/awesome-copilot@main
+
+cache:
+  # Where to cache remote repository instruction files
+  dir: ~/.cache/mcp-instructions
+  # How often to re-sync from GitHub
+  sync_interval: 5m
+
+# Optional: LLM-based optimization to merge/deduplicate instructions
+llm:
+  endpoint: https://api.openai.com/v1
+  model: gpt-4o-mini
+  enabled: false  # set to true to optimize by default
+
+# MCP transport: "stdio" or "http"
+transport: stdio
+
+# HTTP listen address (only used when transport is "http")
+addr: ":8080"
