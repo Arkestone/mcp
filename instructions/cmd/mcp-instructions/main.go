@@ -20,9 +20,12 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-var version = "dev" // set at build time via -ldflags
+var version = "dev"  // set at build time via -ldflags
+var commit = "none"  // set at build time via -ldflags
+var date = "unknown" // set at build time via -ldflags
 
 func main() {
+	log.Printf("mcp-instructions version=%s commit=%s date=%s", version, commit, date)
 	cfg := config.Load(config.Options{
 		EnvPrefix:        "INSTRUCTIONS",
 		DefaultAddr:      ":8080",

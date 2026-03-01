@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -10,13 +11,14 @@ import (
 
 	"github.com/Arkestone/mcp/pkg/httputil"
 	"github.com/Arkestone/mcp/pkg/optimizer"
+	"github.com/Arkestone/mcp/pkg/testutil"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
 func TestShouldOptimize(t *testing.T) {
-	enabled := optimizer.New(optimizer.TestLLMConfig())
+	enabled := optimizer.New(testutil.LLMConfig())
 	if enabled == nil {
-		t.Fatal("expected non-nil optimizer from TestLLMConfig")
+		t.Fatal("expected non-nil optimizer from testutil.LLMConfig")
 	}
 
 	tests := []struct {
@@ -199,7 +201,7 @@ func TestWrapHandler_WithHeaders(t *testing.T) {
 }
 
 func TestShouldOptimize_AllCombinations(t *testing.T) {
-	enabled := optimizer.New(optimizer.TestLLMConfig())
+	enabled := optimizer.New(testutil.LLMConfig())
 	tests := []struct {
 		name      string
 		opt       *optimizer.Optimizer
@@ -243,6 +245,78 @@ func TestRunHTTP_AddressAlreadyInUse(t *testing.T) {
 	err = RunHTTP(ctx, srv, addr, nil)
 	if err == nil {
 		t.Fatal("expected error for address already in use")
+	}
+}
+
+func TestRunHTTP_Healthz(t *testing.T) {
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("failed to find free port: %v", err)
+	}
+	addr := l.Addr().String()
+	l.Close()
+
+	srv := mcp.NewServer(&mcp.Implementation{Name: "test", Version: "0.1.0"}, nil)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	go RunHTTP(ctx, srv, addr, nil) //nolint:errcheck
+
+	time.Sleep(100 * time.Millisecond)
+
+	resp, err := http.Get("http://" + addr + "/healthz")
+	if err != nil {
+		t.Fatalf("GET /healthz failed: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("status = %d, want 200", resp.StatusCode)
+	}
+
+	var body map[string]string
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		t.Fatalf("failed to decode response body: %v", err)
+	}
+	if body["status"] != "ok" {
+		t.Errorf(`body["status"] = %q, want "ok"`, body["status"])
+	}
+}
+
+func TestRunHTTP_GracefulShutdown(t *testing.T) {
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("failed to find free port: %v", err)
+	}
+	addr := l.Addr().String()
+	l.Close()
+
+	srv := mcp.NewServer(&mcp.Implementation{Name: "test", Version: "0.1.0"}, nil)
+	ctx, cancel := context.WithCancel(context.Background())
+
+	errCh := make(chan error, 1)
+	go func() {
+		errCh <- RunHTTP(ctx, srv, addr, nil)
+	}()
+
+	time.Sleep(100 * time.Millisecond)
+
+	// Verify the server is up.
+	resp, err := http.Get("http://" + addr + "/healthz")
+	if err != nil {
+		t.Fatalf("server not up before shutdown: %v", err)
+	}
+	resp.Body.Close()
+
+	cancel()
+
+	select {
+	case err := <-errCh:
+		if err != nil {
+			t.Fatalf("RunHTTP returned error after graceful shutdown: %v", err)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("RunHTTP did not stop after context cancel")
 	}
 }
 

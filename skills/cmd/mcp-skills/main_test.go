@@ -16,6 +16,7 @@ import (
 	"github.com/Arkestone/mcp/pkg/github"
 	"github.com/Arkestone/mcp/pkg/optimizer"
 	"github.com/Arkestone/mcp/pkg/server"
+	"github.com/Arkestone/mcp/pkg/testutil"
 	"github.com/Arkestone/mcp/skills/internal/scanner"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -47,7 +48,7 @@ func newTestOptimizer(t *testing.T) *optimizer.Optimizer {
 	}))
 	t.Cleanup(srv.Close)
 
-	cfg := optimizer.TestLLMConfig()
+	cfg := testutil.LLMConfig()
 	cfg.Endpoint = srv.URL
 	return optimizer.New(cfg)
 }
@@ -326,7 +327,7 @@ func TestOptimizeContent(t *testing.T) {
 			w.WriteHeader(http.StatusInternalServerError)
 		}))
 		t.Cleanup(errSrv.Close)
-		cfg := optimizer.TestLLMConfig()
+		cfg := testutil.LLMConfig()
 		cfg.Endpoint = errSrv.URL
 		opt := optimizer.New(cfg)
 		got := optimizeContent(context.Background(), opt, true, "true", inputs)

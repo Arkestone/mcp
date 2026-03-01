@@ -9,10 +9,10 @@ all: lint test build
 build: build-instructions build-skills
 
 build-instructions:
-	go build -trimpath -o $(GOBIN)/mcp-instructions ./instructions/cmd/mcp-instructions
+	go build -buildvcs=false -trimpath -o $(GOBIN)/mcp-instructions ./instructions/cmd/mcp-instructions
 
 build-skills:
-	go build -trimpath -o $(GOBIN)/mcp-skills ./skills/cmd/mcp-skills
+	go build -buildvcs=false -trimpath -o $(GOBIN)/mcp-skills ./skills/cmd/mcp-skills
 
 # Test targets
 test:
@@ -25,9 +25,15 @@ test-integration:
 	go test -tags integration -race -count=1 ./...
 
 cover:
-	go test -coverprofile=coverage.out ./...
-	go tool cover -func=coverage.out
-	@rm -f coverage.out
+	go test -buildvcs=false -coverprofile=cover.out ./...
+	go tool cover -func=cover.out
+	@rm -f cover.out
+
+cover-html:
+	go test -buildvcs=false -coverprofile=cover.out ./...
+	go tool cover -html=cover.out -o coverage.html
+	@rm -f cover.out
+	@echo "Coverage report: coverage.html"
 
 # Quality targets
 lint:
@@ -51,4 +57,4 @@ docker-skills:
 
 # Clean
 clean:
-	rm -rf $(GOBIN) coverage.out
+	rm -rf $(GOBIN) cover.out coverage.out coverage.html
