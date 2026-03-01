@@ -9,10 +9,10 @@ all: lint test build
 build: build-instructions build-skills
 
 build-instructions:
-	go build -buildvcs=false -trimpath -o $(GOBIN)/mcp-instructions ./instructions/cmd/mcp-instructions
+	go build -buildvcs=false -trimpath -o $(GOBIN)/mcp-instructions ./servers/mcp-instructions/cmd/mcp-instructions
 
 build-skills:
-	go build -buildvcs=false -trimpath -o $(GOBIN)/mcp-skills ./skills/cmd/mcp-skills
+	go build -buildvcs=false -trimpath -o $(GOBIN)/mcp-skills ./servers/mcp-skills/cmd/mcp-skills
 
 # Test targets
 test:
@@ -50,10 +50,10 @@ vet:
 docker: docker-instructions docker-skills
 
 docker-instructions:
-	docker build -f instructions/Dockerfile -t ghcr.io/arkestone/mcp-instructions:latest .
+	docker build -f servers/mcp-instructions/Dockerfile -t ghcr.io/arkestone/mcp-instructions:latest .
 
 docker-skills:
-	docker build -f skills/Dockerfile -t ghcr.io/arkestone/mcp-skills:latest .
+	docker build -f servers/mcp-skills/Dockerfile -t ghcr.io/arkestone/mcp-skills:latest .
 
 # Clean
 clean:
