@@ -10,17 +10,29 @@ An MCP server that provides persistent, searchable memory storage for AI assista
 - **Dual transport** — supports both stdio (for local tools) and Streamable HTTP (for remote deployments)
 - **MCP primitives** — memories are exposed as Resources and Tools
 
+## Installation
+
+```bash
+# go install (requires Go 1.24+)
+go install github.com/Arkestone/mcp/servers/mcp-memory/cmd/mcp-memory@latest
+
+# Docker
+docker pull ghcr.io/arkestone/mcp-memory:latest
+
+# Pre-built binary — https://github.com/Arkestone/mcp/releases/latest
+```
+
 ## Getting Started
 
 ```bash
-# From the repo root
-make build-memory
-
 # Run with stdio transport (default)
-./bin/mcp-memory
+mcp-memory
 
 # Run with HTTP transport
-./bin/mcp-memory -transport http -addr :8084
+mcp-memory -transport http -addr :8084
+
+# Build from source
+make build-memory   # → ./bin/mcp-memory
 ```
 
 ## Configuration
@@ -103,14 +115,15 @@ docker run -p 8084:8084 \
 
 ## MCP Client Configuration
 
-### VS Code (`.vscode/mcp.json`)
+### VS Code / GitHub Copilot
+
+`.vscode/mcp.json`:
 
 ```json
 {
   "servers": {
     "memory": {
-      "command": "mcp-memory",
-      "args": []
+      "command": "mcp-memory"
     }
   }
 }
@@ -118,15 +131,58 @@ docker run -p 8084:8084 \
 
 ### Claude Desktop
 
+**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+
 ```json
 {
   "mcpServers": {
     "memory": {
       "command": "mcp-memory",
-      "args": [],
-      "env": {
-        "MEMORY_DIR": "/path/to/memories"
-      }
+      "env": { "MEMORY_DIR": "~/.local/share/mcp-memory" }
+    }
+  }
+}
+```
+
+### Cursor
+
+`.cursor/mcp.json` or `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "memory": {
+      "command": "mcp-memory",
+      "env": { "MEMORY_DIR": "~/.local/share/mcp-memory" }
+    }
+  }
+}
+```
+
+### Windsurf
+
+`~/.codeium/windsurf/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "memory": {
+      "command": "mcp-memory",
+      "env": { "MEMORY_DIR": "~/.local/share/mcp-memory" }
+    }
+  }
+}
+```
+
+### Claude Code
+
+`.mcp.json` or `~/.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "memory": {
+      "command": "mcp-memory"
     }
   }
 }
@@ -138,7 +194,8 @@ docker run -p 8084:8084 \
 {
   "mcpServers": {
     "memory": {
-      "url": "http://localhost:8084"
+      "type": "http",
+      "url": "http://localhost:8084/mcp"
     }
   }
 }

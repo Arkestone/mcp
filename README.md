@@ -4,63 +4,231 @@
 [![codecov](https://codecov.io/gh/Arkestone/mcp/graph/badge.svg)](https://codecov.io/gh/Arkestone/mcp)
 [![Go Report Card](https://goreportcard.com/badge/github.com/Arkestone/mcp)](https://goreportcard.com/report/github.com/Arkestone/mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/Arkestone/mcp)](go.mod)
+[![Release](https://img.shields.io/github/v/release/Arkestone/mcp)](https://github.com/Arkestone/mcp/releases/latest)
 
-A suite of [Model Context Protocol](https://modelcontextprotocol.io) (MCP) servers for [GitHub Copilot](https://github.com/features/copilot) customization. Each server dynamically serves a different type of Copilot configuration — custom instructions, skills, prompts, ADRs, or persistent memory — from local directories and GitHub repositories.
+A suite of [Model Context Protocol](https://modelcontextprotocol.io) (MCP) servers for [GitHub Copilot](https://github.com/features/copilot) and other AI coding assistants. Each server dynamically serves a different type of context — custom instructions, skills, prompts, ADRs, persistent memory, or knowledge graphs — from local directories and GitHub repositories.
+
+## Table of Contents
+
+- [Available Servers](#available-servers)
+- [Installation](#installation)
+  - [go install](#go-install)
+  - [Docker](#docker)
+  - [Pre-built Binaries](#pre-built-binaries)
+  - [Build from Source](#build-from-source)
+- [Quick Start](#quick-start)
+- [Transport Mechanisms](#transport-mechanisms)
+- [MCP Client Configuration](#mcp-client-configuration)
+  - [VS Code](#vs-code)
+  - [Claude Desktop](#claude-desktop)
+  - [Cursor](#cursor)
+  - [Windsurf](#windsurf)
+  - [Claude Code](#claude-code)
+  - [JetBrains](#jetbrains)
+  - [Zed](#zed)
+  - [Docker Compose (all servers)](#docker-compose--all-servers)
+- [LLM Optimization](#llm-optimization)
+- [GitHub Authentication](#github-authentication-optional)
+- [Network & Proxy](#network--proxy)
+- [Architecture](#architecture)
+- [Shared Packages](#shared-packages)
+- [Development](#development)
+- [Contributing](#contributing)
 
 ## Available Servers
 
-| Server | Description | Port | Docs |
-|--------|-------------|------|------|
-| [mcp-instructions](./servers/mcp-instructions/) | Serves Copilot custom instruction files (`.github/copilot-instructions.md`, `.github/instructions/**/*.instructions.md`) | `:8080` | [README](./servers/mcp-instructions/README.md) · [CHANGELOG](./servers/mcp-instructions/CHANGELOG.md) |
-| [mcp-skills](./servers/mcp-skills/) | Serves Copilot skills (`SKILL.md`) with frontmatter metadata | `:8081` | [README](./servers/mcp-skills/README.md) · [CHANGELOG](./servers/mcp-skills/CHANGELOG.md) |
-| [mcp-prompts](./servers/mcp-prompts/) | Serves VS Code Copilot prompt files (`.github/prompts/*.prompt.md`) and chat mode files | `:8082` | [README](./servers/mcp-prompts/README.md) · [CHANGELOG](./servers/mcp-prompts/CHANGELOG.md) |
-| [mcp-graph](./servers/mcp-graph/) | Knowledge graph MCP server — store entities and relationships, query neighbors and shortest paths | `:8085` | [README](./servers/mcp-graph/README.md) · [CHANGELOG](./servers/mcp-graph/CHANGELOG.md) |
-| [mcp-adr](./servers/mcp-adr/) | Serves Architecture Decision Records from `docs/adr/`, `docs/decisions/`, or `doc/adr/` | `:8083` | [README](./servers/mcp-adr/README.md) · [CHANGELOG](./servers/mcp-adr/CHANGELOG.md) |
-| [mcp-memory](./servers/mcp-memory/) | Persistent memory store — remember, recall, and forget information across sessions | `:8084` | [README](./servers/mcp-memory/README.md) · [CHANGELOG](./servers/mcp-memory/CHANGELOG.md) |
+| Server | Description | Port |
+|--------|-------------|------|
+| [mcp-instructions](./servers/mcp-instructions/) | Serves Copilot custom instruction files (`.github/copilot-instructions.md`, `.github/instructions/**`) from local dirs and GitHub repos | `:8080` |
+| [mcp-skills](./servers/mcp-skills/) | Serves Copilot skills (`skills/*/SKILL.md`) with frontmatter metadata and reference bundles | `:8081` |
+| [mcp-prompts](./servers/mcp-prompts/) | Serves VS Code Copilot prompt files (`.github/prompts/*.prompt.md`) and chat mode files | `:8082` |
+| [mcp-adr](./servers/mcp-adr/) | Serves Architecture Decision Records from `docs/adr/`, `docs/decisions/`, or `doc/adr/` | `:8083` |
+| [mcp-memory](./servers/mcp-memory/) | Persistent memory store — remember, recall, and forget information across sessions | `:8084` |
+| [mcp-graph](./servers/mcp-graph/) | Knowledge graph — store entities and relationships, query neighbors and shortest paths | `:8085` |
+
+Each server has its own [README](./servers/mcp-instructions/README.md) and [CHANGELOG](./servers/mcp-instructions/CHANGELOG.md).
+
+## Installation
+
+### go install
+
+The fastest way to install. Requires [Go 1.24+](https://go.dev/dl/).
+
+```bash
+# Install the latest version
+go install github.com/Arkestone/mcp/servers/mcp-instructions/cmd/mcp-instructions@latest
+go install github.com/Arkestone/mcp/servers/mcp-skills/cmd/mcp-skills@latest
+go install github.com/Arkestone/mcp/servers/mcp-prompts/cmd/mcp-prompts@latest
+go install github.com/Arkestone/mcp/servers/mcp-adr/cmd/mcp-adr@latest
+go install github.com/Arkestone/mcp/servers/mcp-memory/cmd/mcp-memory@latest
+go install github.com/Arkestone/mcp/servers/mcp-graph/cmd/mcp-graph@latest
+
+# Install a pinned version
+go install github.com/Arkestone/mcp/servers/mcp-instructions/cmd/mcp-instructions@v0.0.1
+```
+
+### Docker
+
+Pre-built images are published to the GitHub Container Registry after each release:
+
+```bash
+# Pull the latest version
+docker pull ghcr.io/arkestone/mcp-instructions:latest
+docker pull ghcr.io/arkestone/mcp-skills:latest
+docker pull ghcr.io/arkestone/mcp-prompts:latest
+docker pull ghcr.io/arkestone/mcp-adr:latest
+docker pull ghcr.io/arkestone/mcp-memory:latest
+docker pull ghcr.io/arkestone/mcp-graph:latest
+
+# Pull a specific version
+docker pull ghcr.io/arkestone/mcp-instructions:v0.0.1
+```
+
+### Pre-built Binaries
+
+Download pre-built binaries for Linux, macOS, and Windows from [GitHub Releases](https://github.com/Arkestone/mcp/releases):
+
+```bash
+# Example: Linux amd64
+curl -L https://github.com/Arkestone/mcp/releases/latest/download/mcp-instructions_linux_amd64.tar.gz | tar xz
+mv mcp-instructions /usr/local/bin/
+```
+
+### Build from Source
+
+```bash
+git clone https://github.com/Arkestone/mcp.git
+cd mcp
+make build    # → ./bin/mcp-instructions, ./bin/mcp-skills, ...
+```
 
 ## Quick Start
 
 ```bash
-# Build all servers
-make build
+# stdio — used by VS Code, Claude Desktop, Cursor, etc.
+mcp-instructions -dirs /path/to/repo
 
-# Or build individually
-make build-instructions   # → ./bin/mcp-instructions
-make build-skills         # → ./bin/mcp-skills
-make build-prompts        # → ./bin/mcp-prompts
-make build-adr            # → ./bin/mcp-adr
-make build-memory         # → ./bin/mcp-memory
-```
+# HTTP — for shared team deployments
+mcp-instructions -transport http -addr :8080 -repos github/awesome-copilot
 
-Each server supports stdio (default) and HTTP transports:
-
-```bash
-# stdio — used by Copilot CLI and desktop clients
-./bin/mcp-instructions -dirs /path/to/repo
-
-# HTTP — used for remote/shared deployments
-./bin/mcp-instructions -transport http -addr :8080 -repos github/awesome-copilot
+# With LLM optimization
+mcp-instructions -transport http -llm.enabled -llm.endpoint https://api.scaleway.ai/v1
 ```
 
 See each server's README for the full configuration reference.
 
+## Transport Mechanisms
+
+| Transport | When to Use |
+|-----------|-------------|
+| **stdio** | Local clients (VS Code, Claude Desktop, Cursor, etc.) — the client spawns the server process |
+| **Streamable HTTP** | Remote/shared deployments — the server runs independently, clients connect over HTTP |
+
+All servers default to stdio. Pass `-transport http` to switch to HTTP.
+
 ## MCP Client Configuration
 
-### VS Code (`.vscode/mcp.json`)
+### VS Code
+
+#### `.vscode/mcp.json` (project-level)
 
 ```json
 {
   "servers": {
-    "instructions": { "command": "mcp-instructions", "args": ["-dirs", "/path/to/repo"] },
-    "skills":       { "command": "mcp-skills",       "args": ["-dirs", "/path/to/skills"] },
-    "prompts":      { "command": "mcp-prompts",      "args": ["-dirs", "/path/to/repo"] },
-    "adrs":         { "command": "mcp-adr",          "args": ["-dirs", "/path/to/repo"] },
-    "memory":       { "command": "mcp-memory" }
+    "instructions": { "command": "mcp-instructions", "args": ["-dirs", "${workspaceFolder}"] },
+    "skills":       { "command": "mcp-skills",       "args": ["-dirs", "${workspaceFolder}"] },
+    "prompts":      { "command": "mcp-prompts",      "args": ["-dirs", "${workspaceFolder}"] },
+    "adrs":         { "command": "mcp-adr",          "args": ["-dirs", "${workspaceFolder}"] },
+    "memory":       { "command": "mcp-memory" },
+    "graph":        { "command": "mcp-graph" }
   }
 }
 ```
 
-### Claude Desktop (`~/Library/Application Support/Claude/claude_desktop_config.json`)
+#### Global user settings (`settings.json`)
+
+```json
+{
+  "github.copilot.chat.mcp.servers": {
+    "instructions": {
+      "command": "mcp-instructions",
+      "args": ["-dirs", "/path/to/repo"]
+    }
+  }
+}
+```
+
+### Claude Desktop
+
+**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "instructions": {
+      "command": "mcp-instructions",
+      "args": ["-dirs", "/path/to/repo"]
+    },
+    "skills": {
+      "command": "mcp-skills",
+      "args": ["-dirs", "/path/to/repo"]
+    },
+    "memory": {
+      "command": "mcp-memory",
+      "env": { "MEMORY_DIR": "~/.local/share/mcp-memory" }
+    },
+    "graph": {
+      "command": "mcp-graph"
+    }
+  }
+}
+```
+
+### Cursor
+
+#### `.cursor/mcp.json` (project-level)
+
+```json
+{
+  "mcpServers": {
+    "instructions": {
+      "command": "mcp-instructions",
+      "args": ["-dirs", "."]
+    },
+    "skills": {
+      "command": "mcp-skills",
+      "args": ["-dirs", "."]
+    },
+    "prompts": {
+      "command": "mcp-prompts",
+      "args": ["-dirs", "."]
+    },
+    "memory": {
+      "command": "mcp-memory"
+    }
+  }
+}
+```
+
+#### Global (`~/.cursor/mcp.json`)
+
+```json
+{
+  "mcpServers": {
+    "memory": {
+      "command": "mcp-memory",
+      "env": { "MEMORY_DIR": "~/.local/share/mcp-memory" }
+    }
+  }
+}
+```
+
+### Windsurf
+
+**macOS/Linux**: `~/.codeium/windsurf/mcp_config.json`
+**Windows**: `%USERPROFILE%\.codeium\windsurf\mcp_config.json`
 
 ```json
 {
@@ -72,6 +240,72 @@ See each server's README for the full configuration reference.
     "memory": {
       "command": "mcp-memory",
       "env": { "MEMORY_DIR": "~/.local/share/mcp-memory" }
+    }
+  }
+}
+```
+
+### Claude Code
+
+`~/.mcp.json` (global) or `.mcp.json` (project-level)
+
+```json
+{
+  "mcpServers": {
+    "instructions": {
+      "command": "mcp-instructions",
+      "args": ["-dirs", "."]
+    },
+    "skills": {
+      "command": "mcp-skills",
+      "args": ["-dirs", "."]
+    },
+    "memory": {
+      "command": "mcp-memory"
+    },
+    "graph": {
+      "command": "mcp-graph"
+    }
+  }
+}
+```
+
+### JetBrains
+
+In JetBrains IDEs (IntelliJ IDEA, GoLand, PyCharm, etc.), go to **Settings → Tools → AI Assistant → Model Context Protocol (MCP)**:
+
+```json
+{
+  "mcpServers": {
+    "instructions": {
+      "command": "mcp-instructions",
+      "args": ["-dirs", "$PROJECT_DIR$"]
+    },
+    "memory": {
+      "command": "mcp-memory"
+    }
+  }
+}
+```
+
+### Zed
+
+Add to `~/.config/zed/settings.json`:
+
+```json
+{
+  "context_servers": {
+    "mcp-instructions": {
+      "command": {
+        "path": "mcp-instructions",
+        "args": ["-dirs", "/path/to/repo"]
+      }
+    },
+    "mcp-memory": {
+      "command": {
+        "path": "mcp-memory",
+        "args": []
+      }
     }
   }
 }
@@ -121,9 +355,63 @@ services:
       MEMORY_DIR: /data
     volumes: ["memory-data:/data"]
 
+  mcp-graph:
+    image: ghcr.io/arkestone/mcp-graph:latest
+    ports: ["8085:8085"]
+    environment:
+      GRAPH_TRANSPORT: http
+      GRAPH_DATA_FILE: /data/graph.json
+    volumes: ["graph-data:/data"]
+
 volumes:
   memory-data:
+  graph-data:
 ```
+
+Then connect your client over HTTP:
+
+```json
+{
+  "mcpServers": {
+    "instructions": {
+      "type": "http",
+      "url": "http://localhost:8080/mcp"
+    }
+  }
+}
+```
+
+## LLM Optimization
+
+All content servers (instructions, skills, prompts, ADRs) optionally consolidate multiple sources using an OpenAI-compatible LLM endpoint. This deduplicates and logically organizes content from multiple repositories.
+
+```bash
+mcp-instructions \
+  -dirs . \
+  -llm.enabled \
+  -llm.endpoint https://api.scaleway.ai/v1 \
+  -llm.api-key $SCW_SECRET_KEY \
+  -llm.model llama-3.3-70b-instruct
+```
+
+**Supported providers**: OpenAI, Azure OpenAI, [Scaleway Generative APIs](https://www.scaleway.com/en/generative-apis/), Ollama, LM Studio, and any OpenAI-compatible endpoint.
+
+See [`config.scaleway.example.yaml`](./servers/mcp-instructions/config.scaleway.example.yaml) for a complete Scaleway configuration example.
+
+## GitHub Authentication (Optional)
+
+A GitHub token is **optional**. Public repositories work without authentication. For private repositories, provide a token (highest priority first):
+
+| Method | Example |
+|--------|---------|
+| CLI flag | `-github-token ghp_xxx` |
+| Prefixed env var | `INSTRUCTIONS_GITHUB_TOKEN=ghp_xxx` |
+| Global env var | `GITHUB_TOKEN=ghp_xxx` |
+| YAML config | `github_token: ghp_xxx` |
+
+## Network & Proxy
+
+All servers work on-premise, in private/public cloud, with direct internet or through HTTP/HTTPS proxies. See the **[Network & Proxy Guide](docs/network.md)** for firewall rules, proxy configuration, and custom CA certificates.
 
 ## Architecture
 
@@ -133,9 +421,9 @@ volumes:
 │   ├── mcp-instructions/   # custom instructions server  (:8080)
 │   ├── mcp-skills/         # skills server               (:8081)
 │   ├── mcp-prompts/        # prompt files server         (:8082)
-│   └── mcp-graph/          # knowledge graph server      (:8085)
 │   ├── mcp-adr/            # ADR server                  (:8083)
-│   └── mcp-memory/         # persistent memory server    (:8084)
+│   ├── mcp-memory/         # persistent memory server    (:8084)
+│   └── mcp-graph/          # knowledge graph server      (:8085)
 ├── pkg/
 │   ├── config/             # shared configuration loading (YAML → env → flags)
 │   ├── github/             # GitHub Contents API client
@@ -146,20 +434,15 @@ volumes:
 ├── docs/
 │   └── network.md          # network / proxy / firewall guide
 ├── examples/               # client configuration examples
-├── AGENTS.md               # AI coding assistant guide
-├── Makefile
-├── go.mod
-└── go.sum
+└── AGENTS.md               # AI coding assistant guide
 ```
 
-Each content server (instructions, skills, prompts, ADRs) follows the same layered design:
+Each content server follows the same layered design:
 
 1. **Config** — YAML → environment variables → CLI flags (each layer overrides the previous)
 2. **Loader / Scanner** — discovers content from local directories and GitHub repositories
 3. **Optimizer** — optional LLM-based consolidation via `pkg/optimizer`
 4. **MCP Server** — exposes content as Resources, Prompts, and Tools over stdio or Streamable HTTP
-
-`mcp-memory` is a standalone persistent store and does not use the loader or optimizer layers.
 
 ## Shared Packages
 
@@ -177,26 +460,11 @@ Each content server (instructions, skills, prompts, ADRs) follows the same layer
 ```bash
 make build              # build all servers into ./bin/
 make test               # run unit tests
-make test-integration   # run integration tests
+make test-integration   # run integration tests (requires LLM_ENDPOINT)
 make docker             # build Docker images for all servers
 make lint               # run golangci-lint
 make cover              # generate coverage report
 ```
-
-## GitHub Authentication (Optional)
-
-A GitHub token is **optional**. Public repositories work without authentication. For private repositories, provide a token (highest priority first):
-
-| Method | Example |
-|--------|---------|
-| CLI flag | `-github-token ghp_xxx` |
-| Prefixed env var | `INSTRUCTIONS_GITHUB_TOKEN=ghp_xxx` |
-| Global env var | `GITHUB_TOKEN=ghp_xxx` |
-| YAML config | `github_token: ghp_xxx` |
-
-## Network & Proxy
-
-All servers work on-premise, in private/public cloud, with direct internet or through HTTP/HTTPS proxies. See the **[Network & Proxy Guide](docs/network.md)** for firewall rules, proxy configuration, and custom CA certificates.
 
 ## Contributing
 

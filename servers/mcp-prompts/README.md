@@ -6,17 +6,117 @@ An MCP server that serves VS Code Copilot prompt files (`.github/prompts/*.promp
 
 `mcp-prompts` scans configured local directories and GitHub repos for Copilot prompt/chat mode files and exposes them as MCP resources, prompts, and tools. Frontmatter fields (`description`, `mode`) are parsed and surfaced in tool responses.
 
+## Installation
+
+```bash
+# go install (requires Go 1.24+)
+go install github.com/Arkestone/mcp/servers/mcp-prompts/cmd/mcp-prompts@latest
+
+# Docker
+docker pull ghcr.io/arkestone/mcp-prompts:latest
+
+# Pre-built binary — https://github.com/Arkestone/mcp/releases/latest
+```
+
 ## Quick start
 
 ```bash
-# Build
-go build -o mcp-prompts ./servers/mcp-prompts/cmd/mcp-prompts
-
 # Run with a local directory (stdio transport)
-PROMPTS_SOURCES_DIRS=./my-repo ./mcp-prompts
+mcp-prompts -dirs ./my-repo
 
 # Run as HTTP server
-PROMPTS_TRANSPORT=http PROMPTS_ADDR=:8082 PROMPTS_SOURCES_DIRS=./my-repo ./mcp-prompts
+mcp-prompts -transport http -addr :8082 -dirs ./my-repo
+
+# Build from source
+go build -o mcp-prompts ./servers/mcp-prompts/cmd/mcp-prompts
+```
+
+## MCP Client Configuration
+
+### VS Code / GitHub Copilot
+
+`.vscode/mcp.json`:
+
+```json
+{
+  "servers": {
+    "prompts": {
+      "command": "mcp-prompts",
+      "args": ["-dirs", "${workspaceFolder}"]
+    }
+  }
+}
+```
+
+### Claude Desktop
+
+```json
+{
+  "mcpServers": {
+    "prompts": {
+      "command": "mcp-prompts",
+      "args": ["-dirs", "/path/to/repo"]
+    }
+  }
+}
+```
+
+### Cursor
+
+`.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "prompts": {
+      "command": "mcp-prompts",
+      "args": ["-dirs", "."]
+    }
+  }
+}
+```
+
+### Windsurf
+
+`~/.codeium/windsurf/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "prompts": {
+      "command": "mcp-prompts",
+      "args": ["-dirs", "/path/to/repo"]
+    }
+  }
+}
+```
+
+### Claude Code
+
+`.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "prompts": {
+      "command": "mcp-prompts",
+      "args": ["-dirs", "."]
+    }
+  }
+}
+```
+
+### Remote (HTTP)
+
+```json
+{
+  "mcpServers": {
+    "prompts": {
+      "type": "http",
+      "url": "http://localhost:8082/mcp"
+    }
+  }
+}
 ```
 
 ## Configuration

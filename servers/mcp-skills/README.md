@@ -45,18 +45,30 @@ Review code for correctness, readability, and maintainability...
 
 The YAML frontmatter must include `name` and `description`. The Markdown body contains the skill content that will be served to Copilot.
 
+## Installation
+
+```bash
+# go install (requires Go 1.24+)
+go install github.com/Arkestone/mcp/servers/mcp-skills/cmd/mcp-skills@latest
+
+# Docker
+docker pull ghcr.io/arkestone/mcp-skills:latest
+
+# Pre-built binary — https://github.com/Arkestone/mcp/releases/latest
+```
+
 ## Getting Started
 
 ```bash
-# From the repo root
-make build-skills
-
 # Serve skills from a local directory (stdio)
-./bin/mcp-skills -dirs /path/to/skills-repo
+mcp-skills -dirs /path/to/skills-repo
 
 # Serve from a GitHub repo with HTTP transport
 export GITHUB_TOKEN=ghp_...
-./bin/mcp-skills -repos github/awesome-copilot -transport http -addr :8081
+mcp-skills -repos github/awesome-copilot -transport http -addr :8081
+
+# Build from source
+make build-skills   # → ./bin/mcp-skills
 ```
 
 ## Configuration
@@ -165,7 +177,24 @@ addr: ":8081"
 
 ## MCP Client Configuration
 
-### Copilot CLI / VS Code
+### VS Code / GitHub Copilot
+
+`.vscode/mcp.json`:
+
+```json
+{
+  "servers": {
+    "skills": {
+      "command": "mcp-skills",
+      "args": ["-dirs", "${workspaceFolder}"]
+    }
+  }
+}
+```
+
+### Claude Desktop
+
+**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 
 ```json
 {
@@ -178,13 +207,59 @@ addr: ":8081"
 }
 ```
 
+### Cursor
+
+`.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "skills": {
+      "command": "mcp-skills",
+      "args": ["-dirs", "."]
+    }
+  }
+}
+```
+
+### Windsurf
+
+`~/.codeium/windsurf/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "skills": {
+      "command": "mcp-skills",
+      "args": ["-dirs", "/path/to/skills-repo"]
+    }
+  }
+}
+```
+
+### Claude Code
+
+`.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "skills": {
+      "command": "mcp-skills",
+      "args": ["-dirs", "."]
+    }
+  }
+}
+```
+
 ### Remote (HTTP)
 
 ```json
 {
   "mcpServers": {
     "skills": {
-      "url": "http://localhost:8081"
+      "type": "http",
+      "url": "http://localhost:8081/mcp"
     }
   }
 }

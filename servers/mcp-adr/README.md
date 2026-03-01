@@ -2,18 +2,120 @@
 
 An MCP server that serves Architecture Decision Records (ADRs) from local directories and GitHub repositories. It scans `docs/adr/`, `docs/decisions/`, and `doc/adr/` within each configured source and exposes ADRs via the Model Context Protocol.
 
+## Installation
+
+```bash
+# go install (requires Go 1.24+)
+go install github.com/Arkestone/mcp/servers/mcp-adr/cmd/mcp-adr@latest
+
+# Docker
+docker pull ghcr.io/arkestone/mcp-adr:latest
+
+# Pre-built binary — https://github.com/Arkestone/mcp/releases/latest
+```
+
 ## Quick Start
 
 ```bash
-# Build
-go build -o mcp-adr ./servers/mcp-adr/cmd/mcp-adr
-
 # Run with stdio transport (default)
-./mcp-adr
+mcp-adr
 
 # Run with HTTP transport
-ADR_TRANSPORT=http ADR_ADDR=:8083 ./mcp-adr
+mcp-adr -transport http -addr :8083
+
+# Build from source
+go build -o mcp-adr ./servers/mcp-adr/cmd/mcp-adr
 ```
+
+## MCP Client Configuration
+
+### VS Code / GitHub Copilot
+
+`.vscode/mcp.json`:
+
+```json
+{
+  "servers": {
+    "adrs": {
+      "command": "mcp-adr",
+      "args": ["-dirs", "${workspaceFolder}"]
+    }
+  }
+}
+```
+
+### Claude Desktop
+
+```json
+{
+  "mcpServers": {
+    "adrs": {
+      "command": "mcp-adr",
+      "args": ["-dirs", "/path/to/repo"]
+    }
+  }
+}
+```
+
+### Cursor
+
+`.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "adrs": {
+      "command": "mcp-adr",
+      "args": ["-dirs", "."]
+    }
+  }
+}
+```
+
+### Windsurf
+
+`~/.codeium/windsurf/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "adrs": {
+      "command": "mcp-adr",
+      "args": ["-dirs", "/path/to/repo"]
+    }
+  }
+}
+```
+
+### Claude Code
+
+`.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "adrs": {
+      "command": "mcp-adr",
+      "args": ["-dirs", "."]
+    }
+  }
+}
+```
+
+### Remote (HTTP)
+
+```json
+{
+  "mcpServers": {
+    "adrs": {
+      "type": "http",
+      "url": "http://localhost:8083/mcp"
+    }
+  }
+}
+```
+
+
 
 ## Configuration
 

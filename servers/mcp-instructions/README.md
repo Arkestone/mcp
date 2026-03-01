@@ -12,18 +12,33 @@ It discovers `.github/copilot-instructions.md` and `.github/instructions/**/*.in
 - **Dual transport** — supports both stdio (for Copilot CLI / local tools) and Streamable HTTP (for remote deployments)
 - **MCP primitives** — instructions are exposed as Resources, Prompts, and Tools
 
+## Installation
+
+```bash
+# go install (requires Go 1.24+)
+go install github.com/Arkestone/mcp/servers/mcp-instructions/cmd/mcp-instructions@latest
+
+# Pinned version
+go install github.com/Arkestone/mcp/servers/mcp-instructions/cmd/mcp-instructions@v0.0.1
+
+# Docker
+docker pull ghcr.io/arkestone/mcp-instructions:latest
+
+# Pre-built binary — https://github.com/Arkestone/mcp/releases/latest
+```
+
 ## Getting Started
 
 ```bash
-# From the repo root
-make build-instructions
-
 # Serve instructions from a local directory (stdio)
-./bin/mcp-instructions -dirs /path/to/repo
+mcp-instructions -dirs /path/to/repo
 
 # Serve from a GitHub repo with HTTP transport
 export GITHUB_TOKEN=ghp_...
-./bin/mcp-instructions -repos github/awesome-copilot -transport http -addr :8080
+mcp-instructions -repos github/awesome-copilot -transport http -addr :8080
+
+# Build from source
+make build-instructions   # → ./bin/mcp-instructions
 ```
 
 ## Configuration
@@ -121,7 +136,25 @@ docker run -p 8080:8080 \
 
 ## MCP Client Configuration
 
-### Copilot CLI / VS Code
+### VS Code / GitHub Copilot
+
+`.vscode/mcp.json`:
+
+```json
+{
+  "servers": {
+    "instructions": {
+      "command": "mcp-instructions",
+      "args": ["-dirs", "${workspaceFolder}"]
+    }
+  }
+}
+```
+
+### Claude Desktop
+
+**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
 ```json
 {
@@ -134,13 +167,61 @@ docker run -p 8080:8080 \
 }
 ```
 
-### Remote (HTTP)
+### Cursor
+
+`.cursor/mcp.json` (project) or `~/.cursor/mcp.json` (global):
 
 ```json
 {
   "mcpServers": {
     "instructions": {
-      "url": "http://localhost:8080"
+      "command": "mcp-instructions",
+      "args": ["-dirs", "."]
+    }
+  }
+}
+```
+
+### Windsurf
+
+`~/.codeium/windsurf/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "instructions": {
+      "command": "mcp-instructions",
+      "args": ["-dirs", "/path/to/repo"]
+    }
+  }
+}
+```
+
+### Claude Code
+
+`.mcp.json` (project) or `~/.mcp.json` (global):
+
+```json
+{
+  "mcpServers": {
+    "instructions": {
+      "command": "mcp-instructions",
+      "args": ["-dirs", "."]
+    }
+  }
+}
+```
+
+### Remote (HTTP)
+
+For shared team deployments, start the server with `-transport http` and connect clients over HTTP:
+
+```json
+{
+  "mcpServers": {
+    "instructions": {
+      "type": "http",
+      "url": "http://localhost:8080/mcp"
     }
   }
 }

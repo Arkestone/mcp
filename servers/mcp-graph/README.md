@@ -32,6 +32,18 @@
 | `graph://stats` | Node/edge counts and all relation types |
 | `graph://node/{id}` | Single node details |
 
+## Installation
+
+```bash
+# go install (requires Go 1.24+)
+go install github.com/Arkestone/mcp/servers/mcp-graph/cmd/mcp-graph@latest
+
+# Docker
+docker pull ghcr.io/arkestone/mcp-graph:latest
+
+# Pre-built binary — https://github.com/Arkestone/mcp/releases/latest
+```
+
 ## Quick Start
 
 ### stdio (VS Code / Claude Desktop)
@@ -44,6 +56,48 @@
       "env": {
         "GRAPH_DIRS": "~/.local/share/mcp-graph"
       }
+    }
+  }
+}
+```
+
+### Cursor
+
+`.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "graph": {
+      "command": "mcp-graph"
+    }
+  }
+}
+```
+
+### Windsurf
+
+`~/.codeium/windsurf/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "graph": {
+      "command": "mcp-graph"
+    }
+  }
+}
+```
+
+### Claude Code
+
+`.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "graph": {
+      "command": "mcp-graph"
     }
   }
 }
