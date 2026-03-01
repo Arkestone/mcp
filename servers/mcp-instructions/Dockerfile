@@ -11,7 +11,7 @@ ARG TARGETOS TARGETARCH
 RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
     go build -ldflags="-s -w" -o /mcp-instructions ./servers/mcp-instructions/cmd/mcp-instructions
 
-FROM alpine:3.21
+FROM alpine:3.23
 
 LABEL org.opencontainers.image.title="mcp-instructions" \
       org.opencontainers.image.description="MCP server for GitHub Copilot custom instructions" \
