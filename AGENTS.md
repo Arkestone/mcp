@@ -11,6 +11,7 @@ This is a Go monorepo hosting five MCP (Model Context Protocol) servers:
 | Instructions | `servers/mcp-instructions/` | `mcp-instructions` | `:8080` |
 | Skills | `servers/mcp-skills/` | `mcp-skills` | `:8081` |
 | Prompts | `servers/mcp-prompts/` | `mcp-prompts` | `:8082` |
+| Graph   | `servers/mcp-graph/`   | `mcp-graph`   | `:8085` |
 | ADR | `servers/mcp-adr/` | `mcp-adr` | `:8083` |
 | Memory | `servers/mcp-memory/` | `mcp-memory` | `:8084` |
 
@@ -27,6 +28,7 @@ make build
 go build -buildvcs=false -o mcp-instructions ./servers/mcp-instructions/cmd/mcp-instructions
 go build -buildvcs=false -o mcp-skills       ./servers/mcp-skills/cmd/mcp-skills
 go build -buildvcs=false -o mcp-prompts      ./servers/mcp-prompts/cmd/mcp-prompts
+go build -buildvcs=false -o mcp-graph        ./servers/mcp-graph/cmd/mcp-graph
 go build -buildvcs=false -o mcp-adr          ./servers/mcp-adr/cmd/mcp-adr
 go build -buildvcs=false -o mcp-memory       ./servers/mcp-memory/cmd/mcp-memory
 
@@ -59,6 +61,7 @@ mcp/
 │   │   ├── README.md
 │   │   └── CHANGELOG.md
 │   ├── mcp-prompts/               # Prompts MCP server           (:8082)
+│   └── mcp-graph/                 # Knowledge graph MCP server   (:8085)
 │   │   ├── cmd/mcp-prompts/
 │   │   ├── internal/
 │   │   ├── Dockerfile

@@ -96,6 +96,7 @@ jobs:
           CGO_ENABLED=0 go build -o mcp-adr ./servers/mcp-adr/cmd/mcp-adr
           CGO_ENABLED=0 go build -o mcp-memory ./servers/mcp-memory/cmd/mcp-memory
           CGO_ENABLED=0 go build -o mcp-prompts ./servers/mcp-prompts/cmd/mcp-prompts
+          CGO_ENABLED=0 go build -o mcp-graph ./servers/mcp-graph/cmd/mcp-graph
       - name: Verify binaries
         run: |
           ./mcp-instructions --help || true
@@ -103,6 +104,7 @@ jobs:
           ./mcp-adr --help || true
           ./mcp-memory --help || true
           ./mcp-prompts --help || true
+          ./mcp-graph --help || true
 
   docker:
     name: Docker Build
@@ -154,3 +156,11 @@ jobs:
           push: false
           platforms: linux/amd64,linux/arm64
           tags: ghcr.io/arkestone/mcp-prompts:ci
+      - name: Build mcp-graph Docker image (multi-arch)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: servers/mcp-graph/Dockerfile
+          push: false
+          platforms: linux/amd64,linux/arm64
+          tags: ghcr.io/arkestone/mcp-graph:ci

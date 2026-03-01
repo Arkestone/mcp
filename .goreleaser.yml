@@ -73,6 +73,20 @@ builds:
       - arm64
     ldflags:
       - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+  - id: mcp-graph
+    main: ./servers/mcp-graph/cmd/mcp-graph
+    binary: mcp-graph
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
 
 archives:
   - format: tar.gz
@@ -195,6 +209,26 @@ dockers:
     build_flag_templates:
       - --platform=linux/arm64
     goarch: arm64
+  - id: mcp-graph-amd64
+    ids: [mcp-graph]
+    image_templates:
+      - ghcr.io/arkestone/mcp-graph:{{ .Version }}-amd64
+      - ghcr.io/arkestone/mcp-graph:latest-amd64
+    use: buildx
+    dockerfile: servers/mcp-graph/Dockerfile.goreleaser
+    build_flag_templates:
+      - --platform=linux/amd64
+    goarch: amd64
+  - id: mcp-graph-arm64
+    ids: [mcp-graph]
+    image_templates:
+      - ghcr.io/arkestone/mcp-graph:{{ .Version }}-arm64
+      - ghcr.io/arkestone/mcp-graph:latest-arm64
+    use: buildx
+    dockerfile: servers/mcp-graph/Dockerfile.goreleaser
+    build_flag_templates:
+      - --platform=linux/arm64
+    goarch: arm64
 
 docker_manifests:
   - name_template: ghcr.io/arkestone/mcp-instructions:{{ .Version }}
@@ -237,6 +271,14 @@ docker_manifests:
     image_templates:
       - ghcr.io/arkestone/mcp-prompts:latest-amd64
       - ghcr.io/arkestone/mcp-prompts:latest-arm64
+  - name_template: ghcr.io/arkestone/mcp-graph:{{ .Version }}
+    image_templates:
+      - ghcr.io/arkestone/mcp-graph:{{ .Version }}-amd64
+      - ghcr.io/arkestone/mcp-graph:{{ .Version }}-arm64
+  - name_template: ghcr.io/arkestone/mcp-graph:latest
+    image_templates:
+      - ghcr.io/arkestone/mcp-graph:latest-amd64
+      - ghcr.io/arkestone/mcp-graph:latest-arm64
 
 release:
   github:
