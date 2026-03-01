@@ -163,12 +163,3 @@ type chatChoice struct {
 }
 
 func floatPtr(f float64) *float64 { return &f }
-
-// TestLLMConfig returns a LLMConfig suitable for creating a non-nil Optimizer in tests.
-func TestLLMConfig() LLMConfig {
-	return LLMConfig{
-		Endpoint: "http://localhost:9999",
-		APIKey:   "test-key",
-		Model:    "test-model",
-	}
-}

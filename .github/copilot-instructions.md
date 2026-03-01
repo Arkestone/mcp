@@ -4,10 +4,10 @@ This is a Go monorepo containing multiple MCP servers and shared packages.
 
 ```bash
 # Instructions MCP server
-go build -o mcp-instructions ./cmd/mcp-instructions
+go build -o mcp-instructions ./instructions/cmd/mcp-instructions
 
 # Skills MCP server
-go build -o mcp-skills ./cmd/mcp-skills
+go build -o mcp-skills ./skills/cmd/mcp-skills
 
 # Run all tests
 go test ./...

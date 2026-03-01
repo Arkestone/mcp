@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2025-07-07
+
 ### Added
 
 - Skills MCP server (`mcp-skills`) for serving Copilot skills
@@ -27,3 +29,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Moved instructions server to `instructions/` subdirectory
 - Extracted LLMConfig to shared `pkg/optimizer` package
+
+[unreleased]: https://github.com/Arkestone/mcp/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/Arkestone/mcp/releases/tag/v0.1.0

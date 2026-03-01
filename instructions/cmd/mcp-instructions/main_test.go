@@ -16,6 +16,7 @@ import (
 	"github.com/Arkestone/mcp/pkg/github"
 	"github.com/Arkestone/mcp/pkg/optimizer"
 	"github.com/Arkestone/mcp/pkg/server"
+	"github.com/Arkestone/mcp/pkg/testutil"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -95,7 +96,7 @@ func source(ldr *loader.Loader) string {
 // ---------------------------------------------------------------------------
 
 func TestShouldOptimize(t *testing.T) {
-	opt := optimizer.New(optimizer.TestLLMConfig())
+	opt := optimizer.New(testutil.LLMConfig())
 	var nilOpt *optimizer.Optimizer
 
 	tests := []struct {
@@ -270,7 +271,7 @@ func TestOptimizeContent(t *testing.T) {
 	})
 
 	t.Run("enabled optimizer override false falls back", func(t *testing.T) {
-		opt := optimizer.New(optimizer.TestLLMConfig())
+		opt := optimizer.New(testutil.LLMConfig())
 		got := optimizeContent(ctx, opt, true, "false", inputs)
 		if got != fallback {
 			t.Errorf("got %q, want ConcatRaw output", got)

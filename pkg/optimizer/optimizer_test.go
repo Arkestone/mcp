@@ -825,9 +825,50 @@ func TestNew_MultipleClients(t *testing.T) {
 	}
 }
 
+// TestOptimize_RequestCreationError covers the http.NewRequestWithContext error
+// branch by using an endpoint with a space in the host (invalid URL).
+func TestOptimize_RequestCreationError(t *testing.T) {
+	opt := New(LLMConfig{
+		Endpoint: "http://invalid host",
+		APIKey:   "sk-test",
+		Model:    "model",
+	})
+	_, err := opt.Optimize(context.Background(), []ContentInput{
+		{Source: "s", Path: "p", Content: "c"},
+	})
+	if err == nil {
+		t.Fatal("expected error for malformed endpoint URL")
+	}
+}
+
 func TestEnabled(t *testing.T) {
 	opt := New(LLMConfig{Endpoint: "http://example.com", APIKey: "key"})
 	if !opt.Enabled() {
 		t.Error("configured optimizer should be enabled")
+	}
+}
+
+func TestOptimize_EmptyChoices(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"choices":[]}`))
+	}))
+	defer server.Close()
+
+	opt := New(LLMConfig{
+		Endpoint: server.URL,
+		APIKey:   "sk-test",
+		Model:    "model",
+	})
+
+	_, err := opt.Optimize(context.Background(), []ContentInput{
+		{Source: "s", Path: "p", Content: "c"},
+	})
+	if err == nil {
+		t.Fatal("expected error when LLM returns empty choices")
+	}
+	if !strings.Contains(err.Error(), "no choices") {
+		t.Errorf("error = %v, want it to contain \"no choices\"", err)
 	}
 }
