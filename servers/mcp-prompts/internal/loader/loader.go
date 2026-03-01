@@ -56,10 +56,16 @@ func (l *Loader) Stop() { l.syncer.Stop() }
 func (l *Loader) ForceSync() { l.syncer.ForceSync() }
 
 // List returns all prompts and chat modes. Local dirs are read from disk; repos from cache.
+// When no dirs are configured, the current working directory is used as default
+// so the server works out-of-the-box when run from a repository root.
 func (l *Loader) List() []Prompt {
+	dirs := l.cfg.Sources.Dirs
+	if len(dirs) == 0 {
+		dirs = []string{"."}
+	}
 	var out []Prompt
-	for _, dir := range l.cfg.Sources.Dirs {
-		out = append(out, scanDir(dir, filepath.Base(dir))...)
+	for _, dir := range dirs {
+		out = append(out, scanDir(dir, sourceFor(dir))...)
 	}
 	for _, ref := range l.cfg.ParsedRepos() {
 		cacheDir := repoCacheDir(l.cfg.Cache.Dir, ref)
@@ -79,65 +85,80 @@ func (l *Loader) Get(uri string) (Prompt, bool) {
 }
 
 // scanDir reads prompt and chatmode files from a directory.
+// It searches in both the .github/ subdirectory (canonical location) and the
+// root of dir (alternative location), preferring .github/ when both exist.
 func scanDir(dir, source string) []Prompt {
+	seen := map[string]bool{}
 	var out []Prompt
 
-	// .github/prompts/*.prompt.md
-	promptsDir := filepath.Join(dir, ".github", "prompts")
-	if info, err := os.Stat(promptsDir); err == nil && info.IsDir() {
-		entries, _ := os.ReadDir(promptsDir)
-		for _, e := range entries {
-			if e.IsDir() || !strings.HasSuffix(e.Name(), ".prompt.md") {
-				continue
-			}
-			content, err := os.ReadFile(filepath.Join(promptsDir, e.Name()))
-			if err != nil {
-				continue
-			}
-			name := strings.TrimSuffix(e.Name(), ".prompt.md")
-			desc, mode, body := parseFrontmatter(string(content))
-			if desc == "" {
-				desc = name
-			}
-			out = append(out, Prompt{
-				Name:        name,
-				Description: desc,
-				Mode:        mode,
-				Type:        TypePrompt,
-				Content:     body,
-				Source:      source,
-				Path:        ".github/prompts/" + e.Name(),
-				URI:         fmt.Sprintf("prompts://%s/%s", source, name),
-			})
+	add := func(p Prompt) {
+		if !seen[p.URI] {
+			seen[p.URI] = true
+			out = append(out, p)
 		}
 	}
 
-	// .github/chatmodes/*.chatmode.md
-	chatmodesDir := filepath.Join(dir, ".github", "chatmodes")
-	if info, err := os.Stat(chatmodesDir); err == nil && info.IsDir() {
-		entries, _ := os.ReadDir(chatmodesDir)
-		for _, e := range entries {
-			if e.IsDir() || !strings.HasSuffix(e.Name(), ".chatmode.md") {
-				continue
+	// Search both .github/ prefix and root level; .github/ takes priority.
+	for _, base := range []string{filepath.Join(dir, ".github"), dir} {
+		// prompts/*.prompt.md
+		promptsDir := filepath.Join(base, "prompts")
+		if info, err := os.Stat(promptsDir); err == nil && info.IsDir() {
+			entries, _ := os.ReadDir(promptsDir)
+			for _, e := range entries {
+				if e.IsDir() || !strings.HasSuffix(e.Name(), ".prompt.md") {
+					continue
+				}
+				content, err := os.ReadFile(filepath.Join(promptsDir, e.Name()))
+				if err != nil {
+					continue
+				}
+				name := strings.TrimSuffix(e.Name(), ".prompt.md")
+				desc, mode, body := parseFrontmatter(string(content))
+				if desc == "" {
+					desc = name
+				}
+				relPath, _ := filepath.Rel(dir, filepath.Join(promptsDir, e.Name()))
+				add(Prompt{
+					Name:        name,
+					Description: desc,
+					Mode:        mode,
+					Type:        TypePrompt,
+					Content:     body,
+					Source:      source,
+					Path:        relPath,
+					URI:         fmt.Sprintf("prompts://%s/%s", source, name),
+				})
 			}
-			content, err := os.ReadFile(filepath.Join(chatmodesDir, e.Name()))
-			if err != nil {
-				continue
+		}
+
+		// chatmodes/*.chatmode.md
+		chatmodesDir := filepath.Join(base, "chatmodes")
+		if info, err := os.Stat(chatmodesDir); err == nil && info.IsDir() {
+			entries, _ := os.ReadDir(chatmodesDir)
+			for _, e := range entries {
+				if e.IsDir() || !strings.HasSuffix(e.Name(), ".chatmode.md") {
+					continue
+				}
+				content, err := os.ReadFile(filepath.Join(chatmodesDir, e.Name()))
+				if err != nil {
+					continue
+				}
+				name := strings.TrimSuffix(e.Name(), ".chatmode.md")
+				desc, _, body := parseFrontmatter(string(content))
+				if desc == "" {
+					desc = name
+				}
+				relPath, _ := filepath.Rel(dir, filepath.Join(chatmodesDir, e.Name()))
+				add(Prompt{
+					Name:        name,
+					Description: desc,
+					Type:        TypeChatmode,
+					Content:     body,
+					Source:      source,
+					Path:        relPath,
+					URI:         fmt.Sprintf("prompts://%s/%s", source, name),
+				})
 			}
-			name := strings.TrimSuffix(e.Name(), ".chatmode.md")
-			desc, _, body := parseFrontmatter(string(content))
-			if desc == "" {
-				desc = name
-			}
-			out = append(out, Prompt{
-				Name:        name,
-				Description: desc,
-				Type:        TypeChatmode,
-				Content:     body,
-				Source:      source,
-				Path:        ".github/chatmodes/" + e.Name(),
-				URI:         fmt.Sprintf("prompts://%s/%s", source, name),
-			})
 		}
 	}
 
@@ -222,4 +243,15 @@ func repoCacheDir(cacheBase string, ref config.RepoRef) string {
 		key += "_" + ref.Ref
 	}
 	return filepath.Join(cacheBase, key)
+}
+
+// sourceFor returns the source label for a directory.
+// For relative paths (e.g. ".") it resolves to the absolute path first so the
+// label is a meaningful directory name rather than ".".
+func sourceFor(dir string) string {
+	abs, err := filepath.Abs(dir)
+	if err != nil {
+		return filepath.Base(dir)
+	}
+	return filepath.Base(abs)
 }

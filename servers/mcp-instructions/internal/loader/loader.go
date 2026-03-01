@@ -47,10 +47,16 @@ func (l *Loader) Stop() { l.syncer.Stop() }
 func (l *Loader) ForceSync() { l.syncer.ForceSync() }
 
 // List returns all instructions. Local dirs are read from disk; repos from cache.
+// When no dirs are configured, the current working directory is used as default
+// so the server works out-of-the-box when run from a repository root.
 func (l *Loader) List() []Instruction {
+	dirs := l.cfg.Sources.Dirs
+	if len(dirs) == 0 {
+		dirs = []string{"."}
+	}
 	var out []Instruction
-	for _, dir := range l.cfg.Sources.Dirs {
-		out = append(out, scanDir(dir, filepath.Base(dir))...)
+	for _, dir := range dirs {
+		out = append(out, scanDir(dir, sourceFor(dir))...)
 	}
 	for _, ref := range l.cfg.ParsedRepos() {
 		cacheDir := repoCacheDir(l.cfg.Cache.Dir, ref)
@@ -70,45 +76,58 @@ func (l *Loader) Get(uri string) (Instruction, bool) {
 }
 
 // scanDir reads instruction files from a directory.
-// Looks for .github/copilot-instructions.md and .github/instructions/**/*.instructions.md
+// It searches in both the .github/ subdirectory (canonical location) and the
+// root of dir (alternative location), preferring .github/ when both exist.
 func scanDir(dir, source string) []Instruction {
+	seen := map[string]bool{}
 	var out []Instruction
 
-	// .github/copilot-instructions.md
-	ciPath := filepath.Join(dir, ".github", "copilot-instructions.md")
-	if content, err := os.ReadFile(ciPath); err == nil {
-		out = append(out, Instruction{
-			Source:  source,
-			Path:    ".github/copilot-instructions.md",
-			Content: string(content),
-			URI:     fmt.Sprintf("instructions://%s/copilot-instructions", source),
-		})
+	add := func(inst Instruction) {
+		if !seen[inst.URI] {
+			seen[inst.URI] = true
+			out = append(out, inst)
+		}
 	}
 
-	// .github/instructions/**/*.instructions.md
-	instrDir := filepath.Join(dir, ".github", "instructions")
-	if info, err := os.Stat(instrDir); err == nil && info.IsDir() {
-		_ = filepath.Walk(instrDir, func(path string, info os.FileInfo, err error) error {
-			if err != nil || info.IsDir() {
-				return err
-			}
-			if !strings.HasSuffix(info.Name(), ".instructions.md") {
-				return nil
-			}
-			content, err := os.ReadFile(path)
-			if err != nil {
-				return nil
-			}
-			relPath, _ := filepath.Rel(dir, path)
-			name := strings.TrimSuffix(info.Name(), ".instructions.md")
-			out = append(out, Instruction{
+	// Search both .github/ prefix and root level; .github/ takes priority.
+	for _, base := range []string{filepath.Join(dir, ".github"), dir} {
+		// copilot-instructions.md
+		ciPath := filepath.Join(base, "copilot-instructions.md")
+		if content, err := os.ReadFile(ciPath); err == nil {
+			relPath, _ := filepath.Rel(dir, ciPath)
+			add(Instruction{
 				Source:  source,
 				Path:    relPath,
 				Content: string(content),
-				URI:     fmt.Sprintf("instructions://%s/%s", source, name),
+				URI:     fmt.Sprintf("instructions://%s/copilot-instructions", source),
 			})
-			return nil
-		})
+		}
+
+		// instructions/**/*.instructions.md
+		instrDir := filepath.Join(base, "instructions")
+		if info, err := os.Stat(instrDir); err == nil && info.IsDir() {
+			_ = filepath.Walk(instrDir, func(path string, info os.FileInfo, err error) error {
+				if err != nil || info.IsDir() {
+					return err
+				}
+				if !strings.HasSuffix(info.Name(), ".instructions.md") {
+					return nil
+				}
+				content, err := os.ReadFile(path)
+				if err != nil {
+					return nil
+				}
+				relPath, _ := filepath.Rel(dir, path)
+				name := strings.TrimSuffix(info.Name(), ".instructions.md")
+				add(Instruction{
+					Source:  source,
+					Path:    relPath,
+					Content: string(content),
+					URI:     fmt.Sprintf("instructions://%s/%s", source, name),
+				})
+				return nil
+			})
+		}
 	}
 
 	return out
@@ -163,4 +182,15 @@ func repoCacheDir(cacheBase string, ref config.RepoRef) string {
 		key += "_" + ref.Ref
 	}
 	return filepath.Join(cacheBase, key)
+}
+
+// sourceFor returns the source label for a directory.
+// For relative paths (e.g. ".") it resolves to the absolute path first so the
+// label is a meaningful directory name rather than ".".
+func sourceFor(dir string) string {
+	abs, err := filepath.Abs(dir)
+	if err != nil {
+		return filepath.Base(dir)
+	}
+	return filepath.Base(abs)
 }

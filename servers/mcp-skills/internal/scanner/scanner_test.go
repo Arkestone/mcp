@@ -1260,3 +1260,45 @@ func TestScanDir_ManySkills(t *testing.T) {
 		t.Errorf("got %d skills, want 50", len(skills))
 	}
 }
+
+// ---------------------------------------------------------------------------
+// .github/ subdirectory scanning
+// ---------------------------------------------------------------------------
+
+func TestScanner_List_GithubSubdir(t *testing.T) {
+// Skills placed under dir/.github/<skill-name>/SKILL.md are discovered.
+dir := t.TempDir()
+createTestSkill(t, filepath.Join(dir, ".github"), "myskill", "My Skill", "A skill in .github", "Skill body")
+
+cfg := newTestConfig([]string{dir}, nil, t.TempDir())
+s := newScanner(cfg)
+skills := s.List()
+if len(skills) != 1 {
+t.Fatalf("got %d skills, want 1", len(skills))
+}
+if skills[0].Name != "My Skill" {
+t.Errorf("Name = %q", skills[0].Name)
+}
+}
+
+func TestScanner_List_GithubAndRootSkills(t *testing.T) {
+// Skills at root level and in .github/ are both included.
+dir := t.TempDir()
+createTestSkill(t, dir, "rootskill", "Root Skill", "Root level", "Body")
+createTestSkill(t, filepath.Join(dir, ".github"), "githubskill", "Github Skill", "In .github", "Body")
+
+cfg := newTestConfig([]string{dir}, nil, t.TempDir())
+s := newScanner(cfg)
+skills := s.List()
+if len(skills) != 2 {
+t.Fatalf("got %d skills, want 2", len(skills))
+}
+}
+
+func TestScanner_List_DefaultCWD(t *testing.T) {
+// With no dirs configured, scanner uses CWD. In test environment (package dir),
+// there are no SKILL.md subdirectories, so result is empty — but it must not panic.
+cfg := newTestConfig(nil, nil, t.TempDir())
+s := newScanner(cfg)
+_ = s.List() // must not panic
+}
