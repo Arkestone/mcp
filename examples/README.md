@@ -1,19 +1,30 @@
 # Client Configuration Examples
 
-This directory contains ready-to-use MCP client configuration snippets for both servers.
+Ready-to-use MCP client configuration snippets for all Arkestone MCP servers.
 
 ## VS Code (`.vscode/mcp.json`)
 
 ```json
 {
   "servers": {
-    "mcp-instructions": {
-      "type": "http",
-      "url": "http://localhost:8080/mcp"
+    "instructions": {
+      "command": "mcp-instructions",
+      "args": ["-dirs", "/path/to/repo"]
     },
-    "mcp-skills": {
-      "type": "http",
-      "url": "http://localhost:8081/mcp"
+    "skills": {
+      "command": "mcp-skills",
+      "args": ["-dirs", "/path/to/skills"]
+    },
+    "prompts": {
+      "command": "mcp-prompts",
+      "args": ["-dirs", "/path/to/repo"]
+    },
+    "adrs": {
+      "command": "mcp-adr",
+      "args": ["-dirs", "/path/to/repo"]
+    },
+    "memory": {
+      "command": "mcp-memory"
     }
   }
 }
@@ -24,20 +35,42 @@ This directory contains ready-to-use MCP client configuration snippets for both 
 ```json
 {
   "mcpServers": {
-    "mcp-instructions": {
+    "instructions": {
       "command": "mcp-instructions",
-      "args": ["--http", "--addr", "127.0.0.1:8080"],
-      "env": {
-        "INSTRUCTIONS_DIRS": "/path/to/instructions"
-      }
+      "args": ["-dirs", "/path/to/repo"]
     },
-    "mcp-skills": {
+    "skills": {
       "command": "mcp-skills",
-      "args": ["--http", "--addr", "127.0.0.1:8081"],
+      "args": ["-dirs", "/path/to/skills"]
+    },
+    "prompts": {
+      "command": "mcp-prompts",
+      "args": ["-dirs", "/path/to/repo"]
+    },
+    "adrs": {
+      "command": "mcp-adr",
+      "args": ["-dirs", "/path/to/repo"]
+    },
+    "memory": {
+      "command": "mcp-memory",
       "env": {
-        "SKILLS_DIRS": "/path/to/skills"
+        "MEMORY_DIR": "~/.local/share/mcp-memory"
       }
     }
+  }
+}
+```
+
+## Remote (HTTP transport)
+
+```json
+{
+  "mcpServers": {
+    "instructions": { "url": "http://localhost:8080" },
+    "skills":       { "url": "http://localhost:8081" },
+    "prompts":      { "url": "http://localhost:8082" },
+    "adrs":         { "url": "http://localhost:8083" },
+    "memory":       { "url": "http://localhost:8084" }
   }
 }
 ```
@@ -48,31 +81,64 @@ This directory contains ready-to-use MCP client configuration snippets for both 
 services:
   mcp-instructions:
     image: ghcr.io/arkestone/mcp-instructions:latest
-    ports:
-      - "8080:8080"
-    command: ["--http", "--addr", "0.0.0.0:8080"]
-    volumes:
-      - ./instructions:/instructions:ro
+    ports: ["8080:8080"]
     environment:
-      INSTRUCTIONS_DIRS: /instructions
+      INSTRUCTIONS_TRANSPORT: http
+      INSTRUCTIONS_DIRS: /data
+    volumes: ["./instructions:/data:ro"]
 
   mcp-skills:
     image: ghcr.io/arkestone/mcp-skills:latest
-    ports:
-      - "8081:8081"
-    command: ["--http", "--addr", "0.0.0.0:8081"]
-    volumes:
-      - ./skills:/skills:ro
+    ports: ["8081:8081"]
     environment:
-      SKILLS_DIRS: /skills
+      SKILLS_TRANSPORT: http
+      SKILLS_DIRS: /data
+    volumes: ["./skills:/data:ro"]
+
+  mcp-prompts:
+    image: ghcr.io/arkestone/mcp-prompts:latest
+    ports: ["8082:8082"]
+    environment:
+      PROMPTS_TRANSPORT: http
+      PROMPTS_SOURCES_DIRS: /data
+    volumes: ["./prompts:/data:ro"]
+
+  mcp-adr:
+    image: ghcr.io/arkestone/mcp-adr:latest
+    ports: ["8083:8083"]
+    environment:
+      ADR_TRANSPORT: http
+      ADR_DIRS: /data
+    volumes: ["./docs:/data:ro"]
+
+  mcp-memory:
+    image: ghcr.io/arkestone/mcp-memory:latest
+    ports: ["8084:8084"]
+    environment:
+      MEMORY_TRANSPORT: http
+      MEMORY_DIR: /data
+    volumes: ["memory-data:/data"]
+
+volumes:
+  memory-data:
 ```
 
 ## Stdio (direct process, for local use)
 
 ```bash
-# Instructions server via stdio
-mcp-instructions --config config.yaml
+# Instructions server
+mcp-instructions -dirs /path/to/repo
 
-# Skills server via stdio
-mcp-skills --config config.yaml
+# Skills server
+mcp-skills -dirs /path/to/skills
+
+# Prompts server
+mcp-prompts -dirs /path/to/repo
+
+# ADR server
+mcp-adr -dirs /path/to/repo
+
+# Memory server (no dirs needed — uses MEMORY_DIR for storage)
+mcp-memory
 ```
+
