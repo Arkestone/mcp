@@ -1,4 +1,4 @@
-.PHONY: all build build-instructions build-skills test test-race test-integration cover lint fmt vet clean docker docker-instructions docker-skills
+.PHONY: all build build-instructions build-skills build-adr build-memory build-prompts test test-race test-integration cover lint fmt vet clean docker docker-instructions docker-skills docker-adr docker-memory docker-prompts
 
 GOBIN    ?= bin
 MODULE   := github.com/Arkestone/mcp
@@ -6,13 +6,22 @@ MODULE   := github.com/Arkestone/mcp
 all: lint test build
 
 # Build targets
-build: build-instructions build-skills
+build: build-instructions build-skills build-adr build-memory build-prompts
 
 build-instructions:
 	go build -buildvcs=false -trimpath -o $(GOBIN)/mcp-instructions ./servers/mcp-instructions/cmd/mcp-instructions
 
 build-skills:
 	go build -buildvcs=false -trimpath -o $(GOBIN)/mcp-skills ./servers/mcp-skills/cmd/mcp-skills
+
+build-adr:
+	go build -buildvcs=false -trimpath -o $(GOBIN)/mcp-adr ./servers/mcp-adr/cmd/mcp-adr
+
+build-memory:
+	go build -buildvcs=false -trimpath -o $(GOBIN)/mcp-memory ./servers/mcp-memory/cmd/mcp-memory
+
+build-prompts:
+	go build -buildvcs=false -trimpath -o $(GOBIN)/mcp-prompts ./servers/mcp-prompts/cmd/mcp-prompts
 
 # Test targets
 test:
@@ -47,13 +56,22 @@ vet:
 	go vet ./...
 
 # Docker targets
-docker: docker-instructions docker-skills
+docker: docker-instructions docker-skills docker-adr docker-memory docker-prompts
 
 docker-instructions:
 	docker build -f servers/mcp-instructions/Dockerfile -t ghcr.io/arkestone/mcp-instructions:latest .
 
 docker-skills:
 	docker build -f servers/mcp-skills/Dockerfile -t ghcr.io/arkestone/mcp-skills:latest .
+
+docker-adr:
+	docker build -f servers/mcp-adr/Dockerfile -t ghcr.io/arkestone/mcp-adr:latest .
+
+docker-memory:
+	docker build -f servers/mcp-memory/Dockerfile -t ghcr.io/arkestone/mcp-memory:latest .
+
+docker-prompts:
+	docker build -f servers/mcp-prompts/Dockerfile -t ghcr.io/arkestone/mcp-prompts:latest .
 
 # Clean
 clean:

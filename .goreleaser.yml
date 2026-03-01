@@ -31,6 +31,48 @@ builds:
       - arm64
     ldflags:
       - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+  - id: mcp-adr
+    main: ./servers/mcp-adr/cmd/mcp-adr
+    binary: mcp-adr
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+  - id: mcp-memory
+    main: ./servers/mcp-memory/cmd/mcp-memory
+    binary: mcp-memory
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+  - id: mcp-prompts
+    main: ./servers/mcp-prompts/cmd/mcp-prompts
+    binary: mcp-prompts
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
 
 archives:
   - format: tar.gz
@@ -59,7 +101,7 @@ dockers:
       - ghcr.io/arkestone/mcp-instructions:{{ .Version }}-amd64
       - ghcr.io/arkestone/mcp-instructions:latest-amd64
     use: buildx
-    dockerfile: instructions/Dockerfile
+    dockerfile: servers/mcp-instructions/Dockerfile
     build_flag_templates:
       - --platform=linux/amd64
     goarch: amd64
@@ -69,7 +111,7 @@ dockers:
       - ghcr.io/arkestone/mcp-instructions:{{ .Version }}-arm64
       - ghcr.io/arkestone/mcp-instructions:latest-arm64
     use: buildx
-    dockerfile: instructions/Dockerfile
+    dockerfile: servers/mcp-instructions/Dockerfile
     build_flag_templates:
       - --platform=linux/arm64
     goarch: arm64
@@ -79,7 +121,7 @@ dockers:
       - ghcr.io/arkestone/mcp-skills:{{ .Version }}-amd64
       - ghcr.io/arkestone/mcp-skills:latest-amd64
     use: buildx
-    dockerfile: skills/Dockerfile
+    dockerfile: servers/mcp-skills/Dockerfile
     build_flag_templates:
       - --platform=linux/amd64
     goarch: amd64
@@ -89,7 +131,67 @@ dockers:
       - ghcr.io/arkestone/mcp-skills:{{ .Version }}-arm64
       - ghcr.io/arkestone/mcp-skills:latest-arm64
     use: buildx
-    dockerfile: skills/Dockerfile
+    dockerfile: servers/mcp-skills/Dockerfile
+    build_flag_templates:
+      - --platform=linux/arm64
+    goarch: arm64
+  - id: mcp-adr-amd64
+    ids: [mcp-adr]
+    image_templates:
+      - ghcr.io/arkestone/mcp-adr:{{ .Version }}-amd64
+      - ghcr.io/arkestone/mcp-adr:latest-amd64
+    use: buildx
+    dockerfile: servers/mcp-adr/Dockerfile
+    build_flag_templates:
+      - --platform=linux/amd64
+    goarch: amd64
+  - id: mcp-adr-arm64
+    ids: [mcp-adr]
+    image_templates:
+      - ghcr.io/arkestone/mcp-adr:{{ .Version }}-arm64
+      - ghcr.io/arkestone/mcp-adr:latest-arm64
+    use: buildx
+    dockerfile: servers/mcp-adr/Dockerfile
+    build_flag_templates:
+      - --platform=linux/arm64
+    goarch: arm64
+  - id: mcp-memory-amd64
+    ids: [mcp-memory]
+    image_templates:
+      - ghcr.io/arkestone/mcp-memory:{{ .Version }}-amd64
+      - ghcr.io/arkestone/mcp-memory:latest-amd64
+    use: buildx
+    dockerfile: servers/mcp-memory/Dockerfile
+    build_flag_templates:
+      - --platform=linux/amd64
+    goarch: amd64
+  - id: mcp-memory-arm64
+    ids: [mcp-memory]
+    image_templates:
+      - ghcr.io/arkestone/mcp-memory:{{ .Version }}-arm64
+      - ghcr.io/arkestone/mcp-memory:latest-arm64
+    use: buildx
+    dockerfile: servers/mcp-memory/Dockerfile
+    build_flag_templates:
+      - --platform=linux/arm64
+    goarch: arm64
+  - id: mcp-prompts-amd64
+    ids: [mcp-prompts]
+    image_templates:
+      - ghcr.io/arkestone/mcp-prompts:{{ .Version }}-amd64
+      - ghcr.io/arkestone/mcp-prompts:latest-amd64
+    use: buildx
+    dockerfile: servers/mcp-prompts/Dockerfile
+    build_flag_templates:
+      - --platform=linux/amd64
+    goarch: amd64
+  - id: mcp-prompts-arm64
+    ids: [mcp-prompts]
+    image_templates:
+      - ghcr.io/arkestone/mcp-prompts:{{ .Version }}-arm64
+      - ghcr.io/arkestone/mcp-prompts:latest-arm64
+    use: buildx
+    dockerfile: servers/mcp-prompts/Dockerfile
     build_flag_templates:
       - --platform=linux/arm64
     goarch: arm64
@@ -111,6 +213,30 @@ docker_manifests:
     image_templates:
       - ghcr.io/arkestone/mcp-skills:latest-amd64
       - ghcr.io/arkestone/mcp-skills:latest-arm64
+  - name_template: ghcr.io/arkestone/mcp-adr:{{ .Version }}
+    image_templates:
+      - ghcr.io/arkestone/mcp-adr:{{ .Version }}-amd64
+      - ghcr.io/arkestone/mcp-adr:{{ .Version }}-arm64
+  - name_template: ghcr.io/arkestone/mcp-adr:latest
+    image_templates:
+      - ghcr.io/arkestone/mcp-adr:latest-amd64
+      - ghcr.io/arkestone/mcp-adr:latest-arm64
+  - name_template: ghcr.io/arkestone/mcp-memory:{{ .Version }}
+    image_templates:
+      - ghcr.io/arkestone/mcp-memory:{{ .Version }}-amd64
+      - ghcr.io/arkestone/mcp-memory:{{ .Version }}-arm64
+  - name_template: ghcr.io/arkestone/mcp-memory:latest
+    image_templates:
+      - ghcr.io/arkestone/mcp-memory:latest-amd64
+      - ghcr.io/arkestone/mcp-memory:latest-arm64
+  - name_template: ghcr.io/arkestone/mcp-prompts:{{ .Version }}
+    image_templates:
+      - ghcr.io/arkestone/mcp-prompts:{{ .Version }}-amd64
+      - ghcr.io/arkestone/mcp-prompts:{{ .Version }}-arm64
+  - name_template: ghcr.io/arkestone/mcp-prompts:latest
+    image_templates:
+      - ghcr.io/arkestone/mcp-prompts:latest-amd64
+      - ghcr.io/arkestone/mcp-prompts:latest-arm64
 
 release:
   github:
