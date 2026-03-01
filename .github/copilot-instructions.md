@@ -4,10 +4,10 @@ This is a Go monorepo containing multiple MCP servers and shared packages.
 
 ```bash
 # Instructions MCP server
-go build -o mcp-instructions ./instructions/cmd/mcp-instructions
+go build -o mcp-instructions ./servers/mcp-instructions/cmd/mcp-instructions
 
 # Skills MCP server
-go build -o mcp-skills ./skills/cmd/mcp-skills
+go build -o mcp-skills ./servers/mcp-skills/cmd/mcp-skills
 
 # Run all tests
 go test ./...
@@ -18,18 +18,18 @@ go test ./...
 This monorepo hosts multiple MCP servers built with the official Go SDK (`github.com/modelcontextprotocol/go-sdk/mcp`). Each server serves different Copilot data via the Model Context Protocol.
 
 **Monorepo layout:**
-- `instructions/` — Instructions MCP server (serves Copilot custom instruction files)
-- `skills/` — Skills MCP server (`mcp-skills`, serves Copilot skills)
+- `servers/mcp-instructions/` — Instructions MCP server (serves Copilot custom instruction files)
+- `servers/mcp-skills/` — Skills MCP server (`mcp-skills`, serves Copilot skills)
 - `pkg/` — Shared packages used across servers
   - `pkg/optimizer/` — shared LLM optimization (OpenAI-compatible client, LLMConfig)
-- `cmd/mcp-instructions/` — entry point for the instructions server
-- `cmd/mcp-skills/` — entry point for the skills server
+- `servers/mcp-instructions/cmd/mcp-instructions/` — entry point for the instructions server
+- `servers/mcp-skills/cmd/mcp-skills/` — entry point for the skills server
 
 ## Instructions server
 
-- `instructions/internal/config/` — YAML + env + CLI flag config loading (layered, each overrides the previous)
-- `instructions/internal/loader/` — on-demand instruction file discovery from local dirs and cached GitHub repos with periodic background sync
-- `instructions/internal/optimizer/` — instruction-specific optimization wiring
+- `servers/mcp-instructions/internal/config/` — YAML + env + CLI flag config loading (layered, each overrides the previous)
+- `servers/mcp-instructions/internal/loader/` — on-demand instruction file discovery from local dirs and cached GitHub repos with periodic background sync
+- `servers/mcp-instructions/internal/optimizer/` — instruction-specific optimization wiring
 
 **Key data flow:** MCP client request → server handler → `loader.List()` or `loader.Get(uri)` reads from disk on-demand → optionally passed through `optimizer.Optimize()` → returned as MCP resource/prompt/tool result.
 
@@ -37,7 +37,7 @@ Local directories are always read live from disk. Remote GitHub repos are cached
 
 ## Skills server
 
-- `skills/` — skills scanner with SKILL.md frontmatter parsing
+- `servers/mcp-skills/internal/scanner/` — skills scanner with SKILL.md frontmatter parsing
 - Skills-specific MCP resources, prompts, and tools
 
 # Conventions

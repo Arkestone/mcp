@@ -16,7 +16,7 @@ import (
 	"github.com/Arkestone/mcp/pkg/httputil"
 	"github.com/Arkestone/mcp/pkg/optimizer"
 	"github.com/Arkestone/mcp/pkg/server"
-	"github.com/Arkestone/mcp/skills/internal/scanner"
+	"github.com/Arkestone/mcp/servers/mcp-skills/internal/scanner"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
