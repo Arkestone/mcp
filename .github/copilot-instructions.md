@@ -40,6 +40,11 @@ Local directories are always read live from disk. Remote GitHub repos are cached
 - `servers/mcp-skills/internal/scanner/` — skills scanner with SKILL.md frontmatter parsing
 - Skills-specific MCP resources, prompts, and tools
 
+# Git commits
+
+- **Never** add `Co-authored-by` trailers of any kind to commit messages — this is strictly forbidden.
+- Write concise, imperative commit messages (e.g. `fix: correct timeout flag`).
+
 # Conventions
 
 - Config precedence: YAML file < environment variables < CLI flags
