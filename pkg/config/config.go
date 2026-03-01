@@ -9,9 +9,10 @@ import (
 	"strings"
 	"time"
 
+	"gopkg.in/yaml.v3"
+
 	"github.com/Arkestone/mcp/pkg/httputil"
 	"github.com/Arkestone/mcp/pkg/optimizer"
-	"gopkg.in/yaml.v3"
 )
 
 // Config holds configuration shared by all MCP servers.

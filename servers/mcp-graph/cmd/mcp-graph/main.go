@@ -10,10 +10,11 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/modelcontextprotocol/go-sdk/mcp"
+
 	"github.com/Arkestone/mcp/pkg/config"
 	"github.com/Arkestone/mcp/pkg/server"
 	"github.com/Arkestone/mcp/servers/mcp-graph/internal/graph"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
 var version = "dev"

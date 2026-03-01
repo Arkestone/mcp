@@ -11,10 +11,11 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/adrg/frontmatter"
+
 	"github.com/Arkestone/mcp/pkg/config"
 	"github.com/Arkestone/mcp/pkg/github"
 	"github.com/Arkestone/mcp/pkg/syncer"
-	"github.com/adrg/frontmatter"
 )
 
 // ADR represents a single Architecture Decision Record.

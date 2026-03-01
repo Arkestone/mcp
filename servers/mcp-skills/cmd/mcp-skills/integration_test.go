@@ -11,10 +11,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/modelcontextprotocol/go-sdk/mcp"
+
 	"github.com/Arkestone/mcp/pkg/config"
 	"github.com/Arkestone/mcp/pkg/github"
 	"github.com/Arkestone/mcp/servers/mcp-skills/internal/scanner"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
 func setupTestSkills(t *testing.T) string {

@@ -9,10 +9,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/modelcontextprotocol/go-sdk/mcp"
+
 	"github.com/Arkestone/mcp/pkg/httputil"
 	"github.com/Arkestone/mcp/pkg/optimizer"
 	"github.com/Arkestone/mcp/pkg/testutil"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
 func TestShouldOptimize(t *testing.T) {

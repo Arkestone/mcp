@@ -8,9 +8,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/modelcontextprotocol/go-sdk/mcp"
+
 	"github.com/Arkestone/mcp/pkg/httputil"
 	"github.com/Arkestone/mcp/pkg/optimizer"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
 // ShouldOptimize determines whether to run LLM optimization for a request.
