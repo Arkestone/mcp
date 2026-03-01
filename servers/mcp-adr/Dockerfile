@@ -11,7 +11,7 @@ ARG TARGETOS TARGETARCH
 RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
     go build -ldflags="-s -w" -o /mcp-adr ./servers/mcp-adr/cmd/mcp-adr
 
-FROM alpine:3.21
+FROM alpine:3.23
 
 LABEL org.opencontainers.image.title="mcp-adr" \
       org.opencontainers.image.description="MCP server for Architecture Decision Records" \
