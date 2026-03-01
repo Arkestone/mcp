@@ -1,0 +1,33 @@
+# MCP Skills Server Configuration
+# See README.md for documentation.
+
+# Where to find Copilot skills.
+# Skills follow the github/awesome-copilot format:
+#   skills/{skill-name}/SKILL.md (with YAML frontmatter: name, description)
+#   skills/{skill-name}/references/ (optional supporting docs)
+sources:
+  # Local directories containing skills/ subdirectories.
+  dirs:
+    - ./my-skills
+
+  # GitHub repositories with skills (owner/repo or owner/repo@ref).
+  repos:
+    - github/awesome-copilot
+
+# Local cache for remote repository content.
+cache:
+  dir: ~/.cache/mcp-skills
+  sync_interval: 5m
+
+# Optional LLM optimization (OpenAI-compatible endpoint).
+# When multiple skills are returned, the LLM can consolidate them.
+llm:
+  endpoint: ""
+  model: gpt-4o-mini
+  enabled: false
+
+# MCP transport: stdio (default) or http.
+transport: stdio
+
+# HTTP listen address (only used when transport is http).
+addr: ":8081"

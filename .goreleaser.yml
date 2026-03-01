@@ -1,0 +1,122 @@
+version: 2
+
+project_name: mcp
+
+builds:
+  - id: mcp-instructions
+    main: ./instructions/cmd/mcp-instructions
+    binary: mcp-instructions
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+  - id: mcp-skills
+    main: ./skills/cmd/mcp-skills
+    binary: mcp-skills
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+
+archives:
+  - format: tar.gz
+    name_template: >-
+      {{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}
+    format_overrides:
+      - goos: windows
+        format: zip
+
+checksum:
+  name_template: checksums.txt
+  algorithm: sha256
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^chore"
+      - "^docs"
+      - "^style"
+
+dockers:
+  - id: mcp-instructions-amd64
+    ids: [mcp-instructions]
+    image_templates:
+      - ghcr.io/arkestone/mcp-instructions:{{ .Version }}-amd64
+      - ghcr.io/arkestone/mcp-instructions:latest-amd64
+    use: buildx
+    dockerfile: instructions/Dockerfile
+    build_flag_templates:
+      - --platform=linux/amd64
+    goarch: amd64
+  - id: mcp-instructions-arm64
+    ids: [mcp-instructions]
+    image_templates:
+      - ghcr.io/arkestone/mcp-instructions:{{ .Version }}-arm64
+      - ghcr.io/arkestone/mcp-instructions:latest-arm64
+    use: buildx
+    dockerfile: instructions/Dockerfile
+    build_flag_templates:
+      - --platform=linux/arm64
+    goarch: arm64
+  - id: mcp-skills-amd64
+    ids: [mcp-skills]
+    image_templates:
+      - ghcr.io/arkestone/mcp-skills:{{ .Version }}-amd64
+      - ghcr.io/arkestone/mcp-skills:latest-amd64
+    use: buildx
+    dockerfile: skills/Dockerfile
+    build_flag_templates:
+      - --platform=linux/amd64
+    goarch: amd64
+  - id: mcp-skills-arm64
+    ids: [mcp-skills]
+    image_templates:
+      - ghcr.io/arkestone/mcp-skills:{{ .Version }}-arm64
+      - ghcr.io/arkestone/mcp-skills:latest-arm64
+    use: buildx
+    dockerfile: skills/Dockerfile
+    build_flag_templates:
+      - --platform=linux/arm64
+    goarch: arm64
+
+docker_manifests:
+  - name_template: ghcr.io/arkestone/mcp-instructions:{{ .Version }}
+    image_templates:
+      - ghcr.io/arkestone/mcp-instructions:{{ .Version }}-amd64
+      - ghcr.io/arkestone/mcp-instructions:{{ .Version }}-arm64
+  - name_template: ghcr.io/arkestone/mcp-instructions:latest
+    image_templates:
+      - ghcr.io/arkestone/mcp-instructions:latest-amd64
+      - ghcr.io/arkestone/mcp-instructions:latest-arm64
+  - name_template: ghcr.io/arkestone/mcp-skills:{{ .Version }}
+    image_templates:
+      - ghcr.io/arkestone/mcp-skills:{{ .Version }}-amd64
+      - ghcr.io/arkestone/mcp-skills:{{ .Version }}-arm64
+  - name_template: ghcr.io/arkestone/mcp-skills:latest
+    image_templates:
+      - ghcr.io/arkestone/mcp-skills:latest-amd64
+      - ghcr.io/arkestone/mcp-skills:latest-arm64
+
+release:
+  github:
+    owner: Arkestone
+    name: mcp
+  draft: false
+  prerelease: auto
+  mode: append
+  make_latest: true

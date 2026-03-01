@@ -1,0 +1,41 @@
+version: 2
+updates:
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps):"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps):"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "docker"
+    directory: "/instructions"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps):"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "docker"
+    directory: "/skills"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps):"
+    open-pull-requests-limit: 10
