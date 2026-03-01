@@ -372,7 +372,7 @@ func TestOptimizeContextCancellation(t *testing.T) {
 		{Source: "s", Path: "p", Content: "c"},
 	})
 	if err == nil {
-		t.Error("expected error from cancelled context")
+		t.Error("expected error from canceled context")
 	}
 }
 
@@ -774,7 +774,7 @@ func TestConsolidate_ContextCancelled(t *testing.T) {
 
 	_, err := opt.Optimize(ctx, []ContentInput{{Source: "s1", Content: "data"}})
 	if err == nil {
-		t.Fatal("expected error for cancelled context")
+		t.Fatal("expected error for canceled context")
 	}
 }
 

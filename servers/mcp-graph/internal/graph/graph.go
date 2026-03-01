@@ -48,7 +48,7 @@ type NeighborResult struct {
 	Edges []Edge `json:"edges"`
 }
 
-// diskGraph is the serialisation format for the JSON file.
+// diskGraph is the serialization format for the JSON file.
 type diskGraph struct {
 	Nodes map[string]*Node `json:"nodes"`
 	Edges map[string]*Edge `json:"edges"`

@@ -864,11 +864,9 @@ func TestApplyEnv_WhitespaceOnlyCSV(t *testing.T) {
 	defer os.Unsetenv("TEST_DIRS")
 
 	ApplyEnv(cfg, "TEST")
-	// Should result in whitespace-only entries (not filtered)
+	// Should result in whitespace-only entries (not filtered); all entries are preserved.
 	for _, d := range cfg.Sources.Dirs {
-		if d != "" && d != " " && d != "  " {
-			// Valid — parsing preserves whitespace
-		}
+		_ = d
 	}
 }
 

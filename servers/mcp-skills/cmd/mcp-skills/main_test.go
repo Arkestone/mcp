@@ -659,5 +659,5 @@ func TestRegisterPrompts_ViaProtocol(t *testing.T) {
 	})
 }
 
-// suppress unused import warning
+// suppress unused import warning.
 var _ = fmt.Sprintf

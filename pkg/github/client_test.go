@@ -277,7 +277,7 @@ func TestFetchFile_CancelledContext(t *testing.T) {
 	cancel() // cancel immediately
 	_, err := c.FetchFile(ctx, "o", "r", "", "f.md")
 	if err == nil {
-		t.Fatal("expected error for cancelled context")
+		t.Fatal("expected error for canceled context")
 	}
 }
 
@@ -289,7 +289,7 @@ func TestFetchDir_CancelledContext(t *testing.T) {
 	cancel()
 	_, err := c.FetchDir(ctx, "o", "r", "", "dir")
 	if err == nil {
-		t.Fatal("expected error for cancelled context")
+		t.Fatal("expected error for canceled context")
 	}
 }
 

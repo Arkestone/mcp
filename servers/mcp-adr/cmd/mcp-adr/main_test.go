@@ -2,9 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
-	"net/http"
-	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
@@ -15,42 +12,9 @@ import (
 	"github.com/Arkestone/mcp/pkg/github"
 	"github.com/Arkestone/mcp/pkg/optimizer"
 	"github.com/Arkestone/mcp/pkg/server"
-	"github.com/Arkestone/mcp/pkg/testutil"
 	"github.com/Arkestone/mcp/servers/mcp-adr/internal/scanner"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
-
-func newTestOptimizer(t *testing.T) *optimizer.Optimizer {
-	t.Helper()
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		resp := struct {
-			Choices []struct {
-				Message struct {
-					Role    string `json:"role"`
-					Content string `json:"content"`
-				} `json:"message"`
-			} `json:"choices"`
-		}{
-			Choices: []struct {
-				Message struct {
-					Role    string `json:"role"`
-					Content string `json:"content"`
-				} `json:"message"`
-			}{
-				{Message: struct {
-					Role    string `json:"role"`
-					Content string `json:"content"`
-				}{Role: "assistant", Content: "optimized"}},
-			},
-		}
-		json.NewEncoder(w).Encode(resp)
-	}))
-	t.Cleanup(srv.Close)
-
-	cfg := testutil.LLMConfig()
-	cfg.Endpoint = srv.URL
-	return optimizer.New(cfg)
-}
 
 // setupTestADREnv creates a temp dir with two ADR files and returns scanner + optimizer.
 func setupTestADREnv(t *testing.T) (*scanner.Scanner, *optimizer.Optimizer) {

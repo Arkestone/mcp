@@ -247,7 +247,7 @@ func TestParse_noFrontmatter(t *testing.T) {
 	}
 }
 
-// TestRemember_noTags_writeFormat verifies the serialised file does NOT contain
+// TestRemember_noTags_writeFormat verifies the serialized file does NOT contain
 // a "tags:" line when no tags are provided (kills store:137 CONDITIONALS_BOUNDARY).
 func TestRemember_noTags_writeFormat(t *testing.T) {
 	st := newTestStore(t)

@@ -254,7 +254,7 @@ func TestLoaderRepoCacheDir(t *testing.T) {
 	}
 }
 
-// Mock GitHub API server for testing sync
+// Mock GitHub API server for testing sync.
 func newMockGitHubServer(t *testing.T) *httptest.Server {
 	t.Helper()
 	mux := http.NewServeMux()

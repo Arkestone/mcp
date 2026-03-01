@@ -19,8 +19,8 @@ import (
 
 // ProxyConfig holds network settings shared across all HTTP clients.
 type ProxyConfig struct {
-	// ProxyURL overrides the proxy. When empty, Go's default behaviour applies:
-	// HTTP_PROXY / HTTPS_PROXY / NO_PROXY environment variables are honoured.
+	// ProxyURL overrides the proxy. When empty, Go's default behavior applies:
+	// HTTP_PROXY / HTTPS_PROXY / NO_PROXY environment variables are honored.
 	ProxyURL string `yaml:"proxy_url"`
 
 	// CACertFile is a PEM-encoded CA bundle appended to the system pool.
@@ -93,7 +93,7 @@ func NewClient(cfg ProxyConfig, timeout time.Duration) (*http.Client, error) {
 	}, nil
 }
 
-// DefaultClient creates a minimal client that still honours env-based proxy
+// DefaultClient creates a minimal client that still honors env-based proxy
 // and propagates context headers. Use when no explicit ProxyConfig is needed.
 func DefaultClient(timeout time.Duration) *http.Client {
 	c, _ := NewClient(ProxyConfig{}, timeout)

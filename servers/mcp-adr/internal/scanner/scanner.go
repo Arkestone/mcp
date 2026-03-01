@@ -131,7 +131,7 @@ func parseFrontmatter(content string) (title, status, date string) {
 }
 
 // humanize converts a filename-style ID to a readable title.
-// "0001-use-postgresql" → "0001 Use Postgresql"
+// "0001-use-postgresql" → "0001 Use Postgresql".
 func humanize(id string) string {
 	parts := strings.Split(id, "-")
 	for i := 1; i < len(parts); i++ {

@@ -32,7 +32,7 @@ type Optimizer struct {
 }
 
 // New creates an Optimizer. Returns nil if LLM is not configured.
-// An optional *http.Client can be passed to control proxy/TLS behaviour;
+// An optional *http.Client can be passed to control proxy/TLS behavior;
 // if nil, a default client with a 60 s timeout is used.
 func New(cfg LLMConfig, client ...*http.Client) *Optimizer {
 	if cfg.Endpoint == "" || cfg.APIKey == "" {
