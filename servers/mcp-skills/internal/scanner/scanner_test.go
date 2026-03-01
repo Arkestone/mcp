@@ -196,6 +196,24 @@ func TestParseFrontmatter_EmptyBody(t *testing.T) {
 	}
 }
 
+// TestParseFrontmatter_NoTrailingNewline tests content with no newline after the
+// closing "---", making body truly empty (len==0).  Kills scanner:157
+// CONDITIONALS_BOUNDARY len(body)>0 → len(body)>=0, which would panic on
+// an empty-slice access.
+func TestParseFrontmatter_NoTrailingNewline(t *testing.T) {
+	data := []byte("---\nname: NoTrail\ndescription: trail\n---")
+	name, desc, body := parseFrontmatter(data)
+	if name != "NoTrail" {
+		t.Errorf("name = %q, want NoTrail", name)
+	}
+	if desc != "trail" {
+		t.Errorf("description = %q, want trail", desc)
+	}
+	if body != "" {
+		t.Errorf("body = %q, want empty", body)
+	}
+}
+
 func TestParseFrontmatter_SpecialCharacters(t *testing.T) {
 	data := []byte("---\nname: \"Skill: C++ & Go!\"\ndescription: Uses <html> & \"quotes\"\n---\nBody\n")
 	name, desc, _ := parseFrontmatter(data)

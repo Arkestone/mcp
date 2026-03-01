@@ -91,6 +91,21 @@ func TestParseFrontmatter_UnclosedDelimiter(t *testing.T) {
 	}
 }
 
+// TestParseFrontmatter_NoTrailingNewline tests content where body is truly empty
+// (no trailing newline after the closing "---").  This kills the
+// CONDITIONALS_BOUNDARY mutation len(body)>0 → len(body)>=0 which would panic
+// on an empty-slice access when len==0.
+func TestParseFrontmatter_NoTrailingNewline(t *testing.T) {
+	content := "---\ndescription: nodesc\n---"
+	desc, _, body := parseFrontmatter(content)
+	if desc != "nodesc" {
+		t.Errorf("desc = %q, want %q", desc, "nodesc")
+	}
+	if body != "" {
+		t.Errorf("body = %q, want empty", body)
+	}
+}
+
 func TestParseFrontmatter_QuotedValues(t *testing.T) {
 	content := "---\ndescription: \"Quoted description\"\nmode: 'ask'\n---\nbody"
 	desc, mode, _ := parseFrontmatter(content)

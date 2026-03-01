@@ -247,6 +247,108 @@ func TestParse_noFrontmatter(t *testing.T) {
 	}
 }
 
+// TestRemember_noTags_writeFormat verifies the serialised file does NOT contain
+// a "tags:" line when no tags are provided (kills store:137 CONDITIONALS_BOUNDARY).
+func TestRemember_noTags_writeFormat(t *testing.T) {
+	st := newTestStore(t)
+	m, err := st.Remember("no tags here", nil)
+	if err != nil {
+		t.Fatalf("Remember: %v", err)
+	}
+	raw, err := os.ReadFile(filepath.Join(st.dir, m.ID+".md"))
+	if err != nil {
+		t.Fatalf("ReadFile: %v", err)
+	}
+	if strings.Contains(string(raw), "tags:") {
+		t.Errorf("file should not contain 'tags:' for a no-tags memory, got:\n%s", raw)
+	}
+}
+
+// TestRemember_singleTag_format verifies a single tag is written as "tags: [mytag]"
+// with no leading comma (kills store:140 CONDITIONALS_BOUNDARY on i>0).
+func TestRemember_singleTag_format(t *testing.T) {
+	st := newTestStore(t)
+	m, err := st.Remember("one tag", []string{"mytag"})
+	if err != nil {
+		t.Fatalf("Remember: %v", err)
+	}
+	raw, err := os.ReadFile(filepath.Join(st.dir, m.ID+".md"))
+	if err != nil {
+		t.Fatalf("ReadFile: %v", err)
+	}
+	if !strings.Contains(string(raw), "tags: [mytag]") {
+		t.Errorf("expected 'tags: [mytag]' in file, got:\n%s", raw)
+	}
+	// roundtrip
+	got, ok := st.Get(m.ID)
+	if !ok {
+		t.Fatal("Get returned false")
+	}
+	if len(got.Tags) != 1 || got.Tags[0] != "mytag" {
+		t.Errorf("Tags = %v, want [mytag]", got.Tags)
+	}
+}
+
+// TestParse_emptyFrontmatter verifies parse handles content where the frontmatter
+// separator "\n---\n" is at position 0 in rest (idx==0), i.e. "---\n\n---\ncontent".
+// Kills store:169 CONDITIONALS_BOUNDARY (idx < 0  →  idx <= 0 would skip parsing).
+func TestParse_emptyFrontmatter(t *testing.T) {
+	m, err := parse("myid", "---\n\n---\ncontent here")
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	if m.ID != "myid" {
+		t.Errorf("ID = %q", m.ID)
+	}
+	if m.Content != "content here" {
+		t.Errorf("Content = %q, want %q", m.Content, "content here")
+	}
+}
+
+// TestParse_timestamps verifies that valid created_at / updated_at values are
+// parsed correctly (kills store:195 CONDITIONALS_NEGATION: err==nil → err!=nil).
+func TestParse_timestamps(t *testing.T) {
+	now := time.Now().UTC().Truncate(time.Millisecond)
+	content := "---\n" +
+		"id: tid\n" +
+		"created_at: " + now.Format(time.RFC3339Nano) + "\n" +
+		"updated_at: " + now.Add(time.Second).Format(time.RFC3339Nano) + "\n" +
+		"---\nsome content"
+	m, err := parse("tid", content)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	if m.CreatedAt.IsZero() {
+		t.Error("CreatedAt should not be zero when valid created_at is present")
+	}
+	if !m.CreatedAt.Equal(now) {
+		t.Errorf("CreatedAt = %v, want %v", m.CreatedAt, now)
+	}
+	if !m.UpdatedAt.Equal(now.Add(time.Second)) {
+		t.Errorf("UpdatedAt = %v, want %v", m.UpdatedAt, now.Add(time.Second))
+	}
+}
+
+// TestRemember_timestampRoundtrip verifies that CreatedAt survives a write+read
+// cycle (cross-validates store:195 via the public API).
+func TestRemember_timestampRoundtrip(t *testing.T) {
+	st := newTestStore(t)
+	original, err := st.Remember("roundtrip", nil)
+	if err != nil {
+		t.Fatalf("Remember: %v", err)
+	}
+	got, ok := st.Get(original.ID)
+	if !ok {
+		t.Fatal("Get returned false")
+	}
+	if !got.CreatedAt.Equal(original.CreatedAt) {
+		t.Errorf("CreatedAt mismatch: got %v, want %v", got.CreatedAt, original.CreatedAt)
+	}
+	if !got.UpdatedAt.Equal(original.UpdatedAt) {
+		t.Errorf("UpdatedAt mismatch: got %v, want %v", got.UpdatedAt, original.UpdatedAt)
+	}
+}
+
 func TestMatchesTags(t *testing.T) {
 	tests := []struct {
 		name   string
