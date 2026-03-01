@@ -13,8 +13,8 @@ A monorepo hosting [Model Context Protocol](https://modelcontextprotocol.io) (MC
 
 | Server | Description | Docs |
 |--------|-------------|------|
-| [mcp-instructions](./instructions/) | Serves Copilot custom instructions | [README](./instructions/README.md) |
-| [mcp-skills](./skills/) | Serves Copilot skills | [README](./skills/README.md) |
+| [mcp-instructions](./servers/mcp-instructions/) | Serves Copilot custom instructions | [README](./servers/mcp-instructions/README.md) |
+| [mcp-skills](./servers/mcp-skills/) | Serves Copilot skills | [README](./servers/mcp-skills/README.md) |
 
 ## Shared Components
 
@@ -47,12 +47,13 @@ See each server's README for full configuration and usage details.
 
 ```
 .
-├── instructions/           # mcp-instructions server
-│   ├── cmd/mcp-instructions/
-│   └── internal/loader/
-├── skills/                 # mcp-skills server
-│   ├── cmd/mcp-skills/
-│   └── internal/scanner/
+├── servers/
+│   ├── mcp-instructions/       # mcp-instructions server
+│   │   ├── cmd/mcp-instructions/
+│   │   └── internal/loader/
+│   └── mcp-skills/             # mcp-skills server
+│       ├── cmd/mcp-skills/
+│       └── internal/scanner/
 ├── pkg/
 │   ├── config/             # shared configuration loading
 │   ├── github/             # GitHub Contents API client
@@ -62,6 +63,8 @@ See each server's README for full configuration and usage details.
 │   └── syncer/             # background sync
 ├── docs/
 │   └── network.md          # network / proxy / firewall guide
+├── examples/               # client configuration examples
+├── AGENTS.md               # AI coding assistant guide
 ├── Makefile
 ├── go.mod
 └── go.sum
@@ -89,8 +92,8 @@ make cover              # generate coverage report
 
 Each server supports configuration via YAML files, environment variables, and CLI flags. See the individual server READMEs for details:
 
-- [mcp-instructions configuration](./instructions/README.md#configuration)
-- [mcp-skills configuration](./skills/README.md#configuration)
+- [mcp-instructions configuration](./servers/mcp-instructions/README.md#configuration)
+- [mcp-skills configuration](./servers/mcp-skills/README.md#configuration)
 
 ### GitHub Authentication (Optional)
 

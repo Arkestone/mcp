@@ -4,7 +4,7 @@ project_name: mcp
 
 builds:
   - id: mcp-instructions
-    main: ./instructions/cmd/mcp-instructions
+    main: ./servers/mcp-instructions/cmd/mcp-instructions
     binary: mcp-instructions
     env:
       - CGO_ENABLED=0
@@ -18,7 +18,7 @@ builds:
     ldflags:
       - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
   - id: mcp-skills
-    main: ./skills/cmd/mcp-skills
+    main: ./servers/mcp-skills/cmd/mcp-skills
     binary: mcp-skills
     env:
       - CGO_ENABLED=0

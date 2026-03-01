@@ -13,7 +13,7 @@ import (
 
 	"github.com/Arkestone/mcp/pkg/config"
 	"github.com/Arkestone/mcp/pkg/github"
-	"github.com/Arkestone/mcp/skills/internal/scanner"
+	"github.com/Arkestone/mcp/servers/mcp-skills/internal/scanner"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 

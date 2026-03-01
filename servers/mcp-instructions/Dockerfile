@@ -9,7 +9,7 @@ COPY . .
 
 ARG TARGETOS TARGETARCH
 RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
-    go build -ldflags="-s -w" -o /mcp-instructions ./instructions/cmd/mcp-instructions
+    go build -ldflags="-s -w" -o /mcp-instructions ./servers/mcp-instructions/cmd/mcp-instructions
 
 FROM alpine:3.21
 
