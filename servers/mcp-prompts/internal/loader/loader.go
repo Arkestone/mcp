@@ -13,6 +13,7 @@ import (
 	"github.com/Arkestone/mcp/pkg/config"
 	"github.com/Arkestone/mcp/pkg/github"
 	"github.com/Arkestone/mcp/pkg/syncer"
+	"github.com/adrg/frontmatter"
 )
 
 const (
@@ -165,31 +166,17 @@ func scanDir(dir, source string) []Prompt {
 	return out
 }
 
+type promptMeta struct {
+	Description string `yaml:"description"`
+	Mode        string `yaml:"mode"`
+}
+
 // parseFrontmatter extracts description and mode from YAML frontmatter.
 // Returns description, mode, and the remaining body.
 func parseFrontmatter(content string) (description, mode, body string) {
-	if !strings.HasPrefix(content, "---") {
-		return "", "", content
-	}
-	rest := content[3:]
-	idx := strings.Index(rest, "\n---")
-	if idx < 0 {
-		return "", "", content
-	}
-	frontmatter := rest[:idx]
-	body = rest[idx+4:]
-	if len(body) > 0 && body[0] == '\n' {
-		body = body[1:]
-	}
-	for _, line := range strings.Split(frontmatter, "\n") {
-		trimmed := strings.TrimSpace(line)
-		if strings.HasPrefix(trimmed, "description:") {
-			description = strings.Trim(strings.TrimSpace(strings.TrimPrefix(trimmed, "description:")), "\"'")
-		} else if strings.HasPrefix(trimmed, "mode:") {
-			mode = strings.Trim(strings.TrimSpace(strings.TrimPrefix(trimmed, "mode:")), "\"'")
-		}
-	}
-	return description, mode, body
+	var meta promptMeta
+	rest, _ := frontmatter.Parse(strings.NewReader(content), &meta)
+	return meta.Description, meta.Mode, string(rest)
 }
 
 func (l *Loader) syncAllRepos() {

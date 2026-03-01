@@ -14,6 +14,7 @@ import (
 	"github.com/Arkestone/mcp/pkg/config"
 	"github.com/Arkestone/mcp/pkg/github"
 	"github.com/Arkestone/mcp/pkg/syncer"
+	"github.com/adrg/frontmatter"
 )
 
 // ADR represents a single Architecture Decision Record.
@@ -116,27 +117,17 @@ func scanDir(dir, source string) []ADR {
 	return out
 }
 
+type adrMeta struct {
+	Title  string `yaml:"title"`
+	Status string `yaml:"status"`
+	Date   string `yaml:"date"`
+}
+
 // parseFrontmatter extracts title, status, and date from YAML frontmatter.
 func parseFrontmatter(content string) (title, status, date string) {
-	if !strings.HasPrefix(content, "---") {
-		return "", "", ""
-	}
-	rest := content[3:]
-	idx := strings.Index(rest, "\n---")
-	if idx < 0 {
-		return "", "", ""
-	}
-	for _, line := range strings.Split(rest[:idx], "\n") {
-		trimmed := strings.TrimSpace(line)
-		if strings.HasPrefix(trimmed, "title:") {
-			title = strings.Trim(strings.TrimSpace(strings.TrimPrefix(trimmed, "title:")), "\"'")
-		} else if strings.HasPrefix(trimmed, "status:") {
-			status = strings.Trim(strings.TrimSpace(strings.TrimPrefix(trimmed, "status:")), "\"'")
-		} else if strings.HasPrefix(trimmed, "date:") {
-			date = strings.Trim(strings.TrimSpace(strings.TrimPrefix(trimmed, "date:")), "\"'")
-		}
-	}
-	return title, status, date
+	var meta adrMeta
+	frontmatter.Parse(strings.NewReader(content), &meta) //nolint:errcheck
+	return meta.Title, meta.Status, meta.Date
 }
 
 // humanize converts a filename-style ID to a readable title.

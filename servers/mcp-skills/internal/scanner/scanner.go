@@ -3,16 +3,17 @@
 package scanner
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/Arkestone/mcp/pkg/config"
 	"github.com/Arkestone/mcp/pkg/github"
 	"github.com/Arkestone/mcp/pkg/syncer"
+	"github.com/adrg/frontmatter"
 )
 
 // Skill represents a single Copilot skill parsed from a SKILL.md file.
@@ -147,52 +148,17 @@ func scanDir(dir, source string) []Skill {
 	return out
 }
 
-// parseFrontmatter extracts YAML frontmatter (between --- delimiters) and returns
+type skillMeta struct {
+	Name        string `yaml:"name"`
+	Description string `yaml:"description"`
+}
+
+// parseFrontmatter extracts YAML frontmatter and returns
 // the name, description, and remaining markdown body.
 func parseFrontmatter(data []byte) (name, description, body string) {
-	content := string(data)
-	if !strings.HasPrefix(content, "---") {
-		return "", "", content
-	}
-
-	rest := content[3:]
-	idx := strings.Index(rest, "\n---")
-	if idx < 0 {
-		return "", "", content
-	}
-
-	frontmatter := rest[:idx]
-	body = rest[idx+4:]
-	if len(body) > 0 && body[0] == '\n' {
-		body = body[1:]
-	}
-
-	// Parse simple YAML fields
-	lines := strings.Split(frontmatter, "\n")
-	for i, line := range lines {
-		trimmed := strings.TrimSpace(line)
-		if strings.HasPrefix(trimmed, "name:") {
-			name = strings.Trim(strings.TrimSpace(strings.TrimPrefix(trimmed, "name:")), "\"'")
-		} else if strings.HasPrefix(trimmed, "description:") {
-			val := strings.TrimSpace(strings.TrimPrefix(trimmed, "description:"))
-			if val == "|" || val == ">" {
-				// Multiline: collect indented lines
-				var parts []string
-				for j := i + 1; j < len(lines); j++ {
-					l := lines[j]
-					if len(l) > 0 && l[0] != ' ' && l[0] != '\t' {
-						break
-					}
-					parts = append(parts, strings.TrimSpace(l))
-				}
-				description = strings.Join(parts, " ")
-			} else {
-				description = strings.Trim(val, "\"'")
-			}
-		}
-	}
-
-	return name, description, body
+	var meta skillMeta
+	rest, _ := frontmatter.Parse(bytes.NewReader(data), &meta)
+	return meta.Name, meta.Description, string(rest)
 }
 
 func (s *Scanner) syncAllRepos() {
