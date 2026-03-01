@@ -30,19 +30,19 @@ jobs:
       matrix:
         include:
           - name: mcp-memory/store
-            package: ./servers/mcp-memory/internal/store/...
+            package: ./servers/mcp-memory/internal/store
           - name: mcp-graph/graph
-            package: ./servers/mcp-graph/internal/graph/...
+            package: ./servers/mcp-graph/internal/graph
           - name: mcp-skills/scanner
-            package: ./servers/mcp-skills/internal/scanner/...
+            package: ./servers/mcp-skills/internal/scanner
           - name: mcp-prompts/loader
-            package: ./servers/mcp-prompts/internal/loader/...
+            package: ./servers/mcp-prompts/internal/loader
           - name: mcp-adr/scanner
-            package: ./servers/mcp-adr/internal/scanner/...
+            package: ./servers/mcp-adr/internal/scanner
           - name: mcp-instructions/loader
-            package: ./servers/mcp-instructions/internal/loader/...
+            package: ./servers/mcp-instructions/internal/loader
           - name: pkg/optimizer
-            package: ./pkg/optimizer/...
+            package: ./pkg/optimizer
     steps:
       - uses: actions/checkout@v4
 
