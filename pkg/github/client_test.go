@@ -493,3 +493,62 @@ func TestFetchFile_HTTP200WithToken(t *testing.T) {
 		t.Errorf("got %q, want %q", got, "content")
 	}
 }
+
+// TestFetchFile_RequestCreationError covers the http.NewRequestWithContext error
+// branch by supplying a BaseURL that produces an invalid URL (space in host).
+func TestFetchFile_RequestCreationError(t *testing.T) {
+	c := &Client{BaseURL: "http://invalid host"}
+	_, err := c.FetchFile(context.Background(), "o", "r", "", "f.md")
+	if err == nil {
+		t.Fatal("expected error for malformed URL")
+	}
+}
+
+// errReader returns an error on every Read, simulating a broken response body.
+type errReader struct{}
+
+func (errReader) Read([]byte) (int, error) { return 0, fmt.Errorf("read error") }
+func (errReader) Close() error             { return nil }
+
+// brokenBodyTransport returns HTTP 200 with a body that always errors on Read.
+type brokenBodyTransport struct{}
+
+func (brokenBodyTransport) RoundTrip(*http.Request) (*http.Response, error) {
+	return &http.Response{
+		StatusCode: 200,
+		Body:       errReader{},
+		Header:     make(http.Header),
+	}, nil
+}
+
+func TestFetchFile_BodyReadError(t *testing.T) {
+	c := &Client{HTTPClient: &http.Client{Transport: brokenBodyTransport{}}, BaseURL: "http://example.com"}
+	_, err := c.FetchFile(context.Background(), "o", "r", "", "f.md")
+	if err == nil {
+		t.Fatal("expected error from broken body, got nil")
+	}
+}
+
+func TestFetchDir_DecodeError(t *testing.T) {
+	srv, _ := newServer(t, http.StatusOK, "not-valid-json")
+	c := &Client{BaseURL: srv.URL}
+
+	_, err := c.FetchDir(context.Background(), "o", "r", "", "dir")
+	if err == nil {
+		t.Fatal("expected decode error, got nil")
+	}
+}
+
+type errTransport struct{}
+
+func (errTransport) RoundTrip(*http.Request) (*http.Response, error) {
+	return nil, fmt.Errorf("transport error")
+}
+
+func TestFetchDir_DoError(t *testing.T) {
+	c := &Client{HTTPClient: &http.Client{Transport: errTransport{}}, BaseURL: "http://example.com"}
+	_, err := c.FetchDir(context.Background(), "o", "r", "", "dir")
+	if err == nil {
+		t.Fatal("expected transport error, got nil")
+	}
+}

@@ -1057,6 +1057,26 @@ func TestLoaderStartStopMultipleTimes(t *testing.T) {
 	ldr.Stop()
 }
 
+// TestSyncAllRepos_MkdirFailLogsAndContinues covers the log.Printf branch in
+// syncAllRepos when syncRepo returns an error (os.MkdirAll fails because a
+// regular file already occupies the expected cache directory path).
+func TestSyncAllRepos_MkdirFailLogsAndContinues(t *testing.T) {
+	cacheDir := t.TempDir()
+	// repoCacheDir("x", "y") == cacheDir/"x_y"; create it as a file so that
+	// os.MkdirAll(cacheDir/x_y/.github, 0755) fails.
+	if err := os.WriteFile(filepath.Join(cacheDir, "x_y"), []byte("block"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	cfg := &config.Config{
+		Sources: config.Sources{Repos: []string{"x/y"}},
+		Cache:   config.CacheConfig{Dir: cacheDir, SyncInterval: time.Hour},
+	}
+	ldr := newLoader(cfg)
+	// Must not panic; the error is logged and execution continues.
+	ldr.syncAllRepos()
+}
+
 func TestLoaderForceSyncWithRemote(t *testing.T) {
 	callCount := 0
 	mux := http.NewServeMux()

@@ -3,8 +3,10 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/Arkestone/mcp/pkg/httputil"
 	"github.com/Arkestone/mcp/pkg/optimizer"
@@ -41,13 +43,21 @@ func WrapHandler(handler http.Handler, headerPassthrough []string) http.Handler 
 // RunHTTP starts a StreamableHTTP MCP server and blocks until ctx is canceled.
 // When headerPassthrough is non-empty, listed headers from inbound HTTP requests
 // are captured into the request context so downstream calls can forward them.
+// A GET /healthz endpoint returns 200 {"status":"ok"} and is always available.
 func RunHTTP(ctx context.Context, srv *mcp.Server, addr string, headerPassthrough []string) error {
-	handler := mcp.NewStreamableHTTPHandler(
+	mcpHandler := mcp.NewStreamableHTTPHandler(
 		func(r *http.Request) *mcp.Server { return srv },
 		nil,
 	)
 
-	root := WrapHandler(handler, headerPassthrough)
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+	})
+	mux.Handle("/", mcpHandler)
+
+	root := WrapHandler(mux, headerPassthrough)
 
 	httpServer := &http.Server{
 		Addr:    addr,
@@ -56,7 +66,9 @@ func RunHTTP(ctx context.Context, srv *mcp.Server, addr string, headerPassthroug
 
 	go func() {
 		<-ctx.Done()
-		httpServer.Close()
+		shutCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		_ = httpServer.Shutdown(shutCtx)
 	}()
 
 	if err := httpServer.ListenAndServe(); err != http.ErrServerClosed {
