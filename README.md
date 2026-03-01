@@ -113,7 +113,7 @@ mcp-instructions -dirs /path/to/repo
 mcp-instructions -transport http -addr :8080 -repos github/awesome-copilot
 
 # With LLM optimization
-mcp-instructions -transport http -llm.enabled -llm.endpoint https://api.scaleway.ai/v1
+mcp-instructions -transport http -llm.enabled -llm.endpoint https://api.openai.com/v1
 ```
 
 See each server's README for the full configuration reference.
@@ -389,14 +389,14 @@ All content servers (instructions, skills, prompts, ADRs) optionally consolidate
 mcp-instructions \
   -dirs . \
   -llm.enabled \
-  -llm.endpoint https://api.scaleway.ai/v1 \
-  -llm.api-key $SCW_SECRET_KEY \
-  -llm.model llama-3.3-70b-instruct
+  -llm.endpoint https://api.openai.com/v1 \
+  -llm.api-key $LLM_API_KEY \
+  -llm.model gpt-4o-mini
 ```
 
-**Supported providers**: OpenAI, Azure OpenAI, [Scaleway Generative APIs](https://www.scaleway.com/en/generative-apis/), Ollama, LM Studio, and any OpenAI-compatible endpoint.
+**Supported providers**: OpenAI, Azure OpenAI, Ollama, LM Studio, and any OpenAI-compatible endpoint.
 
-See [`config.scaleway.example.yaml`](./servers/mcp-instructions/config.scaleway.example.yaml) for a complete Scaleway configuration example.
+See [`config.llm.example.yaml`](./servers/mcp-instructions/config.llm.example.yaml) for a complete configuration example.
 
 ## GitHub Authentication (Optional)
 

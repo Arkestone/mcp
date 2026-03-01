@@ -14,15 +14,15 @@ import (
 // TestLLMEndpointIntegration tests the optimizer against a real OpenAI-compatible
 // endpoint.  Set the following environment variables to enable:
 //
-//	LLM_ENDPOINT  – base URL, e.g. https://api.scaleway.ai/v1
+//	LLM_ENDPOINT  – base URL, e.g. https://api.openai.com/v1
 //	LLM_API_KEY   – bearer token
-//	LLM_MODEL     – model ID, e.g. llama-3.1-8b-instruct
+//	LLM_MODEL     – model ID, e.g. gpt-4o-mini
 //
-// Example (Scaleway):
+// Example (Ollama):
 //
-//	LLM_ENDPOINT=https://api.scaleway.ai/v1 \
-//	LLM_API_KEY=$SCW_SECRET_KEY \
-//	LLM_MODEL=llama-3.1-8b-instruct \
+//	LLM_ENDPOINT=http://localhost:11434/v1 \
+//	LLM_API_KEY=ollama \
+//	LLM_MODEL=llama3.2 \
 //	go test -tags integration -v -run TestLLMEndpointIntegration ./pkg/optimizer/
 func TestLLMEndpointIntegration(t *testing.T) {
 	endpoint := os.Getenv("LLM_ENDPOINT")
