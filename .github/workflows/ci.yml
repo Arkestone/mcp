@@ -93,10 +93,16 @@ jobs:
         run: |
           CGO_ENABLED=0 go build -o mcp-instructions ./servers/mcp-instructions/cmd/mcp-instructions
           CGO_ENABLED=0 go build -o mcp-skills ./servers/mcp-skills/cmd/mcp-skills
+          CGO_ENABLED=0 go build -o mcp-adr ./servers/mcp-adr/cmd/mcp-adr
+          CGO_ENABLED=0 go build -o mcp-memory ./servers/mcp-memory/cmd/mcp-memory
+          CGO_ENABLED=0 go build -o mcp-prompts ./servers/mcp-prompts/cmd/mcp-prompts
       - name: Verify binaries
         run: |
           ./mcp-instructions --help || true
           ./mcp-skills --help || true
+          ./mcp-adr --help || true
+          ./mcp-memory --help || true
+          ./mcp-prompts --help || true
 
   docker:
     name: Docker Build
@@ -124,3 +130,27 @@ jobs:
           push: false
           platforms: linux/amd64,linux/arm64
           tags: ghcr.io/arkestone/mcp-skills:ci
+      - name: Build mcp-adr Docker image (multi-arch)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: servers/mcp-adr/Dockerfile
+          push: false
+          platforms: linux/amd64,linux/arm64
+          tags: ghcr.io/arkestone/mcp-adr:ci
+      - name: Build mcp-memory Docker image (multi-arch)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: servers/mcp-memory/Dockerfile
+          push: false
+          platforms: linux/amd64,linux/arm64
+          tags: ghcr.io/arkestone/mcp-memory:ci
+      - name: Build mcp-prompts Docker image (multi-arch)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: servers/mcp-prompts/Dockerfile
+          push: false
+          platforms: linux/amd64,linux/arm64
+          tags: ghcr.io/arkestone/mcp-prompts:ci
