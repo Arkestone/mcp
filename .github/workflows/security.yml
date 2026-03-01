@@ -16,7 +16,7 @@ jobs:
     name: Go Vulnerability Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-go@v5
         with:
           go-version: '1.24'
@@ -29,7 +29,7 @@ jobs:
     name: Container Scan (mcp-instructions)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Build mcp-instructions image
         run: docker build -f servers/mcp-instructions/Dockerfile -t arkestone/mcp-instructions:scan .
       - name: Run Trivy (mcp-instructions)
@@ -49,7 +49,7 @@ jobs:
     name: Container Scan (mcp-skills)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Build mcp-skills image
         run: docker build -f servers/mcp-skills/Dockerfile -t arkestone/mcp-skills:scan .
       - name: Run Trivy (mcp-skills)
@@ -72,7 +72,7 @@ jobs:
     permissions:
       security-events: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Run Scorecard
         uses: ossf/scorecard-action@v2.4.0
         with:
