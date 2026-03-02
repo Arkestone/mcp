@@ -3,8 +3,8 @@
 <!-- install-badges -->
 | Transport | VS Code | VS Code Insiders |
 |-----------|---------|-----------------|
-| stdio | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=mcp-prompts&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22mcp-prompts%22%2C%20%22args%22%3A%20%5B%22--dirs%22%2C%20%22%24%7BworkspaceFolder%7D%22%5D%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-prompts&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22mcp-prompts%22%2C%20%22args%22%3A%20%5B%22--dirs%22%2C%20%22%24%7BworkspaceFolder%7D%22%5D%7D) |
-| HTTP  | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=mcp-prompts&config=%7B%22type%22%3A%20%22http%22%2C%20%22url%22%3A%20%22http%3A%2F%2Flocalhost%3A8082%2Fmcp%22%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-prompts&config=%7B%22type%22%3A%20%22http%22%2C%20%22url%22%3A%20%22http%3A%2F%2Flocalhost%3A8082%2Fmcp%22%7D) |
+| stdio | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-prompts&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22mcp-prompts%22%2C%20%22args%22%3A%20%5B%22--dirs%22%2C%20%22%24%7BworkspaceFolder%7D%22%5D%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-prompts&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22mcp-prompts%22%2C%20%22args%22%3A%20%5B%22--dirs%22%2C%20%22%24%7BworkspaceFolder%7D%22%5D%7D&quality=insiders) |
+| HTTP  | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-prompts&config=%7B%22type%22%3A%20%22http%22%2C%20%22url%22%3A%20%22http%3A%2F%2Flocalhost%3A8082%2Fmcp%22%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-prompts&config=%7B%22type%22%3A%20%22http%22%2C%20%22url%22%3A%20%22http%3A%2F%2Flocalhost%3A8082%2Fmcp%22%7D&quality=insiders) |
 <!-- /install-badges -->
 
 An MCP server that serves VS Code Copilot prompt files (`.github/prompts/*.prompt.md`) and chat mode files (`.github/chatmodes/*.chatmode.md`) from local directories and GitHub repositories.
@@ -54,6 +54,14 @@ go build -o mcp-prompts ./servers/mcp-prompts/cmd/mcp-prompts
   }
 }
 ```
+
+**Method 1: User Configuration (Recommended)**
+Open the Command Palette (`Ctrl+Shift+P`) and run `MCP: Open User Configuration` to open your user `mcp.json` file and add the server configuration.
+
+**Method 2: Workspace Configuration**
+Add the configuration to `.vscode/mcp.json` in your workspace to share it with your team.
+
+> See the [VS Code MCP documentation](https://code.visualstudio.com/docs/copilot/model-context-protocol) for more details.
 
 ### Claude Desktop
 
@@ -168,30 +176,41 @@ All config keys are available as `PROMPTS_` prefixed env vars, e.g.:
 | `PROMPTS_LLM_MODEL` | LLM model name |
 | `PROMPTS_LLM_ENABLED` | Enable LLM optimization (`true`/`false`) |
 
-## MCP primitives
+## MCP API
 
 ### Resources
 
-| URI | Description |
-|---|---|
-| `prompts://{source}/{name}` | Single prompt or chat mode file |
-| `prompts://optimized` | All files merged via LLM (or concatenated) |
-| `prompts://index` | Plain-text index of all files |
-
-### Prompts
-
-| Name | Arguments | Description |
-|---|---|---|
-| `get-prompts` | `source` (optional), `optimize` (optional) | Get all prompt/chat mode content |
+- **`prompts://{source}/{name}`** — Content of a single prompt or chat mode file. `{source}` is the directory basename or `owner/repo`; `{name}` is the file stem (e.g. `component` for `component.prompt.md`).
+- **`prompts://optimized`** — All prompt files from every configured source merged and deduplicated (via LLM if configured, otherwise concatenated).
+- **`prompts://index`** — Plain-text index listing all available prompt URIs, sources, types, and descriptions.
 
 ### Tools
 
-| Name | Description |
-|---|---|
-| `refresh-prompts` | Force immediate re-sync from all sources |
-| `list-prompts` | List all files with URI, source, path, type, description, mode |
-| `get-prompt` | Get a single prompt by URI |
-| `optimize-prompts` | Get consolidated content via LLM or concatenation |
+- **`refresh-prompts`**
+  - Force an immediate re-sync of all configured sources. Local directories are re-scanned; GitHub repo caches are fetched without waiting for the background interval.
+  - No input required.
+
+- **`list-prompts`**
+  - Return metadata for every discovered file: URI, source, path, type (`prompt` or `chatmode`), description, and mode.
+  - No input required.
+
+- **`get-prompt`**
+  - Return the full content and metadata of a single prompt or chat mode file.
+  - Input:
+    - `uri` (string, required): the resource URI in `prompts://{source}/{name}` form.
+
+- **`optimize-prompts`**
+  - Return consolidated prompt content, optionally passed through an LLM for merging and deduplication.
+  - Input:
+    - `optimize` (boolean, optional): override the global `llm.enabled` setting for this request.
+
+### Prompts
+
+- **`get-prompts`**
+  - Inject prompt/chat mode content into the conversation as a prompt message, optionally filtered to a single source and/or optimized.
+  - Parameters:
+    - `source` (string, optional): restrict output to one source (directory basename or `owner/repo`).
+    - `optimize` (string `"true"` / `"false"`, optional): override the global LLM optimization setting for this request.
 
 ## Examples
 

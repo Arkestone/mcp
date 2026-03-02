@@ -7,8 +7,8 @@ sidebar_label: mcp-adr
 <!-- install-badges -->
 | Transport | VS Code | VS Code Insiders |
 |-----------|---------|-----------------|
-| stdio | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=mcp-adr&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22mcp-adr%22%2C%20%22args%22%3A%20%5B%22--dirs%22%2C%20%22%24%7BworkspaceFolder%7D%22%5D%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-adr&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22mcp-adr%22%2C%20%22args%22%3A%20%5B%22--dirs%22%2C%20%22%24%7BworkspaceFolder%7D%22%5D%7D) |
-| HTTP  | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=mcp-adr&config=%7B%22type%22%3A%20%22http%22%2C%20%22url%22%3A%20%22http%3A%2F%2Flocalhost%3A8083%2Fmcp%22%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-adr&config=%7B%22type%22%3A%20%22http%22%2C%20%22url%22%3A%20%22http%3A%2F%2Flocalhost%3A8083%2Fmcp%22%7D) |
+| stdio | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-adr&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22mcp-adr%22%2C%20%22args%22%3A%20%5B%22--dirs%22%2C%20%22%24%7BworkspaceFolder%7D%22%5D%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-adr&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22mcp-adr%22%2C%20%22args%22%3A%20%5B%22--dirs%22%2C%20%22%24%7BworkspaceFolder%7D%22%5D%7D&quality=insiders) |
+| HTTP  | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-adr&config=%7B%22type%22%3A%20%22http%22%2C%20%22url%22%3A%20%22http%3A%2F%2Flocalhost%3A8083%2Fmcp%22%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-adr&config=%7B%22type%22%3A%20%22http%22%2C%20%22url%22%3A%20%22http%3A%2F%2Flocalhost%3A8083%2Fmcp%22%7D&quality=insiders) |
 <!-- /install-badges -->
 
 An MCP server that serves Architecture Decision Records (ADRs) from local directories and GitHub repositories. It scans `docs/adr/`, `docs/decisions/`, and `doc/adr/` within each configured source and exposes ADRs via the Model Context Protocol.
@@ -54,6 +54,14 @@ go build -o mcp-adr ./servers/mcp-adr/cmd/mcp-adr
   }
 }
 ```
+
+**Method 1: User Configuration (Recommended)**
+Open the Command Palette (`Ctrl+Shift+P`) and run `MCP: Open User Configuration` to open your user `mcp.json` file and add the server configuration.
+
+**Method 2: Workspace Configuration**
+Add the configuration to `.vscode/mcp.json` in your workspace to share it with your team.
+
+> See the [VS Code MCP documentation](https://code.visualstudio.com/docs/copilot/model-context-protocol) for more details.
 
 ### Claude Desktop
 
@@ -167,30 +175,44 @@ All variables are prefixed with `ADR_`:
 | `ADR_LLM_MODEL` | LLM model name |
 | `ADR_LLM_ENABLED` | Enable LLM optimization (`true`/`false`) |
 
-## MCP Primitives
+## MCP API
 
 ### Resources
 
-| URI | Description |
-|---|---|
-| `adrs://{source}/{id}` | Individual ADR content (Markdown + frontmatter) |
-| `adrs://optimized` | All ADRs merged via LLM (or concatenated) |
-| `adrs://index` | Plain-text list of all available ADRs |
-
-### Prompts
-
-| Name | Arguments | Description |
-|---|---|---|
-| `get-adrs` | `source` (opt), `status` (opt), `optimize` (opt) | Get ADRs, optionally filtered by source or status |
+- **`adrs://{source}/{id}`** — Full content (Markdown + parsed frontmatter) of a single ADR. `{source}` is the directory basename or `owner/repo`; `{id}` is the filename stem (e.g. `0001-use-postgresql`).
+- **`adrs://optimized`** — All ADRs from every configured source merged and deduplicated (via LLM if configured, otherwise concatenated).
+- **`adrs://index`** — Plain-text index listing all available ADR URIs with title, status, and date metadata.
 
 ### Tools
 
-| Name | Description |
-|---|---|
-| `refresh-adrs` | Force re-sync of all ADR sources |
-| `list-adrs` | List all ADRs with optional `source` and `status` filters |
-| `get-adr` | Get a single ADR by `uri` |
-| `optimize-adrs` | Get consolidated ADR content with optional LLM optimization |
+- **`refresh-adrs`**
+  - Force an immediate re-sync of all configured sources. Local directories are re-scanned; GitHub repo caches are fetched without waiting for the background interval.
+  - No input required.
+
+- **`list-adrs`**
+  - Return metadata for every discovered ADR: URI, source, title, status, and date.
+  - Input:
+    - `source` (string, optional): restrict listing to one source (directory basename or `owner/repo`).
+    - `status` (string, optional): filter by ADR status (`proposed`, `accepted`, `deprecated`, or `superseded`).
+
+- **`get-adr`**
+  - Return the full content and metadata of a single ADR.
+  - Input:
+    - `uri` (string, required): the resource URI in `adrs://{source}/{id}` form.
+
+- **`optimize-adrs`**
+  - Return consolidated ADR content, optionally passed through an LLM for merging and deduplication.
+  - Input:
+    - `optimize` (boolean, optional): override the global `llm.enabled` setting for this request.
+
+### Prompts
+
+- **`get-adrs`**
+  - Inject ADR content into the conversation as a prompt message, optionally filtered and optimized.
+  - Parameters:
+    - `source` (string, optional): restrict output to one source (directory basename or `owner/repo`).
+    - `status` (string, optional): filter by ADR status (`proposed`, `accepted`, `deprecated`, or `superseded`).
+    - `optimize` (string `"true"` / `"false"`, optional): override the global LLM optimization setting for this request.
 
 ## ADR Format
 

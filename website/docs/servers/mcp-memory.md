@@ -7,8 +7,8 @@ sidebar_label: mcp-memory
 <!-- install-badges -->
 | Transport | VS Code | VS Code Insiders |
 |-----------|---------|-----------------|
-| stdio | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=mcp-memory&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22mcp-memory%22%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-memory&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22mcp-memory%22%7D) |
-| HTTP  | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=mcp-memory&config=%7B%22type%22%3A%20%22http%22%2C%20%22url%22%3A%20%22http%3A%2F%2Flocalhost%3A8084%2Fmcp%22%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-memory&config=%7B%22type%22%3A%20%22http%22%2C%20%22url%22%3A%20%22http%3A%2F%2Flocalhost%3A8084%2Fmcp%22%7D) |
+| stdio | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-memory&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22mcp-memory%22%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-memory&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22mcp-memory%22%7D&quality=insiders) |
+| HTTP  | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-memory&config=%7B%22type%22%3A%20%22http%22%2C%20%22url%22%3A%20%22http%3A%2F%2Flocalhost%3A8084%2Fmcp%22%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-memory&config=%7B%22type%22%3A%20%22http%22%2C%20%22url%22%3A%20%22http%3A%2F%2Flocalhost%3A8084%2Fmcp%22%7D&quality=insiders) |
 <!-- /install-badges -->
 
 An MCP server that provides persistent, searchable memory storage for AI assistants. Memories are stored as Markdown files on disk and can be retrieved by text query or tag.
@@ -74,23 +74,36 @@ See [`config.example.yaml`](https://github.com/Arkestone/mcp/blob/main/servers/m
 -addr         HTTP listen address (default :8084)
 ```
 
-## MCP Primitives
+## MCP API
 
 ### Resources
 
-| URI | Description |
-|---|---|
-| `memory://{id}` | Individual memory by ID |
-| `memory://all` | All stored memories (newline-separated) |
+- **`memory://{id}`** — Content of a single memory by its unique ID, including body text, tags, and creation timestamp.
+- **`memory://all`** — All stored memories as newline-separated plain text, suitable for bulk context injection.
 
 ### Tools
 
-| Name | Arguments | Description |
-|---|---|---|
-| `remember` | `content` (string), `tags` ([]string, optional) | Store a new memory with optional tags |
-| `recall` | `query` (string, optional), `tags` ([]string, optional) | Search memories by text and/or tags |
-| `forget` | `id` (string) | Delete a memory by ID |
-| `list-memories` | `tags` ([]string, optional) | List all memories, optionally filtered by tags |
+- **`remember`**
+  - Store a new memory with optional tags for later filtering and retrieval.
+  - Input:
+    - `content` (string, required): the text to remember.
+    - `tags` (string array, optional): labels to attach to this memory (e.g. `["go", "architecture"]`).
+
+- **`recall`**
+  - Search memories by full-text query and/or tags. Returns all memories whose content or tags match.
+  - Input:
+    - `query` (string, optional): text to search for in memory content and tags.
+    - `tags` (string array, optional): filter to memories that carry all of the given tags.
+
+- **`forget`**
+  - Permanently delete a memory by its ID.
+  - Input:
+    - `id` (string, required): the ID of the memory to delete.
+
+- **`list-memories`**
+  - List all stored memories, optionally filtered by tags.
+  - Input:
+    - `tags` (string array, optional): return only memories that carry all of the given tags.
 
 ## Memory Format
 
@@ -139,6 +152,14 @@ docker run -p 8084:8084 \
   }
 }
 ```
+
+**Method 1: User Configuration (Recommended)**
+Open the Command Palette (`Ctrl+Shift+P`) and run `MCP: Open User Configuration` to open your user `mcp.json` file and add the server configuration.
+
+**Method 2: Workspace Configuration**
+Add the configuration to `.vscode/mcp.json` in your workspace to share it with your team.
+
+> See the [VS Code MCP documentation](https://code.visualstudio.com/docs/copilot/model-context-protocol) for more details.
 
 ### Claude Desktop
 

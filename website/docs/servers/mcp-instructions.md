@@ -7,8 +7,8 @@ sidebar_label: mcp-instructions
 <!-- install-badges -->
 | Transport | VS Code | VS Code Insiders |
 |-----------|---------|-----------------|
-| stdio | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=mcp-instructions&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22mcp-instructions%22%2C%20%22args%22%3A%20%5B%22--dirs%22%2C%20%22%24%7BworkspaceFolder%7D%22%5D%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-instructions&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22mcp-instructions%22%2C%20%22args%22%3A%20%5B%22--dirs%22%2C%20%22%24%7BworkspaceFolder%7D%22%5D%7D) |
-| HTTP  | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=mcp-instructions&config=%7B%22type%22%3A%20%22http%22%2C%20%22url%22%3A%20%22http%3A%2F%2Flocalhost%3A8080%2Fmcp%22%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-instructions&config=%7B%22type%22%3A%20%22http%22%2C%20%22url%22%3A%20%22http%3A%2F%2Flocalhost%3A8080%2Fmcp%22%7D) |
+| stdio | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-instructions&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22mcp-instructions%22%2C%20%22args%22%3A%20%5B%22--dirs%22%2C%20%22%24%7BworkspaceFolder%7D%22%5D%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-instructions&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22mcp-instructions%22%2C%20%22args%22%3A%20%5B%22--dirs%22%2C%20%22%24%7BworkspaceFolder%7D%22%5D%7D&quality=insiders) |
+| HTTP  | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-instructions&config=%7B%22type%22%3A%20%22http%22%2C%20%22url%22%3A%20%22http%3A%2F%2Flocalhost%3A8080%2Fmcp%22%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-instructions&config=%7B%22type%22%3A%20%22http%22%2C%20%22url%22%3A%20%22http%3A%2F%2Flocalhost%3A8080%2Fmcp%22%7D&quality=insiders) |
 <!-- /install-badges -->
 
 An MCP server that dynamically serves [GitHub Copilot custom instructions](https://docs.github.com/en/copilot/customize-github-copilot/adding-custom-instructions-for-github-copilot) from local directories and GitHub repositories.
@@ -93,29 +93,36 @@ See [`config.example.yaml`](https://github.com/Arkestone/mcp/blob/main/servers/m
 -llm-model       LLM model name
 ```
 
-## MCP Primitives
+## MCP API
 
 ### Resources
 
-| URI | Description |
-|---|---|
-| `instructions://{source}/{name}` | Individual instruction file content |
-| `instructions://optimized` | All instructions merged via LLM (or concatenated) |
-| `instructions://index` | List of all available instruction URIs |
-
-### Prompts
-
-| Name | Arguments | Description |
-|---|---|---|
-| `get-instructions` | `source` (optional), `optimize` (optional) | Get instructions as a prompt, optionally filtered and optimized |
+- **`instructions://{source}/{name}`** — Content of an individual instruction file from the named source. `{source}` is the directory basename or `owner/repo`; `{name}` is the file path relative to `.github/`.
+- **`instructions://optimized`** — All instructions from every configured source merged and deduplicated (via LLM if configured, otherwise concatenated).
+- **`instructions://index`** — Plain-text index listing all available instruction URIs and their sources.
 
 ### Tools
 
-| Name | Arguments | Description |
-|---|---|---|
-| `refresh` | — | Force-sync all remote repo caches |
-| `list-instructions` | — | List all available instruction files |
-| `optimize-instructions` | `source` (optional), `optimize` (optional) | Get consolidated instructions with optional LLM optimization |
+- **`refresh-instructions`**
+  - Force an immediate re-sync of all configured sources. Local directories are re-scanned; GitHub repo caches are fetched from the API right away without waiting for the next background sync interval.
+  - No input required.
+
+- **`list-instructions`**
+  - Return metadata for every discovered instruction file: URI, source, name, and path.
+  - No required inputs.
+
+- **`optimize-instructions`**
+  - Return consolidated instruction content, optionally passed through an LLM for merging and deduplication.
+  - Input:
+    - `optimize` (boolean, optional): override the global `llm.enabled` setting for this request.
+
+### Prompts
+
+- **`get-instructions`**
+  - Inject instruction content into the conversation as a prompt message, optionally filtered to a single source and/or optimized.
+  - Parameters:
+    - `source` (string, optional): restrict output to one source (directory basename or `owner/repo`).
+    - `optimize` (string `"true"` / `"false"`, optional): override the global LLM optimization setting for this request.
 
 ## Instruction File Format
 
@@ -161,6 +168,14 @@ docker run -p 8080:8080 \
   }
 }
 ```
+
+**Method 1: User Configuration (Recommended)**
+Open the Command Palette (`Ctrl+Shift+P`) and run `MCP: Open User Configuration` to open your user `mcp.json` file and add the server configuration.
+
+**Method 2: Workspace Configuration**
+Add the configuration to `.vscode/mcp.json` in your workspace to share it with your team.
+
+> See the [VS Code MCP documentation](https://code.visualstudio.com/docs/copilot/model-context-protocol) for more details.
 
 ### Claude Desktop
 

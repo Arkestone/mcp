@@ -3,8 +3,8 @@
 <!-- install-badges -->
 | Transport | VS Code | VS Code Insiders |
 |-----------|---------|-----------------|
-| stdio | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=mcp-skills&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22mcp-skills%22%2C%20%22args%22%3A%20%5B%22--dirs%22%2C%20%22%24%7BworkspaceFolder%7D%22%5D%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-skills&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22mcp-skills%22%2C%20%22args%22%3A%20%5B%22--dirs%22%2C%20%22%24%7BworkspaceFolder%7D%22%5D%7D) |
-| HTTP  | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=mcp-skills&config=%7B%22type%22%3A%20%22http%22%2C%20%22url%22%3A%20%22http%3A%2F%2Flocalhost%3A8081%2Fmcp%22%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-skills&config=%7B%22type%22%3A%20%22http%22%2C%20%22url%22%3A%20%22http%3A%2F%2Flocalhost%3A8081%2Fmcp%22%7D) |
+| stdio | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-skills&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22mcp-skills%22%2C%20%22args%22%3A%20%5B%22--dirs%22%2C%20%22%24%7BworkspaceFolder%7D%22%5D%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-skills&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22mcp-skills%22%2C%20%22args%22%3A%20%5B%22--dirs%22%2C%20%22%24%7BworkspaceFolder%7D%22%5D%7D&quality=insiders) |
+| HTTP  | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-skills&config=%7B%22type%22%3A%20%22http%22%2C%20%22url%22%3A%20%22http%3A%2F%2Flocalhost%3A8081%2Fmcp%22%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-skills&config=%7B%22type%22%3A%20%22http%22%2C%20%22url%22%3A%20%22http%3A%2F%2Flocalhost%3A8081%2Fmcp%22%7D&quality=insiders) |
 <!-- /install-badges -->
 
 An MCP server that dynamically serves [GitHub Copilot skills](https://docs.github.com/en/copilot) from local directories and GitHub repositories.
@@ -119,29 +119,46 @@ See [`config.example.yaml`](config.example.yaml) for all options.
 -llm-model       LLM model name
 ```
 
-## MCP Primitives
+## MCP API
 
 ### Resources
 
-| URI | Description |
-|---|---|
-| `skills://{source}/{skill-name}` | Individual skill content (SKILL.md + references) |
-| `skills://optimized` | All skills merged via LLM (or concatenated) |
-| `skills://index` | List of all available skill URIs |
-
-### Prompts
-
-| Name | Arguments | Description |
-|---|---|---|
-| `get-skills` | `source` (optional), `optimize` (optional) | Get skills as a prompt, optionally filtered and optimized |
+- **`skills://{source}/{name}`** — Full content of a single skill (SKILL.md body plus any bundled reference files). `{source}` is the directory basename or `owner/repo`; `{name}` is the skill's `name` frontmatter value.
+- **`skills://optimized`** — All skills from every configured source merged and deduplicated (via LLM if configured, otherwise concatenated).
+- **`skills://index`** — Plain-text index listing all available skill URIs and their sources.
 
 ### Tools
 
-| Name | Arguments | Description |
-|---|---|---|
-| `refresh` | — | Force-sync all remote repo caches |
-| `list-skills` | — | List all available skills |
-| `optimize-skills` | `source` (optional), `optimize` (optional) | Get consolidated skills with optional LLM optimization |
+- **`refresh-skills`**
+  - Force an immediate re-sync of all configured sources. Local directories are re-scanned; GitHub repo caches are fetched from the API without waiting for the background sync interval.
+  - No input required.
+
+- **`list-skills`**
+  - Return metadata for every discovered skill: URI, source, name, description, and path.
+  - No input required.
+
+- **`get-skill`**
+  - Return the full content (SKILL.md + references) for a single skill by name.
+  - Input:
+    - `name` (string, required): the skill name as declared in SKILL.md frontmatter.
+
+- **`optimize-skills`**
+  - Return consolidated skill content, optionally passed through an LLM for merging and deduplication.
+  - Input:
+    - `optimize` (boolean, optional): override the global `llm.enabled` setting for this request.
+
+### Prompts
+
+- **`get-skills`**
+  - Inject skill content into the conversation as a prompt message, optionally filtered to a single source and/or optimized.
+  - Parameters:
+    - `source` (string, optional): restrict output to one source (directory basename or `owner/repo`).
+    - `optimize` (string `"true"` / `"false"`, optional): override the global LLM optimization setting for this request.
+
+- **`get-skill`**
+  - Inject a single skill and its references into the conversation as a prompt message.
+  - Parameters:
+    - `name` (string, required): the skill name as declared in SKILL.md frontmatter.
 
 ## Docker
 
@@ -198,6 +215,14 @@ addr: ":8081"
   }
 }
 ```
+
+**Method 1: User Configuration (Recommended)**
+Open the Command Palette (`Ctrl+Shift+P`) and run `MCP: Open User Configuration` to open your user `mcp.json` file and add the server configuration.
+
+**Method 2: Workspace Configuration**
+Add the configuration to `.vscode/mcp.json` in your workspace to share it with your team.
+
+> See the [VS Code MCP documentation](https://code.visualstudio.com/docs/copilot/model-context-protocol) for more details.
 
 ### Claude Desktop
 
