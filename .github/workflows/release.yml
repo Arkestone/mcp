@@ -97,16 +97,15 @@ jobs:
           # Goreleaser strips the 'v' prefix — tag is '1.0.0', not 'v1.0.0'
           DOCKER_TAG="${RELEASE_TAG#v}"
           for server in mcp-instructions mcp-skills mcp-adr mcp-memory mcp-prompts mcp-graph; do
-            IMAGE="ghcr.io/arkestone/${server}"
-            DIGEST=$(docker buildx imagetools inspect "${IMAGE}:${DOCKER_TAG}" \
-              --format '{{.Manifest.Digest}}' 2>/dev/null || true)
-            if [ -n "${DIGEST}" ]; then
-              cosign sign --yes "${IMAGE}@${DIGEST}"
-              echo "✓ Signed ${IMAGE}@${DIGEST}"
-            else
-              echo "::error::Could not get digest for ${IMAGE}:${DOCKER_TAG} — image missing after goreleaser?"
+            IMAGE="ghcr.io/arkestone/${server}:${DOCKER_TAG}"
+            # Verify image is accessible before signing
+            if ! docker buildx imagetools inspect "${IMAGE}" --format '{{.Manifest.MediaType}}' 2>/dev/null | grep -q 'manifest'; then
+              echo "::error::Image ${IMAGE} not found or not accessible after goreleaser"
               exit 1
             fi
+            # Sign by tag — cosign resolves digest internally, works with multi-arch OCI indexes
+            cosign sign --yes "${IMAGE}"
+            echo "✓ Signed ${IMAGE}"
           done
 
       - name: Generate SBOM
