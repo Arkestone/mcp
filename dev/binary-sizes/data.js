@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772463761820,
+  "lastUpdate": 1772464739759,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Binary Sizes": [
@@ -995,6 +995,60 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/46e83c90ae4b33225c9b694b253aa522bef0e556"
         },
         "date": 1772463761440,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "mcp-instructions",
+            "value": 8.274,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-skills",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-adr",
+            "value": 8.602,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-memory",
+            "value": 8.285,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-prompts",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-graph",
+            "value": 7.914,
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "fb06d5929fd883a8b6c0923da67e1fb6d7905da4",
+          "message": "fix(post-release): strip v prefix from tag for Docker image validation\n\nGoreleaser uses .Version (e.g. 1.0.0) not .Tag (v1.0.0) as the Docker\nimage tag. The post-release validation was looking for :v1.0.0 which\ndoesn't exist, causing 'not found' errors.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T16:18:28+01:00",
+          "tree_id": "1507c41172cb42f8c974010369731d12f3d20257",
+          "url": "https://github.com/Arkestone/mcp/commit/fb06d5929fd883a8b6c0923da67e1fb6d7905da4"
+        },
+        "date": 1772464739232,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
