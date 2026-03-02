@@ -62,7 +62,7 @@ Open the Command Palette (`Ctrl+Shift+P`) and run `MCP: Open User Configuration`
 **Method 2: Workspace Configuration**
 Add the configuration to `.vscode/mcp.json` in your workspace to share it with your team.
 
-> See the [VS Code MCP documentation](https://code.visualstudio.com/docs/copilot/model-context-protocol) for more details.
+> See the [VS Code MCP documentation](https://code.visualstudio.com/docs/copilot/chat/mcp-servers) for more details.
 
 ### Claude Desktop
 

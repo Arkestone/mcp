@@ -38,8 +38,10 @@ jobs:
             --exclude 'https://github\.com/Arkestone/mcp/compare/.*'
             --exclude 'https://pkg\.go\.dev/.*'
             --exclude 'https://insiders\.vscode\.dev/.*'
+            --exclude '^/docs/'
             --exclude 'mailto:'
             --exclude-loopback
+            --exclude-path 'website/'
             '**/*.md'
           fail: true
           jobSummary: true

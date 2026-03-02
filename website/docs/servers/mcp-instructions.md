@@ -12,7 +12,7 @@ sidebar_label: mcp-instructions
 | Docker | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-instructions&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22docker%22%2C%20%22args%22%3A%20%5B%22run%22%2C%20%22--rm%22%2C%20%22-i%22%2C%20%22-v%22%2C%20%22%24%7BworkspaceFolder%7D%3A%2Fworkspace%3Aro%22%2C%20%22ghcr.io%2Farkestone%2Fmcp-instructions%3Alatest%22%2C%20%22--dirs%22%2C%20%22%2Fworkspace%22%5D%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-instructions&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22docker%22%2C%20%22args%22%3A%20%5B%22run%22%2C%20%22--rm%22%2C%20%22-i%22%2C%20%22-v%22%2C%20%22%24%7BworkspaceFolder%7D%3A%2Fworkspace%3Aro%22%2C%20%22ghcr.io%2Farkestone%2Fmcp-instructions%3Alatest%22%2C%20%22--dirs%22%2C%20%22%2Fworkspace%22%5D%7D&quality=insiders) |
 <!-- /install-badges -->
 
-An MCP server that dynamically serves [GitHub Copilot custom instructions](https://docs.github.com/en/copilot/customize-github-copilot/adding-custom-instructions-for-github-copilot) from local directories and GitHub repositories.
+An MCP server that dynamically serves [GitHub Copilot custom instructions](https://docs.github.com/en/copilot/customizing-copilot/adding-custom-instructions-for-github-copilot) from local directories and GitHub repositories.
 
 It discovers `.github/copilot-instructions.md` and `.github/instructions/**/*.instructions.md` files from configured sources and exposes them via the [Model Context Protocol](https://modelcontextprotocol.io).
 
@@ -134,7 +134,7 @@ The server discovers two kinds of instruction files from each configured source:
 | `.github/copilot-instructions.md` | Repository-wide instructions applied to every conversation |
 | `.github/instructions/*.instructions.md` | Path-specific instructions (front-matter `applyTo` glob controls scope) |
 
-For details on authoring instruction files, see [Customizing Copilot with custom instructions](https://docs.github.com/en/copilot/customize-github-copilot/adding-custom-instructions-for-github-copilot).
+For details on authoring instruction files, see [Customizing Copilot with custom instructions](https://docs.github.com/en/copilot/customizing-copilot/adding-custom-instructions-for-github-copilot).
 
 ## Docker
 
@@ -176,7 +176,7 @@ Open the Command Palette (`Ctrl+Shift+P`) and run `MCP: Open User Configuration`
 **Method 2: Workspace Configuration**
 Add the configuration to `.vscode/mcp.json` in your workspace to share it with your team.
 
-> See the [VS Code MCP documentation](https://code.visualstudio.com/docs/copilot/model-context-protocol) for more details.
+> See the [VS Code MCP documentation](https://code.visualstudio.com/docs/copilot/chat/mcp-servers) for more details.
 
 ### Claude Desktop
 

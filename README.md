@@ -160,7 +160,7 @@ Click to install any server directly into VS Code or VS Code Insiders. **stdio**
 
 ### VS Code
 
-> **Quick install**: Use the badges in [Quick Install in VS Code](#quick-install-in-vs-code) above, or open the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`) and run **`MCP: Open User Configuration`** to add a server to your global `mcp.json`. See the [VS Code MCP documentation](https://code.visualstudio.com/docs/copilot/model-context-protocol) for full details.
+> **Quick install**: Use the badges in [Quick Install in VS Code](#quick-install-in-vs-code) above, or open the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`) and run **`MCP: Open User Configuration`** to add a server to your global `mcp.json`. See the [VS Code MCP documentation](https://code.visualstudio.com/docs/copilot/chat/mcp-servers) for full details.
 
 #### `.vscode/mcp.json` (project-level)
 
