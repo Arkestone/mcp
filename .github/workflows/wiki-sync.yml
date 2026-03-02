@@ -1,0 +1,75 @@
+name: Wiki Sync
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'README.md'
+      - 'docs/**'
+      - 'servers/*/README.md'
+      - 'servers/*/CHANGELOG.md'
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    name: Sync to Wiki
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Clone wiki
+        id: clone
+        run: |
+          if git clone "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git" wiki 2>/dev/null; then
+            echo "wiki_exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::GitHub Wiki is not enabled or has no pages yet. Skipping sync."
+            echo "wiki_exists=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sync pages
+        if: steps.clone.outputs.wiki_exists == 'true'
+        run: |
+          cd wiki
+
+          # Home page from root README
+          if [ -f "../README.md" ]; then
+            cp ../README.md Home.md
+          fi
+
+          # Per-server pages
+          for server in mcp-instructions mcp-skills mcp-adr mcp-memory mcp-prompts mcp-graph; do
+            if [ -f "../servers/${server}/README.md" ]; then
+              cp "../servers/${server}/README.md" "${server}.md"
+            fi
+            if [ -f "../servers/${server}/CHANGELOG.md" ]; then
+              cp "../servers/${server}/CHANGELOG.md" "${server}-changelog.md"
+            fi
+          done
+
+          # Docs pages
+          if [ -d "../docs" ]; then
+            for f in ../docs/*.md; do
+              [ -f "$f" ] || continue
+              name=$(basename "$f")
+              cp "$f" "$name"
+            done
+          fi
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No wiki changes to commit."
+          else
+            git commit -m "docs: sync from main @ ${GITHUB_SHA:0:7}"
+            git push
+            echo "✅ Wiki updated successfully."
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
