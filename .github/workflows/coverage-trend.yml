@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: gh-pages-coverage
+  cancel-in-progress: false  # Never cancel: would corrupt gh-pages history
+
 env:
   CGO_ENABLED: '0'
   GOFLAGS: '-buildvcs=false'
@@ -30,6 +34,10 @@ jobs:
         id: cov
         run: |
           TOTAL=$(go tool cover -func=coverage.out | grep '^total:' | awk '{print $3}' | tr -d '%')
+          if [ -z "${TOTAL}" ]; then
+            echo "::error::Could not parse total coverage from coverage.out"
+            exit 1
+          fi
           echo "total=${TOTAL}" >> "$GITHUB_OUTPUT"
           echo "Coverage total: ${TOTAL}%"
           printf '[{"name":"Total Coverage","unit":"%%","value":%s}]\n' "${TOTAL}" > coverage-result.json

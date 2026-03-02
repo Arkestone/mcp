@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: gh-pages-benchmarks
+  cancel-in-progress: false  # Never cancel: would corrupt gh-pages history
+
 env:
   CGO_ENABLED: '0'
   GOFLAGS: '-buildvcs=false'

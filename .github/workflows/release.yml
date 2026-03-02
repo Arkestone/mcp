@@ -81,7 +81,8 @@ jobs:
               cosign sign --yes "${IMAGE}@${DIGEST}"
               echo "✓ Signed ${IMAGE}@${DIGEST}"
             else
-              echo "⚠ Could not get digest for ${IMAGE}:${RELEASE_TAG} — skipping"
+              echo "::error::Could not get digest for ${IMAGE}:${RELEASE_TAG} — image missing after goreleaser?"
+              exit 1
             fi
           done
 

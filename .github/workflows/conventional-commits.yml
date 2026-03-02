@@ -31,9 +31,11 @@ jobs:
             chore
             revert
           requireScope: false
-          # Allow WIP prefixes so drafts aren't blocked
+          # Allow WIP drafts
           wip: true
-          subjectPattern: ^.+$
+          # Subject must not start with uppercase
+          subjectPattern: ^(?![A-Z]).+$
           subjectPatternError: |
-            The PR title "{title}" is missing a description after the type.
-            Example: "feat: add JSON export" or "fix(loader): handle empty dirs"
+            The PR title "{title}" is invalid.
+            - Subject must start with a lowercase letter (e.g. "feat: add JSON export")
+            - Or use WIP prefix (e.g. "WIP: experimenting with…")
