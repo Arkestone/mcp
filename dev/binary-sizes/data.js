@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772462604510,
+  "lastUpdate": 1772462818907,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Binary Sizes": [
@@ -833,6 +833,60 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/38b7697ea05bc5e7acae630ae3839dc60b64e739"
         },
         "date": 1772462603561,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "mcp-instructions",
+            "value": 8.274,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-skills",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-adr",
+            "value": 8.602,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-memory",
+            "value": 8.285,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-prompts",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-graph",
+            "value": 7.914,
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "84ad29af2d199dbf7ab0171ae55ef343ab67c900",
+          "message": "fix(release): use apiUrl to extract numeric asset ID for REST API deletion\n\nThe .assets[].id field in gh CLI returns a GraphQL node ID (RA_kwDOR...),\nbut the GitHub REST DELETE endpoint requires a numeric integer ID.\nExtract the numeric ID from .assets[].apiUrl (last path segment).\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T15:46:32+01:00",
+          "tree_id": "717dc643b5c5071b258febdd7a58efa5104a2abc",
+          "url": "https://github.com/Arkestone/mcp/commit/84ad29af2d199dbf7ab0171ae55ef343ab67c900"
+        },
+        "date": 1772462818604,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
