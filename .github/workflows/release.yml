@@ -12,7 +12,8 @@ on:
 permissions:
   contents: write
   packages: write
-  id-token: write  # Required for Cosign OIDC keyless signing
+  id-token: write       # Required for Cosign OIDC keyless signing
+  attestations: write   # Required for SLSA provenance attestation
 
 env:
   CGO_ENABLED: '0'
@@ -97,3 +98,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
         run: gh release upload "${RELEASE_TAG}" sbom-binaries.spdx.json --clobber
+
+      - name: Attest build provenance (SLSA L3)
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            dist/*.tar.gz
+            dist/*.zip
+            dist/checksums.txt

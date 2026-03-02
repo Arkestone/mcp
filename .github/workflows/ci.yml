@@ -37,6 +37,15 @@ jobs:
         run: |
           go mod tidy
           git diff --exit-code go.mod go.sum
+      - name: go generate check
+        run: |
+          go generate ./...
+          if ! git diff --quiet; then
+            echo "::error::go generate produced uncommitted changes. Run 'go generate ./...' and commit the result."
+            git diff --name-only
+            exit 1
+          fi
+          echo "✅ Generated files are up to date"
       - name: Check formatting
         run: |
           if [ -n "$(gofmt -l .)" ]; then

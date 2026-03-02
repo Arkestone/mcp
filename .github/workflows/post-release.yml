@@ -1,0 +1,132 @@
+name: Post-Release Validation
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to validate (e.g. v1.0.0)'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate-assets:
+    name: Validate Release Assets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Determine tag
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "value=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=${{ github.event.release.tag_name }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check required release assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.tag.outputs.value }}
+        run: |
+          echo "### ✅ Release Asset Validation: ${TAG}" >> "$GITHUB_STEP_SUMMARY"
+          FAILED=0
+
+          # Fetch asset list
+          ASSETS=$(gh release view "${TAG}" --repo Arkestone/mcp --json assets --jq '[.assets[].name]')
+          echo "Assets found: $ASSETS"
+
+          check_asset() {
+            local name="$1"
+            if echo "$ASSETS" | grep -q "\"${name}\""; then
+              echo "✓ ${name}" >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "✗ ${name} — MISSING" >> "$GITHUB_STEP_SUMMARY"
+              echo "::error::Missing release asset: ${name}"
+              FAILED=1
+            fi
+          }
+
+          # Core assets
+          check_asset "checksums.txt"
+          check_asset "sbom-binaries.spdx.json"
+
+          # Linux amd64 binaries
+          for server in mcp-instructions mcp-skills mcp-adr mcp-memory mcp-prompts mcp-graph; do
+            VER="${TAG#v}"
+            check_asset "${server}_${VER}_linux_amd64.tar.gz"
+          done
+
+          exit $FAILED
+
+  validate-docker:
+    name: Validate Docker — ${{ matrix.server }}
+    runs-on: ubuntu-latest
+    needs: validate-assets
+    strategy:
+      fail-fast: false
+      matrix:
+        server:
+          - mcp-instructions
+          - mcp-skills
+          - mcp-adr
+          - mcp-memory
+          - mcp-prompts
+          - mcp-graph
+    steps:
+      - name: Determine tag
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "value=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=${{ github.event.release.tag_name }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Verify image is multi-arch
+        run: |
+          IMAGE="ghcr.io/arkestone/${{ matrix.server }}:${{ steps.tag.outputs.value }}"
+          echo "Inspecting ${IMAGE}..."
+          docker buildx imagetools inspect "${IMAGE}" | grep -E 'linux/amd64|linux/arm64'
+          echo "✓ ${{ matrix.server }} is multi-arch"
+
+      - name: Smoke test image
+        run: |
+          PORT=$(python3 -c "import socket; s=socket.socket(); s.bind(('',0)); print(s.getsockname()[1]); s.close()")
+          IMAGE="ghcr.io/arkestone/${{ matrix.server }}:${{ steps.tag.outputs.value }}"
+          TMPDIR=$(mktemp -d)
+
+          docker run -d --name smoke-${{ matrix.server }} \
+            -p "${PORT}:${PORT}" \
+            "${IMAGE}" --transport http --addr ":${PORT}" --dirs "${TMPDIR}"
+
+          for i in $(seq 1 15); do
+            if curl -sf "http://localhost:${PORT}/healthz" > /dev/null 2>&1; then
+              echo "✓ ${{ matrix.server }} healthz OK (attempt ${i})"
+              break
+            fi
+            sleep 1
+          done
+
+          curl -sf "http://localhost:${PORT}/healthz"
+          docker stop smoke-${{ matrix.server }} 2>/dev/null || true
+          docker rm smoke-${{ matrix.server }} 2>/dev/null || true
+
+  summary:
+    name: Validation Summary
+    if: always()
+    needs: [validate-assets, validate-docker]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report
+        run: |
+          ASSET_RESULT="${{ needs.validate-assets.result }}"
+          DOCKER_RESULT="${{ needs.validate-docker.result }}"
+          if [ "$ASSET_RESULT" = "success" ] && [ "$DOCKER_RESULT" = "success" ]; then
+            echo "✅ Release validation passed — all assets and images are healthy"
+          else
+            echo "❌ Release validation failed (assets: ${ASSET_RESULT}, docker: ${DOCKER_RESULT})"
+            exit 1
+          fi
