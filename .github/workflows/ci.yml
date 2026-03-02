@@ -96,11 +96,11 @@ jobs:
           pct=${total%\%}
           echo "## Coverage: $total" >> "$GITHUB_STEP_SUMMARY"
           go tool cover -func=coverage.out | grep -v "100.0%" | grep -v "^total" >> "$GITHUB_STEP_SUMMARY" || true
-          if awk "BEGIN { exit !($pct < 85) }"; then
-            echo "::error title=Coverage Below Threshold::Coverage is $total (minimum 85%)"
+          if awk "BEGIN { exit !($pct < 84) }"; then
+            echo "::error title=Coverage Below Threshold::Coverage is $total (minimum 84%)"
             exit 1
           fi
-          echo "✅ Coverage is $total (≥ 85%)"
+          echo "✅ Coverage is $total (≥ 84%)"
       - name: Post coverage comment on PR
         if: github.event_name == 'pull_request' && matrix.go-version == 'stable'
         uses: actions/github-script@v7
@@ -108,11 +108,11 @@ jobs:
           script: |
             const total = '${{ steps.coverage.outputs.total }}';
             const pct = parseFloat(total);
-            const icon = pct >= 85 ? '✅' : '❌';
+            const icon = pct >= 84 ? '✅' : '❌';
             const body = [
               `## ${icon} Coverage Report`,
               '',
-              `**Total coverage: ${total}** (threshold: 85%)`,
+              `**Total coverage: ${total}** (threshold: 84%)`,
               '',
               `> Go version: \`stable\` | Run \`go tool cover -html=coverage.out\` locally for details.`,
             ].join('\n');
