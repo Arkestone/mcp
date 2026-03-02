@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772463438161,
+  "lastUpdate": 1772463768693,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Test Coverage": [
@@ -516,6 +516,35 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/ebff3df80bbcdc0a578c17ea9b4b0028494b76c4"
         },
         "date": 1772463437654,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Total Coverage",
+            "value": 84.2,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "46e83c90ae4b33225c9b694b253aa522bef0e556",
+          "message": "fix(release): sign Docker images by tag, not by raw inspect output\n\ndocker buildx imagetools inspect --format '{{.Manifest.Digest}}' returns\nthe full OCI image index manifest text for multi-arch images, not just the\ndigest string. Passing that to cosign as IMAGE@<full text> causes a\n'could not parse reference' error.\n\nFix: sign by IMAGE:TAG directly — cosign resolves the digest internally\nand handles multi-arch OCI image indexes correctly.\n\nAlso add a pre-flight check that the image is accessible before signing.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T16:02:11+01:00",
+          "tree_id": "1b557cebce4515dd22f006a3870d13c0fc32624a",
+          "url": "https://github.com/Arkestone/mcp/commit/46e83c90ae4b33225c9b694b253aa522bef0e556"
+        },
+        "date": 1772463768151,
         "tool": "customBiggerIsBetter",
         "benches": [
           {
