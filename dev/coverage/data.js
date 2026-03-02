@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772468510036,
+  "lastUpdate": 1772469143204,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Test Coverage": [
@@ -719,6 +719,35 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/d66804c1b35e4f15460c00056b0c020662f6d997"
         },
         "date": 1772468509117,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Total Coverage",
+            "value": 84.2,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "9df0ccd5f7c7833a4a9200845a42cc0351ec3beb",
+          "message": "ci: merge 8 more workflows into 4 consolidated files\n\n- container-structure + dockerfile-lint → docker-quality.yml\n  (lint + structure tests, both on Dockerfile push/PR + Monday schedule)\n- spell-check + link-check → doc-quality.yml\n  (both jobs in parallel; link-check schedule kept at Monday 06:00)\n- docs + wiki-sync → docs-publish.yml\n  (build+deploy GitHub Pages then sync wiki in same workflow)\n- benchmark + docker-size → weekly-metrics.yml\n  (weekly Monday run; benchmark job + per-server Docker size matrix)\n\nReduces workflow count from 33 → 29 files.\nAll 29 workflows pass actionlint.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T17:31:39+01:00",
+          "tree_id": "87003bf878f87361af14c1eba8a285bac2f6ac9f",
+          "url": "https://github.com/Arkestone/mcp/commit/9df0ccd5f7c7833a4a9200845a42cc0351ec3beb"
+        },
+        "date": 1772469142318,
         "tool": "customBiggerIsBetter",
         "benches": [
           {
