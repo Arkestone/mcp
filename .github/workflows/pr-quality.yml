@@ -1,15 +1,44 @@
-name: Changelog Check
+name: PR Quality
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, labeled, unlabeled]
+    types: [opened, edited, synchronize, reopened, labeled, unlabeled]
 
 permissions:
-  contents: read
+  statuses: write
   pull-requests: write
+  contents: read
 
 jobs:
-  check:
+  commit-title:
+    name: PR Title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            docs
+            style
+            refactor
+            perf
+            test
+            build
+            ci
+            chore
+            revert
+          requireScope: false
+          wip: true
+          subjectPattern: ^(?![A-Z]).+$
+          subjectPatternError: |
+            The PR title "{title}" is invalid.
+            - Subject must start with a lowercase letter (e.g. "feat: add JSON export")
+            - Or use WIP prefix (e.g. "WIP: experimenting with…")
+
+  changelog:
     name: Changelog Check
     runs-on: ubuntu-latest
     steps:
@@ -22,7 +51,6 @@ jobs:
             const labels = pr.labels.map(l => l.name);
             const marker = '<!-- changelog-check -->';
 
-            // Only enforce on feat/fix PRs (by title prefix or label)
             const isFeatOrFix =
               /^(feat|fix)[\(:]/i.test(title) ||
               labels.includes('enhancement') ||
@@ -36,7 +64,6 @@ jobs:
             const existing = comments.find(c => c.body.includes(marker));
 
             if (!isFeatOrFix) {
-              // Remove any existing warning if PR no longer qualifies
               if (existing) {
                 await github.rest.issues.deleteComment({
                   owner: context.repo.owner,
@@ -48,7 +75,6 @@ jobs:
               return;
             }
 
-            // Get changed files
             const { data: files } = await github.rest.pulls.listFiles({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -83,5 +109,50 @@ jobs:
                 repo: context.repo.repo,
                 comment_id: existing.id,
               });
-              console.log('CHANGELOG updated — removed reminder comment');
+            }
+
+  size:
+    name: PR Size
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR size
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const total = pr.additions + pr.deletions;
+            const threshold = 400;
+            const marker = '<!-- pr-size-check -->';
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+            });
+            const existing = comments.find(c => c.body.includes(marker));
+
+            if (total > threshold) {
+              const body = `${marker}\n⚠️ **Large PR warning**: This PR changes **${total} lines** (+${pr.additions}/-${pr.deletions}), which exceeds the recommended threshold of ${threshold} lines.\n\nConsider breaking this into smaller, focused PRs to make review easier and reduce risk.`;
+              if (existing) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: existing.id,
+                  body,
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  body,
+                });
+              }
+              core.warning(`PR is large: ${total} lines changed (threshold: ${threshold})`);
+            } else if (existing) {
+              await github.rest.issues.deleteComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+              });
             }

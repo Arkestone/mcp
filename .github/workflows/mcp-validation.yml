@@ -1,0 +1,143 @@
+name: MCP Server Validation
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Monday 09:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CGO_ENABLED: '0'
+  GOFLAGS: '-buildvcs=false'
+
+# Validates each server end-to-end:
+#   1. Health check  — GET /healthz returns {"status":"ok"}
+#   2. MCP protocol  — initialize → notifications/initialized → tools/list → resources/list
+jobs:
+  validate:
+    name: Validate — ${{ matrix.server }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        server:
+          - mcp-instructions
+          - mcp-skills
+          - mcp-adr
+          - mcp-memory
+          - mcp-prompts
+          - mcp-graph
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Build ${{ matrix.server }}
+        run: go build -o /tmp/${{ matrix.server }} ./servers/${{ matrix.server }}/cmd/${{ matrix.server }}
+
+      - name: Validate ${{ matrix.server }}
+        run: |
+          PORT=$(python3 -c "import socket; s=socket.socket(); s.bind(('',0)); print(s.getsockname()[1]); s.close()")
+          TMPDIR=$(mktemp -d)
+
+          /tmp/${{ matrix.server }} --transport http --addr ":${PORT}" --dirs "${TMPDIR}" &
+          SERVER_PID=$!
+          trap 'kill "${SERVER_PID}" 2>/dev/null || true' EXIT
+
+          # ── 1. Health check ──────────────────────────────────────────────────
+          STARTED=0
+          for i in $(seq 1 15); do
+            curl -sf "http://localhost:${PORT}/healthz" > /dev/null 2>&1 && STARTED=1 && break
+            sleep 1
+          done
+          if [ "${STARTED}" -eq 0 ]; then
+            echo "::error::${{ matrix.server }} did not start within 15 seconds"
+            exit 1
+          fi
+
+          HEALTH=$(curl -sf "http://localhost:${PORT}/healthz")
+          echo "✓ /healthz → ${HEALTH}"
+
+          BASE="http://localhost:${PORT}"
+
+          # ── 2. initialize ────────────────────────────────────────────────────
+          echo "--- initialize ---"
+          INIT_RESP=$(curl -sf -X POST "${BASE}/" \
+            -H "Content-Type: application/json" \
+            -H "Accept: application/json, text/event-stream" \
+            -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","clientInfo":{"name":"ci","version":"0.0.1"},"capabilities":{}}}' \
+            2>/dev/null || echo "CURL_FAILED")
+
+          if [ "${INIT_RESP}" = "CURL_FAILED" ]; then
+            echo "::error::initialize request failed"
+            exit 1
+          fi
+
+          INIT_JSON=$(echo "${INIT_RESP}" | sed -n 's/^data: //p' | head -1)
+          [ -z "${INIT_JSON}" ] && INIT_JSON="${INIT_RESP}"
+
+          if ! echo "${INIT_JSON}" | python3 -c "import sys,json; d=json.load(sys.stdin); assert 'result' in d; assert 'serverInfo' in d['result']" 2>/dev/null; then
+            echo "::error::initialize response missing result.serverInfo"
+            echo "Response: ${INIT_RESP}"
+            exit 1
+          fi
+
+          SERVER_NAME=$(echo "${INIT_JSON}" | python3 -c "import sys,json; print(json.load(sys.stdin)['result']['serverInfo']['name'])")
+          echo "✓ initialize OK — server: ${SERVER_NAME}"
+
+          # ── 3. initialized notification ──────────────────────────────────────
+          curl -sf -X POST "${BASE}/" \
+            -H "Content-Type: application/json" \
+            -H "Accept: application/json, text/event-stream" \
+            -d '{"jsonrpc":"2.0","method":"notifications/initialized"}' \
+            > /dev/null 2>&1 || true
+
+          # ── 4. tools/list ────────────────────────────────────────────────────
+          TOOLS_RESP=$(curl -sf -X POST "${BASE}/" \
+            -H "Content-Type: application/json" \
+            -H "Accept: application/json, text/event-stream" \
+            -d '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' \
+            2>/dev/null || echo "CURL_FAILED")
+
+          if [ "${TOOLS_RESP}" != "CURL_FAILED" ]; then
+            TOOLS_JSON=$(echo "${TOOLS_RESP}" | sed -n 's/^data: //p' | head -1)
+            [ -z "${TOOLS_JSON}" ] && TOOLS_JSON="${TOOLS_RESP}"
+            TOOL_COUNT=$(echo "${TOOLS_JSON}" | python3 -c "import sys,json; print(len(json.load(sys.stdin).get('result',{}).get('tools',[])))" 2>/dev/null || echo "0")
+            echo "✓ tools/list OK — ${TOOL_COUNT} tool(s)"
+          fi
+
+          # ── 5. resources/list ────────────────────────────────────────────────
+          RES_RESP=$(curl -sf -X POST "${BASE}/" \
+            -H "Content-Type: application/json" \
+            -H "Accept: application/json, text/event-stream" \
+            -d '{"jsonrpc":"2.0","id":3,"method":"resources/list","params":{}}' \
+            2>/dev/null || echo "CURL_FAILED")
+
+          if [ "${RES_RESP}" != "CURL_FAILED" ]; then
+            RES_JSON=$(echo "${RES_RESP}" | sed -n 's/^data: //p' | head -1)
+            [ -z "${RES_JSON}" ] && RES_JSON="${RES_RESP}"
+            RES_COUNT=$(echo "${RES_JSON}" | python3 -c "import sys,json; print(len(json.load(sys.stdin).get('result',{}).get('resources',[])))" 2>/dev/null || echo "0")
+            echo "✓ resources/list OK — ${RES_COUNT} resource(s)"
+          fi
+
+          echo "✅ ${{ matrix.server }} validation passed"
+
+  summary:
+    name: Validation Summary
+    if: always()
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Result
+        run: |
+          if [ "${{ needs.validate.result }}" = "success" ]; then
+            echo "✅ All 6 MCP servers pass health and protocol validation"
+          else
+            echo "❌ One or more servers failed validation"
+            exit 1
+          fi
