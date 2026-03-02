@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772459567837,
+  "lastUpdate": 1772459673252,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Test Coverage": [
@@ -197,6 +197,35 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/8c89c23aa16bff03cf794fe4f4192a082b274af4"
         },
         "date": 1772459566810,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Total Coverage",
+            "value": 84.2,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "371c2468e5d59a19d066d4e8c9253973062fff3a",
+          "message": "fix(link-check): replace invalid regex '^/docs/' with '^file://'\n\nLychee uses Rust regex; the '^/docs/' pattern caused a regex parse error\n('repetition operator missing expression'). Replaced with '^file://' to\nexclude file:// local links, which was the actual intent.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T14:53:55+01:00",
+          "tree_id": "8e27534179af10715440dd519c3842208798f81e",
+          "url": "https://github.com/Arkestone/mcp/commit/371c2468e5d59a19d066d4e8c9253973062fff3a"
+        },
+        "date": 1772459671756,
         "tool": "customBiggerIsBetter",
         "benches": [
           {
