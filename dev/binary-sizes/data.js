@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772462818907,
+  "lastUpdate": 1772463439467,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Binary Sizes": [
@@ -887,6 +887,60 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/84ad29af2d199dbf7ab0171ae55ef343ab67c900"
         },
         "date": 1772462818604,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "mcp-instructions",
+            "value": 8.274,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-skills",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-adr",
+            "value": 8.602,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-memory",
+            "value": 8.285,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-prompts",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-graph",
+            "value": 7.914,
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "ebff3df80bbcdc0a578c17ea9b4b0028494b76c4",
+          "message": "fix(release): strip v prefix for Docker tag lookup in cosign step\n\nGoreleaser uses .Version (1.0.0) not .Tag (v1.0.0) as Docker image tag.\nThe cosign signing step was trying to inspect :v1.0.0 which doesn't exist.\n\nAlso: use dynamic org name in packages visibility API call.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T15:56:43+01:00",
+          "tree_id": "f5888feb9c592bf65759c511960de12ecaad7d97",
+          "url": "https://github.com/Arkestone/mcp/commit/ebff3df80bbcdc0a578c17ea9b4b0028494b76c4"
+        },
+        "date": 1772463437476,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
