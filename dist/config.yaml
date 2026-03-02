@@ -1,0 +1,550 @@
+version: 2
+project_name: mcp
+release:
+  github:
+    owner: Arkestone
+    name: mcp
+  prerelease: auto
+  make_latest: "true"
+  name_template: '{{.Tag}}'
+  mode: append
+builds:
+  - id: mcp-instructions
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    goamd64:
+      - v1
+    go386:
+      - sse2
+    goarm:
+      - "6"
+    goarm64:
+      - v8.0
+    gomips:
+      - hardfloat
+    goppc64:
+      - power8
+    goriscv64:
+      - rva20u64
+    targets:
+      - linux_amd64_v1
+      - linux_arm64_v8.0
+      - darwin_amd64_v1
+      - darwin_arm64_v8.0
+      - windows_amd64_v1
+      - windows_arm64_v8.0
+    dir: .
+    main: ./servers/mcp-instructions/cmd/mcp-instructions
+    binary: mcp-instructions
+    builder: go
+    tool: go
+    command: build
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+    env:
+      - CGO_ENABLED=0
+  - id: mcp-skills
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    goamd64:
+      - v1
+    go386:
+      - sse2
+    goarm:
+      - "6"
+    goarm64:
+      - v8.0
+    gomips:
+      - hardfloat
+    goppc64:
+      - power8
+    goriscv64:
+      - rva20u64
+    targets:
+      - linux_amd64_v1
+      - linux_arm64_v8.0
+      - darwin_amd64_v1
+      - darwin_arm64_v8.0
+      - windows_amd64_v1
+      - windows_arm64_v8.0
+    dir: .
+    main: ./servers/mcp-skills/cmd/mcp-skills
+    binary: mcp-skills
+    builder: go
+    tool: go
+    command: build
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+    env:
+      - CGO_ENABLED=0
+  - id: mcp-adr
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    goamd64:
+      - v1
+    go386:
+      - sse2
+    goarm:
+      - "6"
+    goarm64:
+      - v8.0
+    gomips:
+      - hardfloat
+    goppc64:
+      - power8
+    goriscv64:
+      - rva20u64
+    targets:
+      - linux_amd64_v1
+      - linux_arm64_v8.0
+      - darwin_amd64_v1
+      - darwin_arm64_v8.0
+      - windows_amd64_v1
+      - windows_arm64_v8.0
+    dir: .
+    main: ./servers/mcp-adr/cmd/mcp-adr
+    binary: mcp-adr
+    builder: go
+    tool: go
+    command: build
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+    env:
+      - CGO_ENABLED=0
+  - id: mcp-memory
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    goamd64:
+      - v1
+    go386:
+      - sse2
+    goarm:
+      - "6"
+    goarm64:
+      - v8.0
+    gomips:
+      - hardfloat
+    goppc64:
+      - power8
+    goriscv64:
+      - rva20u64
+    targets:
+      - linux_amd64_v1
+      - linux_arm64_v8.0
+      - darwin_amd64_v1
+      - darwin_arm64_v8.0
+      - windows_amd64_v1
+      - windows_arm64_v8.0
+    dir: .
+    main: ./servers/mcp-memory/cmd/mcp-memory
+    binary: mcp-memory
+    builder: go
+    tool: go
+    command: build
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+    env:
+      - CGO_ENABLED=0
+  - id: mcp-prompts
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    goamd64:
+      - v1
+    go386:
+      - sse2
+    goarm:
+      - "6"
+    goarm64:
+      - v8.0
+    gomips:
+      - hardfloat
+    goppc64:
+      - power8
+    goriscv64:
+      - rva20u64
+    targets:
+      - linux_amd64_v1
+      - linux_arm64_v8.0
+      - darwin_amd64_v1
+      - darwin_arm64_v8.0
+      - windows_amd64_v1
+      - windows_arm64_v8.0
+    dir: .
+    main: ./servers/mcp-prompts/cmd/mcp-prompts
+    binary: mcp-prompts
+    builder: go
+    tool: go
+    command: build
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+    env:
+      - CGO_ENABLED=0
+  - id: mcp-graph
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    goamd64:
+      - v1
+    go386:
+      - sse2
+    goarm:
+      - "6"
+    goarm64:
+      - v8.0
+    gomips:
+      - hardfloat
+    goppc64:
+      - power8
+    goriscv64:
+      - rva20u64
+    targets:
+      - linux_amd64_v1
+      - linux_arm64_v8.0
+      - darwin_amd64_v1
+      - darwin_arm64_v8.0
+      - windows_amd64_v1
+      - windows_arm64_v8.0
+    dir: .
+    main: ./servers/mcp-graph/cmd/mcp-graph
+    binary: mcp-graph
+    builder: go
+    tool: go
+    command: build
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+    env:
+      - CGO_ENABLED=0
+archives:
+  - id: archive-mcp-instructions
+    ids:
+      - mcp-instructions
+    builds_info:
+      mode: 493
+    name_template: '{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+    formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    files:
+      - src: license*
+      - src: LICENSE*
+      - src: readme*
+      - src: README*
+      - src: changelog*
+      - src: CHANGELOG*
+  - id: archive-mcp-skills
+    ids:
+      - mcp-skills
+    builds_info:
+      mode: 493
+    name_template: '{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+    formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    files:
+      - src: license*
+      - src: LICENSE*
+      - src: readme*
+      - src: README*
+      - src: changelog*
+      - src: CHANGELOG*
+  - id: archive-mcp-adr
+    ids:
+      - mcp-adr
+    builds_info:
+      mode: 493
+    name_template: '{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+    formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    files:
+      - src: license*
+      - src: LICENSE*
+      - src: readme*
+      - src: README*
+      - src: changelog*
+      - src: CHANGELOG*
+  - id: archive-mcp-memory
+    ids:
+      - mcp-memory
+    builds_info:
+      mode: 493
+    name_template: '{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+    formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    files:
+      - src: license*
+      - src: LICENSE*
+      - src: readme*
+      - src: README*
+      - src: changelog*
+      - src: CHANGELOG*
+  - id: archive-mcp-prompts
+    ids:
+      - mcp-prompts
+    builds_info:
+      mode: 493
+    name_template: '{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+    formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    files:
+      - src: license*
+      - src: LICENSE*
+      - src: readme*
+      - src: README*
+      - src: changelog*
+      - src: CHANGELOG*
+  - id: archive-mcp-graph
+    ids:
+      - mcp-graph
+    builds_info:
+      mode: 493
+    name_template: '{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+    formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    files:
+      - src: license*
+      - src: LICENSE*
+      - src: readme*
+      - src: README*
+      - src: changelog*
+      - src: CHANGELOG*
+snapshot:
+  version_template: '{{ .Version }}-SNAPSHOT-{{ .ShortCommit }}'
+checksum:
+  name_template: checksums.txt
+  algorithm: sha256
+dockers_v2:
+  - id: mcp-instructions
+    ids:
+      - mcp-instructions
+    dockerfile: servers/mcp-instructions/Dockerfile.goreleaser
+    images:
+      - ghcr.io/arkestone/mcp-instructions
+    tags:
+      - '{{ .Version }}'
+      - '{{ if not .IsSnapshot }}latest{{ end }}'
+    platforms:
+      - linux/amd64
+      - linux/arm64
+    retry:
+      attempts: 10
+      delay: 10s
+      max_delay: 5m0s
+    sbom: "true"
+  - id: mcp-skills
+    ids:
+      - mcp-skills
+    dockerfile: servers/mcp-skills/Dockerfile.goreleaser
+    images:
+      - ghcr.io/arkestone/mcp-skills
+    tags:
+      - '{{ .Version }}'
+      - '{{ if not .IsSnapshot }}latest{{ end }}'
+    platforms:
+      - linux/amd64
+      - linux/arm64
+    retry:
+      attempts: 10
+      delay: 10s
+      max_delay: 5m0s
+    sbom: "true"
+  - id: mcp-prompts
+    ids:
+      - mcp-prompts
+    dockerfile: servers/mcp-prompts/Dockerfile.goreleaser
+    images:
+      - ghcr.io/arkestone/mcp-prompts
+    tags:
+      - '{{ .Version }}'
+      - '{{ if not .IsSnapshot }}latest{{ end }}'
+    platforms:
+      - linux/amd64
+      - linux/arm64
+    retry:
+      attempts: 10
+      delay: 10s
+      max_delay: 5m0s
+    sbom: "true"
+  - id: mcp-adr
+    ids:
+      - mcp-adr
+    dockerfile: servers/mcp-adr/Dockerfile.goreleaser
+    images:
+      - ghcr.io/arkestone/mcp-adr
+    tags:
+      - '{{ .Version }}'
+      - '{{ if not .IsSnapshot }}latest{{ end }}'
+    platforms:
+      - linux/amd64
+      - linux/arm64
+    retry:
+      attempts: 10
+      delay: 10s
+      max_delay: 5m0s
+    sbom: "true"
+  - id: mcp-memory
+    ids:
+      - mcp-memory
+    dockerfile: servers/mcp-memory/Dockerfile.goreleaser
+    images:
+      - ghcr.io/arkestone/mcp-memory
+    tags:
+      - '{{ .Version }}'
+      - '{{ if not .IsSnapshot }}latest{{ end }}'
+    platforms:
+      - linux/amd64
+      - linux/arm64
+    retry:
+      attempts: 10
+      delay: 10s
+      max_delay: 5m0s
+    sbom: "true"
+  - id: mcp-graph
+    ids:
+      - mcp-graph
+    dockerfile: servers/mcp-graph/Dockerfile.goreleaser
+    images:
+      - ghcr.io/arkestone/mcp-graph
+    tags:
+      - '{{ .Version }}'
+      - '{{ if not .IsSnapshot }}latest{{ end }}'
+    platforms:
+      - linux/amd64
+      - linux/arm64
+    retry:
+      attempts: 10
+      delay: 10s
+      max_delay: 5m0s
+    sbom: "true"
+docker_digest:
+  name_template: digests.txt
+changelog:
+  filters:
+    exclude:
+      - ^chore
+      - ^docs
+      - ^style
+  sort: asc
+  format: '{{ .SHA }} {{ .Message }}'
+dist: dist
+env_files:
+  github_token: ~/.config/goreleaser/github_token
+  gitlab_token: ~/.config/goreleaser/gitlab_token
+  gitea_token: ~/.config/goreleaser/gitea_token
+source:
+  name_template: '{{ .ProjectName }}-{{ .Version }}'
+  format: tar.gz
+gomod:
+  gobinary: go
+announce:
+  twitter:
+    message_template: '{{ .ProjectName }} {{ .Tag }} is out! Check it out at {{ .ReleaseURL }}'
+  mastodon:
+    message_template: '{{ .ProjectName }} {{ .Tag }} is out! Check it out at {{ .ReleaseURL }}'
+    server: ""
+  reddit:
+    title_template: '{{ .ProjectName }} {{ .Tag }} is out!'
+    url_template: '{{ .ReleaseURL }}'
+  slack:
+    message_template: '{{ .ProjectName }} {{ .Tag }} is out! Check it out at {{ .ReleaseURL }}'
+    username: GoReleaser
+  discord:
+    message_template: '{{ .ProjectName }} {{ .Tag }} is out! Check it out at {{ .ReleaseURL }}'
+    author: GoReleaser
+    color: "3888754"
+    icon_url: https://goreleaser.com/static/avatar.png
+  teams:
+    title_template: '{{ .ProjectName }} {{ .Tag }} is out!'
+    message_template: '{{ .ProjectName }} {{ .Tag }} is out! Check it out at {{ .ReleaseURL }}'
+    color: '#2D313E'
+    icon_url: https://goreleaser.com/static/avatar.png
+  smtp:
+    subject_template: '{{ .ProjectName }} {{ .Tag }} is out!'
+    body_template: 'You can view details from: {{ .ReleaseURL }}'
+  mattermost:
+    message_template: '{{ .ProjectName }} {{ .Tag }} is out! Check it out at {{ .ReleaseURL }}'
+    title_template: '{{ .ProjectName }} {{ .Tag }} is out!'
+    username: GoReleaser
+  linkedin:
+    message_template: '{{ .ProjectName }} {{ .Tag }} is out! Check it out at {{ .ReleaseURL }}'
+  telegram:
+    message_template: '{{ mdv2escape .ProjectName }} {{ mdv2escape .Tag }} is out{{ mdv2escape "!" }} Check it out at {{ mdv2escape .ReleaseURL }}'
+    parse_mode: MarkdownV2
+  webhook:
+    message_template: '{ "message": "{{ .ProjectName }} {{ .Tag }} is out! Check it out at {{ .ReleaseURL }}"}'
+    content_type: application/json; charset=utf-8
+    expected_status_codes:
+      - 200
+      - 201
+      - 202
+      - 204
+  opencollective:
+    title_template: '{{ .Tag }}'
+    message_template: '{{ .ProjectName }} {{ .Tag }} is out!<br/>Check it out at <a href="{{ .ReleaseURL }}">{{ .ReleaseURL }}</a>'
+  bluesky:
+    message_template: '{{ .ProjectName }} {{ .Tag }} is out! Check it out at {{ .ReleaseURL }}'
+  discourse:
+    title_template: '{{ .ProjectName }} {{ .Tag }} is out!'
+    message_template: '{{ .ProjectName }} {{ .Tag }} is out! Check it out at {{ .ReleaseURL }}'
+    username: system
+git:
+  tag_sort: -version:refname
+mcp:
+  name: ""
+  title: ""
+  auth:
+    type: none
+github_urls:
+  download: https://github.com
+gitlab_urls:
+  download: https://gitlab.com

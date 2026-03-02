@@ -50,7 +50,7 @@ func main() {
 	defer stop()
 
 	srv := mcp.NewServer(
-		&mcp.Implementation{Name: "mcp-memory", Version: "0.1.0"},
+		&mcp.Implementation{Name: "mcp-memory", Version: version},
 		nil,
 	)
 
@@ -140,8 +140,8 @@ func registerResources(srv *mcp.Server, st *store.Store) {
 
 func registerTools(srv *mcp.Server, st *store.Store) {
 	type RememberInput struct {
-		Content string   `json:"content" jsonschema:"required,description=The text to remember"`
-		Tags    []string `json:"tags,omitempty" jsonschema:"description=Optional tags to categorize the memory"`
+		Content string   `json:"content" jsonschema:"The text to remember"`
+		Tags    []string `json:"tags,omitempty" jsonschema:"Optional tags to categorize the memory"`
 	}
 	type RememberOutput struct {
 		ID        string   `json:"id"`
@@ -167,8 +167,8 @@ func registerTools(srv *mcp.Server, st *store.Store) {
 	)
 
 	type RecallInput struct {
-		Query string   `json:"query,omitempty" jsonschema:"description=Text to search for in memory content"`
-		Tags  []string `json:"tags,omitempty" jsonschema:"description=Filter by tags (all must match)"`
+		Query string   `json:"query,omitempty" jsonschema:"Text to search for in memory content"`
+		Tags  []string `json:"tags,omitempty" jsonschema:"Filter by tags all must match"`
 	}
 	type RecallEntry struct {
 		ID        string   `json:"id"`
@@ -201,7 +201,7 @@ func registerTools(srv *mcp.Server, st *store.Store) {
 	)
 
 	type ForgetInput struct {
-		ID string `json:"id" jsonschema:"required,description=The ID of the memory to delete"`
+		ID string `json:"id" jsonschema:"The ID of the memory to delete"`
 	}
 	type ForgetOutput struct {
 		Message string `json:"message"`

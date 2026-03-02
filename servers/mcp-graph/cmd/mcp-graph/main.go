@@ -130,9 +130,9 @@ func registerResources(srv *mcp.Server, g *graph.Graph) {
 func registerTools(srv *mcp.Server, g *graph.Graph) {
 	// add-node
 	type AddNodeInput struct {
-		Label string            `json:"label" jsonschema:"required,description=Node type/category (e.g. 'Person' 'Technology' 'Concept')"`
-		Name  string            `json:"name"  jsonschema:"required,description=Display name of the entity"`
-		Props map[string]string `json:"props,omitempty" jsonschema:"description=Optional key-value properties"`
+		Label string            `json:"label" jsonschema:"Node type or category such as Person Technology or Concept"`
+		Name  string            `json:"name" jsonschema:"Display name of the entity"`
+		Props map[string]string `json:"props,omitempty" jsonschema:"Optional key-value properties"`
 	}
 	type NodeOutput struct {
 		ID        string            `json:"id"`
@@ -154,10 +154,10 @@ func registerTools(srv *mcp.Server, g *graph.Graph) {
 
 	// add-edge
 	type AddEdgeInput struct {
-		From     string            `json:"from"     jsonschema:"required,description=ID of the source node"`
-		To       string            `json:"to"       jsonschema:"required,description=ID of the target node"`
-		Relation string            `json:"relation" jsonschema:"required,description=Relationship type (e.g. 'knows' 'depends_on' 'uses')"`
-		Props    map[string]string `json:"props,omitempty" jsonschema:"description=Optional key-value properties on the edge"`
+		From     string            `json:"from" jsonschema:"ID of the source node"`
+		To       string            `json:"to" jsonschema:"ID of the target node"`
+		Relation string            `json:"relation" jsonschema:"Relationship type such as knows depends_on or uses"`
+		Props    map[string]string `json:"props,omitempty" jsonschema:"Optional key-value properties on the edge"`
 	}
 	type EdgeOutput struct {
 		ID        string            `json:"id"`
@@ -180,8 +180,8 @@ func registerTools(srv *mcp.Server, g *graph.Graph) {
 
 	// find-nodes
 	type FindNodesInput struct {
-		Label string `json:"label,omitempty" jsonschema:"description=Filter by node label (case-insensitive exact match)"`
-		Name  string `json:"name,omitempty"  jsonschema:"description=Filter by name substring (case-insensitive)"`
+		Label string `json:"label,omitempty" jsonschema:"Filter by node label case-insensitive exact match"`
+		Name  string `json:"name,omitempty" jsonschema:"Filter by name substring case-insensitive"`
 	}
 	type FindNodesOutput struct {
 		Nodes []NodeOutput `json:"nodes"`
@@ -201,7 +201,7 @@ func registerTools(srv *mcp.Server, g *graph.Graph) {
 
 	// get-node
 	type GetNodeInput struct {
-		ID string `json:"id" jsonschema:"required,description=Node ID"`
+		ID string `json:"id" jsonschema:"Node ID"`
 	}
 	mcp.AddTool(srv, &mcp.Tool{
 		Name:        "get-node",
@@ -216,9 +216,9 @@ func registerTools(srv *mcp.Server, g *graph.Graph) {
 
 	// neighbors
 	type NeighborsInput struct {
-		ID        string `json:"id"                  jsonschema:"required,description=Node ID"`
-		Direction string `json:"direction,omitempty" jsonschema:"description=Edge direction: 'out' 'in' or 'both' (default)"`
-		Relation  string `json:"relation,omitempty"  jsonschema:"description=Optional relation type filter (case-insensitive)"`
+		ID        string `json:"id" jsonschema:"Node ID"`
+		Direction string `json:"direction,omitempty" jsonschema:"Edge direction: out in or both. Default is both"`
+		Relation  string `json:"relation,omitempty" jsonschema:"Optional relation type filter case-insensitive"`
 	}
 	type NeighborsOutput struct {
 		Nodes []NodeOutput `json:"nodes"`
@@ -246,9 +246,9 @@ func registerTools(srv *mcp.Server, g *graph.Graph) {
 
 	// shortest-path
 	type ShortestPathInput struct {
-		From     string `json:"from"               jsonschema:"required,description=Source node ID"`
-		To       string `json:"to"                 jsonschema:"required,description=Target node ID"`
-		MaxDepth int    `json:"max_depth,omitempty" jsonschema:"description=Maximum path length (default 10)"`
+		From     string `json:"from" jsonschema:"Source node ID"`
+		To       string `json:"to" jsonschema:"Target node ID"`
+		MaxDepth int    `json:"max_depth,omitempty" jsonschema:"Maximum path length default 10"`
 	}
 	type PathOutput struct {
 		Nodes []NodeOutput `json:"nodes"`
@@ -276,7 +276,7 @@ func registerTools(srv *mcp.Server, g *graph.Graph) {
 
 	// remove-node
 	type RemoveNodeInput struct {
-		ID string `json:"id" jsonschema:"required,description=ID of the node to delete"`
+		ID string `json:"id" jsonschema:"ID of the node to delete"`
 	}
 	type RemoveNodeOutput struct {
 		Message      string `json:"message"`
@@ -298,7 +298,7 @@ func registerTools(srv *mcp.Server, g *graph.Graph) {
 
 	// remove-edge
 	type RemoveEdgeInput struct {
-		ID string `json:"id" jsonschema:"required,description=ID of the edge to delete"`
+		ID string `json:"id" jsonschema:"ID of the edge to delete"`
 	}
 	type RemoveEdgeOutput struct {
 		Message string `json:"message"`
