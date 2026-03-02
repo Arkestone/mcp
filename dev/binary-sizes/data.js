@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772477384595,
+  "lastUpdate": 1772481745768,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Binary Sizes": [
@@ -1653,6 +1653,60 @@ window.BENCHMARK_DATA = {
           {
             "name": "mcp-skills",
             "value": 8.653,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-adr",
+            "value": 8.602,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-memory",
+            "value": 8.285,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-prompts",
+            "value": 8.653,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-graph",
+            "value": 7.914,
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "4eb8488da039e87765352260378505651bd8799a",
+          "message": "feat(filter): stopwords, suffix-stripping stemmer, co-occurrence bonus\n\nStopwords:\n- Added 14 two-char function words (to/of/in/on/at/is/it/if/do/be/as/an/or/by)\n- Added 28 high-frequency English words (the/use/add/get/how/will/can/...)\n- Prevents noise terms from matching irrelevant items or diluting real scores\n\nStemming:\n- stem() strips 18 common English suffixes (longest-first, root ≥ 4 chars)\n- 'instructions'↔'instruction', 'testing'↔'test', 'deployment'↔'deploy'\n- 'authentication'→'authentic' matches 'auth' via bidirectional stem-prefix\n- Stem match is scored at exact-match weight (not prefix weight)\n\nCo-occurrence bonus:\n- +30% per field where 2+ query terms match the same field\n- 'jwt authentication' in name scores higher than split across name+desc\n- Rewards documents where multiple query concepts appear together\n\nTests: 13 filter tests all pass (added 3 new tests)\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T21:01:51+01:00",
+          "tree_id": "d666d9c7492335e287cee85d75e858412a2a8588",
+          "url": "https://github.com/Arkestone/mcp/commit/4eb8488da039e87765352260378505651bd8799a"
+        },
+        "date": 1772481745415,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "mcp-instructions",
+            "value": 8.637,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-skills",
+            "value": 8.656,
             "unit": "MB"
           },
           {
