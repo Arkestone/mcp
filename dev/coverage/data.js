@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772481748344,
+  "lastUpdate": 1772481912437,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Test Coverage": [
@@ -922,6 +922,35 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/4eb8488da039e87765352260378505651bd8799a"
         },
         "date": 1772481747373,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Total Coverage",
+            "value": 81.8,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "7c1d80163702374b990e2352f74f41c27cdc99b3",
+          "message": "ci: macOS tests, nightly fuzz/profiling, outdated dependencies workflow\n\nci.yml — macOS test matrix:\n- Added matrix.os dimension with ubuntu-latest + macos-latest (stable only)\n- Coverage/PR comment/Codecov steps gated on ubuntu-latest to avoid duplication\n- Gives cross-platform signal on every push/PR without doubling CI cost\n\nnightly.yml (new, runs at 02:00 UTC daily):\n- fuzz: discovers and runs all Fuzz* targets with 30s timeout each\n- memory-profile: pprof mem profile of full test suite, top-20 allocators\n- coverage-deep: full HTML coverage report archived 30 days, flags <80% packages\n\noutdated.yml (new, runs Monday 07:00 UTC):\n- go list -u -m all: markdown table of available module updates\n- go mod verify: checksum integrity check (fails CI if mismatch)\n- go mod tidy check: warns if go.sum would change\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T21:04:23+01:00",
+          "tree_id": "24c2a54921a0c3934d848d01fb5028154727322a",
+          "url": "https://github.com/Arkestone/mcp/commit/7c1d80163702374b990e2352f74f41c27cdc99b3"
+        },
+        "date": 1772481911944,
         "tool": "customBiggerIsBetter",
         "benches": [
           {
