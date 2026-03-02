@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772459665991,
+  "lastUpdate": 1772459958808,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Binary Sizes": [
@@ -401,6 +401,60 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/371c2468e5d59a19d066d4e8c9253973062fff3a"
         },
         "date": 1772459664875,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "mcp-instructions",
+            "value": 8.274,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-skills",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-adr",
+            "value": 8.602,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-memory",
+            "value": 8.285,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-prompts",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-graph",
+            "value": 7.914,
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "924adcdc9704981277efc17af04a4559c628f2dc",
+          "message": "fix(link-check): use regex syntax for --exclude-path (not glob)\n\nLychee's --exclude-path takes Rust regex patterns, not glob patterns.\n'**/CHANGELOG.md' is invalid regex (** = repetition without expression).\nFixed to 'CHANGELOG\\.md' which matches any path containing CHANGELOG.md.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T14:58:46+01:00",
+          "tree_id": "ef247ee6c3884d7c5d985faec4a30f78bab6a6c9",
+          "url": "https://github.com/Arkestone/mcp/commit/924adcdc9704981277efc17af04a4559c628f2dc"
+        },
+        "date": 1772459957767,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
