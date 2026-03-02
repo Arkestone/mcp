@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772476304203,
+  "lastUpdate": 1772477384595,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Binary Sizes": [
@@ -1614,6 +1614,60 @@ window.BENCHMARK_DATA = {
           {
             "name": "mcp-prompts",
             "value": 8.641,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-graph",
+            "value": 7.914,
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "006f2082b41bbab921fbaea3f67aaafe0c51bd97",
+          "message": "feat: efficient context-aware filtering with cache and precision scoring\n\n- pkg/filter: word-boundary tokenizer, weighted scoring (name>tag>desc),\n  coverage multiplier per matched term, stable sort (reproducible order)\n- pkg/cache: generic TTL List[T] with double-checked locking (5s default)\n- mcp-instructions loader: cache.List[Instruction] + maxFileSize 1MiB guard\n- mcp-prompts loader: cache.List[Prompt] + pkg/filter.SortByScore + maxFileSize\n- mcp-skills scanner: cache.List[Skill] + pkg/filter.SortByScore + maxFileSize\n- Fix: Tokenize keeps 2-char tokens; false positives prevented by minPrefixLen=3\n- Fix: TestLoaderLocalReadsLive calls ForceSync() before re-read\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T19:49:05+01:00",
+          "tree_id": "d7020e1bd0e349d06cd4c0d666fdaead019dcfda",
+          "url": "https://github.com/Arkestone/mcp/commit/006f2082b41bbab921fbaea3f67aaafe0c51bd97"
+        },
+        "date": 1772477384266,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "mcp-instructions",
+            "value": 8.637,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-skills",
+            "value": 8.653,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-adr",
+            "value": 8.602,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-memory",
+            "value": 8.285,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-prompts",
+            "value": 8.653,
             "unit": "MB"
           },
           {
