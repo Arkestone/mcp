@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772464936818,
+  "lastUpdate": 1772465379769,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Binary Sizes": [
@@ -1103,6 +1103,60 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/234c1746810ccef067337a0d2e2c4a05b0b20de1"
         },
         "date": 1772464936425,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "mcp-instructions",
+            "value": 8.274,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-skills",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-adr",
+            "value": 8.602,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-memory",
+            "value": 8.285,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-prompts",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-graph",
+            "value": 7.914,
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "3a4ca923f84e9eab55a9e8497866a3b9ea582050",
+          "message": "fix(release): use paginated API to delete all release assets before re-run\n\ngh release view --json assets has a limit and only returns up to 30 assets.\nWith 37 assets per release (6 servers × 5 platforms + checksums), some\nassets remain undeleteted, causing goreleaser 422 already_exists errors.\n\nFix: use gh api --paginate on the REST /releases/{id}/assets endpoint which\nreturns all assets regardless of count.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T16:29:08+01:00",
+          "tree_id": "02bdb02a2bcb7635e42a58c1547ebf57ef9aa012",
+          "url": "https://github.com/Arkestone/mcp/commit/3a4ca923f84e9eab55a9e8497866a3b9ea582050"
+        },
+        "date": 1772465379157,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
