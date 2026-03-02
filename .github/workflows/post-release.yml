@@ -99,7 +99,10 @@ jobs:
 
       - name: Verify image is multi-arch
         run: |
-          IMAGE="ghcr.io/arkestone/${{ matrix.server }}:${{ steps.tag.outputs.value }}"
+          # Goreleaser uses .Version (strips 'v') for Docker image tags
+          DOCKER_TAG="${{ steps.tag.outputs.value }}"
+          DOCKER_TAG="${DOCKER_TAG#v}"
+          IMAGE="ghcr.io/arkestone/${{ matrix.server }}:${DOCKER_TAG}"
           echo "Inspecting ${IMAGE}..."
           docker buildx imagetools inspect "${IMAGE}" | grep -E 'linux/amd64|linux/arm64'
           echo "✓ ${{ matrix.server }} is multi-arch"
@@ -107,7 +110,10 @@ jobs:
       - name: Smoke test image
         run: |
           PORT=$(python3 -c "import socket; s=socket.socket(); s.bind(('',0)); print(s.getsockname()[1]); s.close()")
-          IMAGE="ghcr.io/arkestone/${{ matrix.server }}:${{ steps.tag.outputs.value }}"
+          # Goreleaser uses .Version (strips 'v') for Docker image tags
+          DOCKER_TAG="${{ steps.tag.outputs.value }}"
+          DOCKER_TAG="${DOCKER_TAG#v}"
+          IMAGE="ghcr.io/arkestone/${{ matrix.server }}:${DOCKER_TAG}"
 
           docker run -d --name smoke-${{ matrix.server }} \
             -p "${PORT}:${PORT}" \
