@@ -1,0 +1,48 @@
+name: GoReleaser Dry Run
+
+on:
+  pull_request:
+    paths:
+      - '.goreleaser.yml'
+      - 'servers/**/Dockerfile*'
+      - 'servers/**/main.go'
+      - 'go.mod'
+      - 'go.sum'
+
+permissions:
+  contents: read
+
+env:
+  CGO_ENABLED: '0'
+  GOFLAGS: '-buildvcs=false'
+
+jobs:
+  dry-run:
+    name: GoReleaser Dry Run
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Run GoReleaser (snapshot, no publish)
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          version: '~> v2'
+          # Skip Docker (slow multi-arch builds), signing, and publishing.
+          # Validates binary builds, cross-compilation, and archive config.
+          args: release --snapshot --skip=docker,publish,sign,sbom,announce --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: List built artifacts
+        run: |
+          echo "### 📦 GoReleaser Snapshot Artifacts" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          find dist/ -name '*.tar.gz' -o -name '*.zip' | sort >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"

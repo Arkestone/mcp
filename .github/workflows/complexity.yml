@@ -1,0 +1,89 @@
+name: Code Complexity
+
+on:
+  pull_request:
+    paths:
+      - '**/*.go'
+  push:
+    branches: [main]
+    paths:
+      - '**/*.go'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  GOFLAGS: '-buildvcs=false'
+
+jobs:
+  complexity:
+    name: Cyclomatic Complexity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Install gocyclo
+        run: go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
+
+      - name: Run gocyclo
+        id: gocyclo
+        run: |
+          THRESHOLD=15
+          # Exclude test files from the complexity check
+          OUTPUT=$(gocyclo -over "$THRESHOLD" . 2>&1 | grep -v '_test\.go' | grep -v '^$' || true)
+
+          echo "### 🔄 Code Complexity (threshold: ${THRESHOLD})" >> "$GITHUB_STEP_SUMMARY"
+          if [ -n "$OUTPUT" ]; then
+            echo "⚠️ Functions exceeding complexity threshold:" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            echo "$OUTPUT" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            {
+              echo "has_issues=true"
+              echo "output<<DELIM"
+              echo "$OUTPUT"
+              echo "DELIM"
+            } >> "$GITHUB_OUTPUT"
+          else
+            echo "✅ All functions are within the complexity threshold (${THRESHOLD})." >> "$GITHUB_STEP_SUMMARY"
+            echo "has_issues=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Post PR comment
+        if: github.event_name == 'pull_request' && steps.gocyclo.outputs.has_issues == 'true'
+        env:
+          GOCYCLO_OUTPUT: ${{ steps.gocyclo.outputs.output }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const marker = '<!-- complexity-check -->';
+            const output = process.env.GOCYCLO_OUTPUT;
+            const body = `${marker}\n## 🔄 Code Complexity Warning\n\nFunctions exceeding cyclomatic complexity threshold (15):\n\`\`\`\n${output}\n\`\`\`\nConsider refactoring these functions to improve testability and maintainability.`;
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c => c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }

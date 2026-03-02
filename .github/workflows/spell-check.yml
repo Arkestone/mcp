@@ -1,0 +1,56 @@
+name: Spell Check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**/*.md'
+      - '**/*.go'
+  pull_request:
+    paths:
+      - '**/*.md'
+      - '**/*.go'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  codespell:
+    name: Codespell
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install codespell
+        run: pip install codespell --quiet
+
+      - name: Run codespell
+        run: |
+          set +e
+          OUTPUT=$(codespell \
+            --skip="./dist,./vendor,./website,*.sum,go.mod" \
+            --ignore-words-list="ths,crate,firt,pres,assertIn" \
+            --quiet-level=2 \
+            . 2>&1)
+          EXIT_CODE=$?
+          set -e
+
+          if [ "$EXIT_CODE" -ne 0 ] && [ -n "$OUTPUT" ]; then
+            echo "### 🔤 Spell Check Warnings" >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            echo "$OUTPUT" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+            # Emit per-line warning annotations
+            while IFS= read -r line; do
+              echo "::warning::${line}"
+            done <<< "$OUTPUT"
+          else
+            echo "### 🔤 Spell Check" >> "$GITHUB_STEP_SUMMARY"
+            echo "✅ No spelling issues found." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          # Warn only — do not fail the build
+          exit 0
