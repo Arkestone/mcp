@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772461073219,
+  "lastUpdate": 1772461229148,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Test Coverage": [
@@ -313,6 +313,35 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/a0fd025b8f56dae72f7ee7e31e5912a009c1616f"
         },
         "date": 1772461072310,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Total Coverage",
+            "value": 84.2,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "01e87a8627bd8359fad94810ad5ca31f3cd910a1",
+          "message": "fix(release): checkout tagged commit on workflow_dispatch\n\nWhen triggered manually with a tag input, goreleaser requires the checked-out\ncommit to match the tag. Previously the workflow always checked out HEAD (main),\nwhich diverges from older tags after subsequent commits.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T15:19:53+01:00",
+          "tree_id": "09b385860d01d45bf5ce6aa52a7ed2fc1419cafc",
+          "url": "https://github.com/Arkestone/mcp/commit/01e87a8627bd8359fad94810ad5ca31f3cd910a1"
+        },
+        "date": 1772461228257,
         "tool": "customBiggerIsBetter",
         "benches": [
           {
