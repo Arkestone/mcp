@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772462601387,
+  "lastUpdate": 1772462824675,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Test Coverage": [
@@ -458,6 +458,35 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/38b7697ea05bc5e7acae630ae3839dc60b64e739"
         },
         "date": 1772462601073,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Total Coverage",
+            "value": 84.2,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "84ad29af2d199dbf7ab0171ae55ef343ab67c900",
+          "message": "fix(release): use apiUrl to extract numeric asset ID for REST API deletion\n\nThe .assets[].id field in gh CLI returns a GraphQL node ID (RA_kwDOR...),\nbut the GitHub REST DELETE endpoint requires a numeric integer ID.\nExtract the numeric ID from .assets[].apiUrl (last path segment).\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T15:46:32+01:00",
+          "tree_id": "717dc643b5c5071b258febdd7a58efa5104a2abc",
+          "url": "https://github.com/Arkestone/mcp/commit/84ad29af2d199dbf7ab0171ae55ef343ab67c900"
+        },
+        "date": 1772462824367,
         "tool": "customBiggerIsBetter",
         "benches": [
           {
