@@ -9,6 +9,10 @@ on:
         description: 'Tag to release (must already exist)'
         required: true
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: write
   packages: write
