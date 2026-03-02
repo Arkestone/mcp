@@ -69,21 +69,22 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Make GHCR packages public
-        # Requires a PAT with write:packages scope stored as PACKAGES_TOKEN org secret.
-        # GITHUB_TOKEN cannot change org package visibility.
-        # To create manually: https://github.com/orgs/Arkestone/packages
+        # GITHUB_TOKEN cannot change org package visibility (requires admin:org).
+        # Set PACKAGES_TOKEN org secret (PAT with write:packages + read:org scopes)
+        # to enable automatic public visibility. Without it, run manually:
+        # https://github.com/orgs/Arkestone/packages
         env:
           GH_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
         run: |
           if [ -z "$GH_TOKEN" ]; then
-            echo "PACKAGES_TOKEN not configured, skipping visibility update"
+            echo "::warning::PACKAGES_TOKEN not set — images pushed but remain private. Set the secret or update visibility manually."
             exit 0
           fi
           for pkg in mcp-instructions mcp-skills mcp-prompts mcp-adr mcp-memory mcp-graph; do
             gh api --method PATCH \
-              /orgs/Arkestone/packages/container/$pkg \
+              "/orgs/${{ github.repository_owner }}/packages/container/${pkg}" \
               -f visibility=public \
-              --silent && echo "✓ $pkg → public" || echo "⚠ $pkg: API call failed"
+              --silent && echo "✓ $pkg → public" || echo "⚠ $pkg: API call failed (may already be public)"
           done
 
       - name: Install Cosign
@@ -93,15 +94,17 @@ jobs:
         env:
           RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
         run: |
+          # Goreleaser strips the 'v' prefix — tag is '1.0.0', not 'v1.0.0'
+          DOCKER_TAG="${RELEASE_TAG#v}"
           for server in mcp-instructions mcp-skills mcp-adr mcp-memory mcp-prompts mcp-graph; do
             IMAGE="ghcr.io/arkestone/${server}"
-            DIGEST=$(docker buildx imagetools inspect "${IMAGE}:${RELEASE_TAG}" \
+            DIGEST=$(docker buildx imagetools inspect "${IMAGE}:${DOCKER_TAG}" \
               --format '{{.Manifest.Digest}}' 2>/dev/null || true)
             if [ -n "${DIGEST}" ]; then
               cosign sign --yes "${IMAGE}@${DIGEST}"
               echo "✓ Signed ${IMAGE}@${DIGEST}"
             else
-              echo "::error::Could not get digest for ${IMAGE}:${RELEASE_TAG} — image missing after goreleaser?"
+              echo "::error::Could not get digest for ${IMAGE}:${DOCKER_TAG} — image missing after goreleaser?"
               exit 1
             fi
           done
