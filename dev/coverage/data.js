@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772458144354,
+  "lastUpdate": 1772458417382,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Test Coverage": [
@@ -52,6 +52,35 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/bce961c8fd5d91a98578b7738b070d4c6aacf78b"
         },
         "date": 1772458143600,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Total Coverage",
+            "value": 84.2,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "9d92da677b390a066b3119099fe37499e90a6806",
+          "message": "fix(container-structure): use numeric UID 65532 not string 'nonroot'\n\ndistroless/static-debian12:nonroot stores the user in image metadata as\nthe numeric UID 65532, not the string 'nonroot'. container-structure-test\ncompares the raw image config value, so the test must match exactly.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T14:33:03+01:00",
+          "tree_id": "fba16cf6269580aacc74a323948eddb0645d944c",
+          "url": "https://github.com/Arkestone/mcp/commit/9d92da677b390a066b3119099fe37499e90a6806"
+        },
+        "date": 1772458416346,
         "tool": "customBiggerIsBetter",
         "benches": [
           {
