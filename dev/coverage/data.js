@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772481912437,
+  "lastUpdate": 1772483620042,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Test Coverage": [
@@ -956,6 +956,35 @@ window.BENCHMARK_DATA = {
           {
             "name": "Total Coverage",
             "value": 81.8,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "1228642ab474af47f08f390c33da139e4ae2311c",
+          "message": "test: add FilterByFilePath, FilterByQuery, FetchDirRecursive tests and filter benchmarks\n\n- FilterByFilePath: 7 tests (instructions loader) → 81.2% → 95.5% coverage\n- FilterByQuery: 5 tests + lifecycle (prompts loader) → 59.2% → 71.4% coverage\n- FetchDirRecursive: 5 tests with recursiveServer() helper → pkg/github 71.9% → 98.4%\n- Filter benchmarks: Tokenize, Score (multi-term / no-match), SortByScore(100 items)\n- Fix TestFilterByQuery_SortsByScore: use 'hammering utility' to avoid stem collision with 'build'\n- CI: macOS added to test matrix (stable only); coverage/Codecov gated on ubuntu-latest\n- nightly.yml: fuzz 30s/target, pprof memory profiling, HTML coverage archive 30d\n- outdated.yml: go list -u weekly check + mod tidy drift detection\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T21:32:48+01:00",
+          "tree_id": "6a7a2afcee9d39000f9a58bc4840983fbea199ca",
+          "url": "https://github.com/Arkestone/mcp/commit/1228642ab474af47f08f390c33da139e4ae2311c"
+        },
+        "date": 1772483619682,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Total Coverage",
+            "value": 84.2,
             "unit": "%"
           }
         ]
