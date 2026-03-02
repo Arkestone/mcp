@@ -42,6 +42,20 @@ jobs:
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+      - name: Delete existing release assets (re-run only)
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          echo "Cleaning up existing assets for ${TAG} to allow goreleaser to re-upload…"
+          ASSET_IDS=$(gh release view "${TAG}" --repo "${{ github.repository }}" \
+            --json assets --jq '.assets[].id' 2>/dev/null || true)
+          for id in $ASSET_IDS; do
+            gh api --method DELETE /repos/${{ github.repository }}/releases/assets/"${id}" --silent
+            echo "  Deleted asset ${id}"
+          done
+
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:
