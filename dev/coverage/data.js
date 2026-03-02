@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772466106318,
+  "lastUpdate": 1772468510036,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Test Coverage": [
@@ -690,6 +690,35 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/73547b9676237d3bbe4eb049e182734c53d8ee0c"
         },
         "date": 1772466105413,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Total Coverage",
+            "value": 84.2,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "d66804c1b35e4f15460c00056b0c020662f6d997",
+          "message": "ci: merge related workflows into 5 consolidated files\n\n- benchmark-trend + binary-size + coverage-trend → trends.yml\n  (3 push-to-main trend jobs in one workflow, per-job concurrency)\n- smoke-test + mcp-protocol → mcp-validation.yml\n  (healthz + full MCP protocol check in one matrix job)\n- fuzz + flaky-tests → reliability.yml\n  (Sunday reliability suite with improved flaky analysis summary)\n- conventional-commits + changelog-check + pr-size → pr-quality.yml\n  (all PR quality gates in one workflow, 3 parallel jobs)\n- dependency-review + license-check → dependency-compliance.yml\n  (dependency-review runs only on PRs via if: condition)\n\nReduces workflow count from 39 → 33 files.\nAll 33 workflows pass actionlint.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T17:21:03+01:00",
+          "tree_id": "51940a5ec9a5a903444448f1753cb1b35189f44c",
+          "url": "https://github.com/Arkestone/mcp/commit/d66804c1b35e4f15460c00056b0c020662f6d997"
+        },
+        "date": 1772468509117,
         "tool": "customBiggerIsBetter",
         "benches": [
           {
