@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772459056184,
+  "lastUpdate": 1772459448735,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Binary Sizes": [
@@ -239,6 +239,60 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/bd614d2907f47dfe019da9e5eb75265225afbe2a"
         },
         "date": 1772459055192,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "mcp-instructions",
+            "value": 8.274,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-skills",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-adr",
+            "value": 8.602,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-memory",
+            "value": 8.285,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-prompts",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-graph",
+            "value": 7.914,
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "b7365644e7fd875d4c4e80a42ccd2ae61a677017",
+          "message": "fix(docs+link-check): update broken URLs and fix link checker config\n\nBroken links fixed in 13 markdown files:\n- GitHub custom instructions URL: customize-github-copilot → customizing-copilot\n- VS Code MCP docs URL: docs/copilot/model-context-protocol → docs/copilot/chat/mcp-servers\n\nlink-check.yml improvements:\n- Exclude website/ directory (Docusaurus root-relative /docs/ links need a\n  base URL that lychee can't resolve in CI without a running dev server)\n- Exclude '^/docs/' pattern for root-relative links\n- Already had insiders.vscode.dev excluded from previous commit\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T14:50:17+01:00",
+          "tree_id": "df0c1ac9a16c6bcd2d5d9cb1450a882c28da8d9b",
+          "url": "https://github.com/Arkestone/mcp/commit/b7365644e7fd875d4c4e80a42ccd2ae61a677017"
+        },
+        "date": 1772459447842,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
