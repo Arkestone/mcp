@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772465773616,
+  "lastUpdate": 1772466102069,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Binary Sizes": [
@@ -1211,6 +1211,60 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/c539af17b28f6f92de6cfb7805ef8fb5cc21b46f"
         },
         "date": 1772465772608,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "mcp-instructions",
+            "value": 8.274,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-skills",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-adr",
+            "value": 8.602,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-memory",
+            "value": 8.285,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-prompts",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-graph",
+            "value": 7.914,
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "73547b9676237d3bbe4eb049e182734c53d8ee0c",
+          "message": "fix(release): add concurrency control to prevent parallel release runs\n\nForce-pushing a tag while also triggering workflow_dispatch caused two\nrelease runs to execute in parallel, both trying to create/update the same\nGitHub release. Adding concurrency group cancels the older run automatically.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T16:41:10+01:00",
+          "tree_id": "6211facf094c1f87ee57bfbdfac41eed4f918d37",
+          "url": "https://github.com/Arkestone/mcp/commit/73547b9676237d3bbe4eb049e182734c53d8ee0c"
+        },
+        "date": 1772466101176,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
