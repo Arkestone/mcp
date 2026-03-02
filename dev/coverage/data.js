@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772458819569,
+  "lastUpdate": 1772459054377,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Test Coverage": [
@@ -110,6 +110,35 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/93fea6dd409b6c1384cd330c363e3fe6daf9c9a9"
         },
         "date": 1772458818530,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Total Coverage",
+            "value": 84.2,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "bd614d2907f47dfe019da9e5eb75265225afbe2a",
+          "message": "fix(workflows): action-pinning report-only + link-check vscode exclude\n\naction-pinning.yml:\n- Fix grep pattern: use '^\\s*uses:' to match only YAML directives,\n  not bash code containing 'uses:' as a string literal (false positives)\n- Change exit 1 → warning annotation + exit 0; SHA pinning is an ongoing\n  task for Dependabot/Renovate, not a hard CI blocker\n\nlink-check.yml:\n- Exclude insiders.vscode.dev from link checks; these are valid VS Code\n  install redirect URLs that intentionally return 302\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T14:43:43+01:00",
+          "tree_id": "5183b751872e3206d87c5e955fcf7990f6873312",
+          "url": "https://github.com/Arkestone/mcp/commit/bd614d2907f47dfe019da9e5eb75265225afbe2a"
+        },
+        "date": 1772459053193,
         "tool": "customBiggerIsBetter",
         "benches": [
           {
