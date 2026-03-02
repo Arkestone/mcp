@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772460629413,
+  "lastUpdate": 1772461073219,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Test Coverage": [
@@ -284,6 +284,35 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/72a35992198bf38247ea3072496094056cfa8b82"
         },
         "date": 1772460627956,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Total Coverage",
+            "value": 84.2,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "a0fd025b8f56dae72f7ee7e31e5912a009c1616f",
+          "message": "fix(release): remove dist/ build artifacts from git tracking\n\nThe dist/ directory was accidentally committed with goreleaser build outputs.\nThis caused goreleaser --clean to make the git tree dirty (staged deletions),\nfailing the release workflow immediately.\n\ndist/ is already in .gitignore — this commit only removes tracked files.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T15:17:15+01:00",
+          "tree_id": "4b183d9ca6dbde8f3431dcab6d98437075eacae2",
+          "url": "https://github.com/Arkestone/mcp/commit/a0fd025b8f56dae72f7ee7e31e5912a009c1616f"
+        },
+        "date": 1772461072310,
         "tool": "customBiggerIsBetter",
         "benches": [
           {
