@@ -1,4 +1,4 @@
-name: Spell Check
+name: Doc Quality
 
 on:
   push:
@@ -6,18 +6,22 @@ on:
     paths:
       - '**/*.md'
       - '**/*.go'
+      - 'docs/**'
   pull_request:
     paths:
       - '**/*.md'
       - '**/*.go'
+      - 'docs/**'
+  schedule:
+    - cron: '0 6 * * 1'  # Monday 06:00 UTC (catches externally broken links)
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  codespell:
-    name: Codespell
+  spell-check:
+    name: Spell Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -38,12 +42,9 @@ jobs:
 
           if [ "$EXIT_CODE" -ne 0 ] && [ -n "$OUTPUT" ]; then
             echo "### 🔤 Spell Check Warnings" >> "$GITHUB_STEP_SUMMARY"
-            echo "" >> "$GITHUB_STEP_SUMMARY"
             echo '```' >> "$GITHUB_STEP_SUMMARY"
             echo "$OUTPUT" >> "$GITHUB_STEP_SUMMARY"
             echo '```' >> "$GITHUB_STEP_SUMMARY"
-
-            # Emit per-line warning annotations
             while IFS= read -r line; do
               echo "::warning::${line}"
             done <<< "$OUTPUT"
@@ -51,6 +52,32 @@ jobs:
             echo "### 🔤 Spell Check" >> "$GITHUB_STEP_SUMMARY"
             echo "✅ No spelling issues found." >> "$GITHUB_STEP_SUMMARY"
           fi
+          exit 0  # warn only, never fail the build
 
-          # Warn only — do not fail the build
-          exit 0
+  link-check:
+    name: Link Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check links with lychee
+        id: lychee
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >
+            --verbose
+            --no-progress
+            --timeout 20
+            --max-retries 3
+            --accept 200,206,429
+            --exclude 'https://github\.com/Arkestone/mcp/compare/.*'
+            --exclude 'https://pkg\.go\.dev/.*'
+            --exclude 'https://insiders\.vscode\.dev/.*'
+            --exclude '^file://'
+            --exclude 'mailto:'
+            --exclude-loopback
+            --exclude-path 'website/'
+            --exclude-path 'CHANGELOG\.md'
+            '**/*.md'
+          fail: true
+          jobSummary: true

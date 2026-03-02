@@ -1,14 +1,16 @@
-name: Container Structure Tests
+name: Docker Quality
 
 on:
-  pull_request:
-    paths:
-      - 'servers/**/Dockerfile*'
-      - '.github/workflows/container-structure.yml'
   push:
     branches: [main]
     paths:
+      - 'servers/*/Dockerfile'
       - 'servers/**/Dockerfile*'
+  pull_request:
+    paths:
+      - 'servers/*/Dockerfile'
+      - 'servers/**/Dockerfile*'
+      - '.github/workflows/docker-quality.yml'
   schedule:
     - cron: '0 7 * * 1'  # Monday 07:00 UTC
   workflow_dispatch:
@@ -17,6 +19,31 @@ permissions:
   contents: read
 
 jobs:
+  hadolint:
+    name: Lint — ${{ matrix.server }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        server:
+          - mcp-instructions
+          - mcp-skills
+          - mcp-adr
+          - mcp-memory
+          - mcp-prompts
+          - mcp-graph
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint ${{ matrix.server }}/Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: servers/${{ matrix.server }}/Dockerfile
+          # DL3018: pin apk package versions — acceptable for base image updates
+          # DL3059: multiple consecutive RUN — intentional for layer clarity
+          # DL3007: unpinned tag in setup-only stages — acceptable risk
+          ignore: DL3018,DL3059,DL3007
+          failure-threshold: warning
+
   structure:
     name: Structure — ${{ matrix.server }}
     runs-on: ubuntu-latest
@@ -55,7 +82,7 @@ jobs:
 
       - name: Generate structure test config
         run: |
-          cat > structure-test.yml << EOF
+          cat > structure-test.yml << 'YAML'
           schemaVersion: '2.0.0'
           fileExistenceTests:
             - name: "Binary exists at expected path"
@@ -70,7 +97,7 @@ jobs:
           metadataTest:
             user: "65532"
             entrypoint: ["/${{ matrix.server }}"]
-          EOF
+          YAML
 
       - name: Run structure tests
         run: |
