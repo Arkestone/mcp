@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772462210066,
+  "lastUpdate": 1772462604510,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Binary Sizes": [
@@ -779,6 +779,60 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/d93aecd3a02022c9b06994cc011029bdba4010a9"
         },
         "date": 1772462209496,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "mcp-instructions",
+            "value": 8.274,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-skills",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-adr",
+            "value": 8.602,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-memory",
+            "value": 8.285,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-prompts",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-graph",
+            "value": 7.914,
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "38b7697ea05bc5e7acae630ae3839dc60b64e739",
+          "message": "fix(release): use while+read loop to skip empty asset IDs in cleanup\n\nThe for-loop over ASSET_IDS could iterate with empty string when the variable\nis empty (or contains trailing newlines), causing 'gh api DELETE' to get 404.\nReplace with while+read loop that explicitly skips empty lines.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T15:42:51+01:00",
+          "tree_id": "3031f5cb27d0e7d288b14f0251436f0999d02bcf",
+          "url": "https://github.com/Arkestone/mcp/commit/38b7697ea05bc5e7acae630ae3839dc60b64e739"
+        },
+        "date": 1772462603561,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
