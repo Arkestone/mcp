@@ -89,9 +89,45 @@ builds:
       - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
 
 archives:
-  - formats: [tar.gz]
-    name_template: >-
-      {{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}
+  - id: archive-mcp-instructions
+    ids: [mcp-instructions]
+    formats: [tar.gz]
+    name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+  - id: archive-mcp-skills
+    ids: [mcp-skills]
+    formats: [tar.gz]
+    name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+  - id: archive-mcp-adr
+    ids: [mcp-adr]
+    formats: [tar.gz]
+    name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+  - id: archive-mcp-memory
+    ids: [mcp-memory]
+    formats: [tar.gz]
+    name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+  - id: archive-mcp-prompts
+    ids: [mcp-prompts]
+    formats: [tar.gz]
+    name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+  - id: archive-mcp-graph
+    ids: [mcp-graph]
+    formats: [tar.gz]
+    name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     format_overrides:
       - goos: windows
         formats: [zip]
