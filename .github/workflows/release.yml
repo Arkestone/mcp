@@ -50,7 +50,7 @@ jobs:
         run: |
           echo "Cleaning up existing assets for ${TAG} to allow goreleaser to re-upload…"
           ASSET_IDS=$(gh release view "${TAG}" --repo "${{ github.repository }}" \
-            --json assets --jq '.assets[].id' 2>/dev/null || true)
+            --json assets --jq '.assets[].apiUrl | split("/") | last' 2>/dev/null || true)
           if [ -z "${ASSET_IDS}" ]; then
             echo "No existing assets found"
           else
