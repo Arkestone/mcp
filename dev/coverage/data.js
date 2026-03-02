@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772484440471,
+  "lastUpdate": 1772486230715,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Test Coverage": [
@@ -1072,6 +1072,35 @@ window.BENCHMARK_DATA = {
           {
             "name": "Total Coverage",
             "value": 85.2,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "df2e7de1b55fa9349fa5201c4f5eb8b8abba1534",
+          "message": "feat: frontmatter files: glob pattern for prompts and skills\n\nBoth mcp-prompts and mcp-skills now support a files: field in frontmatter\nthat restricts which file paths the item applies to — identical semantics\nto instructions' existing applyTo: field.\n\nFrontmatter example:\n  ---\n  description: TypeScript code reviewer\n  tags: [typescript, code-review]\n  files: \"**/*.ts\"\n  ---\n\n  or as a list:\n  files:\n    - \"**/*.ts\"\n    - \"**/*.tsx\"\n\nChanges:\n- Prompt.Files []string: parsed from frontmatter files: (string or list)\n- Skill.Files []string: parsed from frontmatter files: (string or list)\n- FilterByFilePath() added to both loader and scanner packages\n  - Items with no Files: always included (global scope)\n  - Items with Files: included only when at least one pattern matches\n  - Empty filePath: all items returned unchanged (backward compatible)\n- file_path parameter added to list-prompts, get-context, optimize-prompts,\n  list-skills, get-context (skills), optimize-skills tool handlers\n- Files exposed in list output (files field in ListEntry)\n- toStringSlice() helper added to scanner (same as instructions loader)\n\nTests: 5 new FilterByFilePath tests per package (unit + integration with\n  real frontmatter parsing); 21 parseFrontmatter call sites updated to\n  unpack new 5th return value\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T22:16:08+01:00",
+          "tree_id": "698c4c4529570c98c416ee91f717ac8edebf24fe",
+          "url": "https://github.com/Arkestone/mcp/commit/df2e7de1b55fa9349fa5201c4f5eb8b8abba1534"
+        },
+        "date": 1772486229736,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Total Coverage",
+            "value": 84.9,
             "unit": "%"
           }
         ]
