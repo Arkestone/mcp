@@ -9,14 +9,15 @@ concurrency:
 
 permissions:
   contents: read
+  pull-requests: write  # needed for pr-title status comment
 
 env:
   CGO_ENABLED: '0'
   GOFLAGS: '-buildvcs=false'
 
 jobs:
-  go-mod-tidy:
-    name: go mod tidy
+  go-checks:
+    name: Go Checks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,12 +32,6 @@ jobs:
             echo "::error::go.mod or go.sum is out of date. Run 'go mod tidy' locally and commit the changes."
             exit 1
           fi
-
-  goreleaser-check:
-    name: GoReleaser Config
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
       - name: Check GoReleaser config
         uses: goreleaser/goreleaser-action@v6
         with:

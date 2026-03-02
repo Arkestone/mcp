@@ -3,6 +3,11 @@ name: CI
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'website/**'
+      - 'examples/**'
   pull_request:
 
 concurrency:
@@ -38,12 +43,10 @@ jobs:
             gofmt -l .
             exit 1
           fi
-      - name: Go vet
-        run: go vet ./...
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
-          version: latest
+          version: v1.64.8
       - name: GoReleaser config check
         uses: goreleaser/goreleaser-action@v6
         with:
@@ -86,7 +89,7 @@ jobs:
 
   test-integration:
     name: Integration Tests
-    needs: [lint, test]
+    needs: [test]
     runs-on: ubuntu-latest
     env:
       LLM_ENDPOINT: ${{ secrets.LLM_ENDPOINT }}
@@ -106,7 +109,7 @@ jobs:
 
   build:
     name: Build
-    needs: lint
+    needs: [lint, test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -157,3 +160,4 @@ jobs:
           tags: ghcr.io/arkestone/${{ matrix.server }}:ci
           cache-from: type=gha,scope=${{ matrix.server }}
           cache-to: type=gha,mode=max,scope=${{ matrix.server }}
+
