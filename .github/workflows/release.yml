@@ -7,7 +7,10 @@ on:
 permissions:
   contents: write
   packages: write
-  id-token: write
+
+env:
+  CGO_ENABLED: '0'
+  GOFLAGS: '-buildvcs=false'
 
 jobs:
   release:
@@ -19,7 +22,8 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.24'
+          go-version-file: go.mod
+          cache: true
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
@@ -38,10 +42,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Make GHCR packages public
-        # Requires a PAT with write:packages + org:admin scope stored as PACKAGES_TOKEN.
-        # GITHUB_TOKEN cannot change org package visibility (insufficient permissions).
-        # To configure: Settings → Secrets → Actions → New secret: PACKAGES_TOKEN
-        # To do it manually: https://github.com/orgs/Arkestone/packages
+        # Requires a PAT with write:packages scope stored as PACKAGES_TOKEN org secret.
+        # GITHUB_TOKEN cannot change org package visibility.
+        # To create manually: https://github.com/orgs/Arkestone/packages
         if: ${{ secrets.PACKAGES_TOKEN != '' }}
         env:
           GH_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
@@ -50,5 +53,5 @@ jobs:
             gh api --method PATCH \
               /orgs/Arkestone/packages/container/$pkg \
               -f visibility=public \
-              --silent && echo "✓ $pkg → public" || echo "⚠ $pkg: $?"
+              --silent && echo "✓ $pkg → public" || echo "⚠ $pkg: API call failed"
           done

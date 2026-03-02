@@ -13,6 +13,10 @@ permissions:
   contents: read
   pull-requests: write
 
+env:
+  CGO_ENABLED: '0'
+  GOFLAGS: '-buildvcs=false'
+
 jobs:
   lint:
     name: Lint
@@ -21,10 +25,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.24'
+          go-version-file: go.mod
           cache: true
-      - name: Go vet
-        run: go vet ./...
+      - name: go mod tidy check
+        run: |
+          go mod tidy
+          git diff --exit-code go.mod go.sum
       - name: Check formatting
         run: |
           if [ -n "$(gofmt -l .)" ]; then
@@ -32,25 +38,29 @@ jobs:
             gofmt -l .
             exit 1
           fi
+      - name: Go vet
+        run: go vet ./...
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
           version: latest
+      - name: GoReleaser config check
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          version: '~> v2'
+          args: check
 
   test:
-    name: Test (Go ${{ matrix.go-version }})
+    name: Test
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        go-version: ['1.24.x']
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: ${{ matrix.go-version }}
+          go-version-file: go.mod
           cache: true
       - name: Run tests
-        run: go test -race -count=1 -coverprofile=coverage.out -covermode=atomic ./...
+        run: go test -count=1 -coverprofile=coverage.out -covermode=atomic ./...
       - name: Coverage summary
         run: |
           total=$(go tool cover -func=coverage.out | grep ^total | awk '{print $3}')
@@ -62,11 +72,11 @@ jobs:
       - name: Upload coverage
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-${{ matrix.go-version }}
+          name: coverage
           path: coverage.out
+          retention-days: 7
       - name: Upload to Codecov
-        if: matrix.go-version == '1.24.x'
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           files: coverage.out
           flags: unittests
@@ -82,11 +92,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.24'
+          go-version-file: go.mod
           cache: true
       - name: Run integration tests
-        run: go test -tags integration -race -count=1 ./...
+        run: go test -tags integration -count=1 ./...
       - name: Run LLM integration tests
+        if: ${{ secrets.LLM_ENDPOINT != '' }}
         run: go test -tags integration -v -run TestLLMEndpointIntegration -count=1 ./pkg/optimizer/
         env:
           LLM_ENDPOINT: ${{ secrets.LLM_ENDPOINT }}
@@ -101,80 +112,48 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.24'
+          go-version-file: go.mod
           cache: true
-      - name: Build binaries
+      - name: Build all servers
         run: |
-          CGO_ENABLED=0 go build -o mcp-instructions ./servers/mcp-instructions/cmd/mcp-instructions
-          CGO_ENABLED=0 go build -o mcp-skills ./servers/mcp-skills/cmd/mcp-skills
-          CGO_ENABLED=0 go build -o mcp-adr ./servers/mcp-adr/cmd/mcp-adr
-          CGO_ENABLED=0 go build -o mcp-memory ./servers/mcp-memory/cmd/mcp-memory
-          CGO_ENABLED=0 go build -o mcp-prompts ./servers/mcp-prompts/cmd/mcp-prompts
-          CGO_ENABLED=0 go build -o mcp-graph ./servers/mcp-graph/cmd/mcp-graph
-      - name: Verify binaries
-        run: |
-          ./mcp-instructions --help || true
-          ./mcp-skills --help || true
-          ./mcp-adr --help || true
-          ./mcp-memory --help || true
-          ./mcp-prompts --help || true
-          ./mcp-graph --help || true
+          for server in mcp-instructions mcp-skills mcp-adr mcp-memory mcp-prompts mcp-graph; do
+            echo "Building $server..."
+            go build -o "dist/$server" "./servers/$server/cmd/$server"
+          done
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: binaries
+          path: dist/
+          retention-days: 1
 
   docker:
-    name: Docker Build
+    name: Docker (${{ matrix.server }})
     needs: [lint, test]
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        server:
+          - mcp-instructions
+          - mcp-skills
+          - mcp-adr
+          - mcp-memory
+          - mcp-prompts
+          - mcp-graph
     steps:
       - uses: actions/checkout@v4
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Build mcp-instructions Docker image (multi-arch)
+      - name: Build ${{ matrix.server }} (multi-arch, no push)
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: servers/mcp-instructions/Dockerfile
+          file: servers/${{ matrix.server }}/Dockerfile
           push: false
           platforms: linux/amd64,linux/arm64
-          tags: ghcr.io/arkestone/mcp-instructions:ci
-      - name: Build mcp-skills Docker image (multi-arch)
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: servers/mcp-skills/Dockerfile
-          push: false
-          platforms: linux/amd64,linux/arm64
-          tags: ghcr.io/arkestone/mcp-skills:ci
-      - name: Build mcp-adr Docker image (multi-arch)
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: servers/mcp-adr/Dockerfile
-          push: false
-          platforms: linux/amd64,linux/arm64
-          tags: ghcr.io/arkestone/mcp-adr:ci
-      - name: Build mcp-memory Docker image (multi-arch)
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: servers/mcp-memory/Dockerfile
-          push: false
-          platforms: linux/amd64,linux/arm64
-          tags: ghcr.io/arkestone/mcp-memory:ci
-      - name: Build mcp-prompts Docker image (multi-arch)
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: servers/mcp-prompts/Dockerfile
-          push: false
-          platforms: linux/amd64,linux/arm64
-          tags: ghcr.io/arkestone/mcp-prompts:ci
-      - name: Build mcp-graph Docker image (multi-arch)
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: servers/mcp-graph/Dockerfile
-          push: false
-          platforms: linux/amd64,linux/arm64
-          tags: ghcr.io/arkestone/mcp-graph:ci
+          tags: ghcr.io/arkestone/${{ matrix.server }}:ci
+          cache-from: type=gha,scope=${{ matrix.server }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.server }}
