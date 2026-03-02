@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772469144462,
+  "lastUpdate": 1772469410211,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Binary Sizes": [
@@ -1373,6 +1373,60 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/9df0ccd5f7c7833a4a9200845a42cc0351ec3beb"
         },
         "date": 1772469142433,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "mcp-instructions",
+            "value": 8.274,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-skills",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-adr",
+            "value": 8.602,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-memory",
+            "value": 8.285,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-prompts",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-graph",
+            "value": 7.914,
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "a5a62b9553c6550f3b1e8db0470544560095fb04",
+          "message": "ci(release): use GITHUB_TOKEN for GHCR visibility with PACKAGES_TOKEN fallback\n\nThe workflow's 'packages: write' permission grants write:packages scope to\nGITHUB_TOKEN, making it sufficient to PATCH package visibility without a\nseparate PAT in most cases.\n\nChanges:\n- Add comment on 'packages: write' clarifying it enables visibility changes\n- Use '${{ secrets.PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}' so org-level\n  PAT is preferred when configured but GITHUB_TOKEN works out of the box\n- Parse HTTP status from response to distinguish 200/204 (success),\n  404 (package missing) and other errors instead of swallowing all failures\n- Emit ::warning:: with PAT instructions only when HTTP status is unexpected\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T17:36:10+01:00",
+          "tree_id": "77c74891c4d4f56b8d89e6b37081dee3c32bc85f",
+          "url": "https://github.com/Arkestone/mcp/commit/a5a62b9553c6550f3b1e8db0470544560095fb04"
+        },
+        "date": 1772469409902,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
