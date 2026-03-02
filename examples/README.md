@@ -25,6 +25,9 @@ Ready-to-use MCP client configuration snippets for all Arkestone MCP servers.
     },
     "memory": {
       "command": "mcp-memory"
+    },
+    "graph": {
+      "command": "mcp-graph"
     }
   }
 }
@@ -56,6 +59,12 @@ Ready-to-use MCP client configuration snippets for all Arkestone MCP servers.
       "env": {
         "MEMORY_DIR": "~/.local/share/mcp-memory"
       }
+    },
+    "graph": {
+      "command": "mcp-graph",
+      "env": {
+        "GRAPH_DIR": "~/.local/share/mcp-graph"
+      }
     }
   }
 }
@@ -70,7 +79,8 @@ Ready-to-use MCP client configuration snippets for all Arkestone MCP servers.
     "skills":       { "url": "http://localhost:8081" },
     "prompts":      { "url": "http://localhost:8082" },
     "adrs":         { "url": "http://localhost:8083" },
-    "memory":       { "url": "http://localhost:8084" }
+    "memory":       { "url": "http://localhost:8084" },
+    "graph":        { "url": "http://localhost:8085" }
   }
 }
 ```
@@ -119,8 +129,17 @@ services:
       MEMORY_DIR: /data
     volumes: ["memory-data:/data"]
 
+  mcp-graph:
+    image: ghcr.io/arkestone/mcp-graph:latest
+    ports: ["8085:8085"]
+    environment:
+      GRAPH_TRANSPORT: http
+      GRAPH_DIR: /data
+    volumes: ["graph-data:/data"]
+
 volumes:
   memory-data:
+  graph-data:
 ```
 
 ## Stdio (direct process, for local use)
@@ -140,5 +159,8 @@ mcp-adr -dirs /path/to/repo
 
 # Memory server (no dirs needed — uses MEMORY_DIR for storage)
 mcp-memory
+
+# Graph server (no dirs needed — uses GRAPH_DIR for storage)
+mcp-graph
 ```
 
