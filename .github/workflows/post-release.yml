@@ -119,13 +119,24 @@ jobs:
             -p "${PORT}:${PORT}" \
             "${IMAGE}" --transport http --addr ":${PORT}" --dirs /tmp
 
-          for i in $(seq 1 15); do
+          STARTED=0
+          for i in $(seq 1 20); do
             if curl -sf "http://localhost:${PORT}/healthz" > /dev/null 2>&1; then
               echo "✓ ${{ matrix.server }} healthz OK (attempt ${i})"
+              STARTED=1
               break
             fi
             sleep 1
           done
+
+          if [ "${STARTED}" -eq 0 ]; then
+            echo "::error::Server did not respond within 20s"
+            echo "--- Container logs ---"
+            docker logs smoke-${{ matrix.server }} 2>&1 || true
+            docker stop smoke-${{ matrix.server }} 2>/dev/null || true
+            docker rm smoke-${{ matrix.server }} 2>/dev/null || true
+            exit 1
+          fi
 
           curl -sf "http://localhost:${PORT}/healthz"
           docker stop smoke-${{ matrix.server }} 2>/dev/null || true
