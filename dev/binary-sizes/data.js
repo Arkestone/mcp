@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772461221599,
+  "lastUpdate": 1772461484401,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Binary Sizes": [
@@ -617,6 +617,60 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/01e87a8627bd8359fad94810ad5ca31f3cd910a1"
         },
         "date": 1772461221092,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "mcp-instructions",
+            "value": 8.274,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-skills",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-adr",
+            "value": 8.602,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-memory",
+            "value": 8.285,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-prompts",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-graph",
+            "value": 7.914,
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "be22141f3d36eb8aac9d0838c72fa35420aef7aa",
+          "message": "fix(release): add --overwrite flag on workflow_dispatch to handle re-runs\n\nWhen re-running the release workflow for an existing tag (via workflow_dispatch),\ngoreleaser fails with 422 'already_exists' when trying to upload binary assets\nthat were already successfully uploaded.\n\nThe --overwrite flag tells goreleaser to replace existing release assets,\nallowing partial re-runs (e.g., to push missing Docker images after a\npreviously failed release workflow).\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T15:24:17+01:00",
+          "tree_id": "3331adb7013f172a641c73b30193f29d93615208",
+          "url": "https://github.com/Arkestone/mcp/commit/be22141f3d36eb8aac9d0838c72fa35420aef7aa"
+        },
+        "date": 1772461484076,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
