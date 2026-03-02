@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772484357828,
+  "lastUpdate": 1772484440471,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Test Coverage": [
@@ -1043,6 +1043,35 @@ window.BENCHMARK_DATA = {
           {
             "name": "Total Coverage",
             "value": 85.1,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "baf7a690ed99fd5d7fa48adfa087239304b922d0",
+          "message": "feat(filter): name precision ratio bonus\n\nName precision bonus (+20% when ≥75% of name tokens covered by query):\n- Rewards items with concise names closely matching the query\n- 'jwt-auth' (2/2 = 100% coverage) beats 'jwt-auth-middleware-guide' (2/4 = 50%)\n  for query 'jwt auth'\n- Coverage computed via reverse pass: for each name token, check if any\n  query token matches (exact, stem, or prefix)\n- Only fires when name is non-empty and coverage >= 75% threshold\n\nNew constants: namePrecisionThreshold=75, namePrecisionBonus=20\nTests added: 3 new precision tests (concise wins, low coverage no bonus, single token)\npkg/filter coverage: 94.8% → 95.4%\n\nFull scoring pipeline now: tokenize → match → coverage bonus → co-occur bonus\n→ phrase adjacency → short-tag → name precision\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T21:46:45+01:00",
+          "tree_id": "b5b5e629e3d984cf904d2d568be7f770c1950954",
+          "url": "https://github.com/Arkestone/mcp/commit/baf7a690ed99fd5d7fa48adfa087239304b922d0"
+        },
+        "date": 1772484439504,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Total Coverage",
+            "value": 85.2,
             "unit": "%"
           }
         ]
