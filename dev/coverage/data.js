@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772458417382,
+  "lastUpdate": 1772458819569,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Test Coverage": [
@@ -81,6 +81,35 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/9d92da677b390a066b3119099fe37499e90a6806"
         },
         "date": 1772458416346,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Total Coverage",
+            "value": 84.2,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "93fea6dd409b6c1384cd330c363e3fe6daf9c9a9",
+          "message": "fix(post-release): use github.repository instead of hardcoded repo name\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T14:39:45+01:00",
+          "tree_id": "28d116e068446014292f9dc3305f5a0034638463",
+          "url": "https://github.com/Arkestone/mcp/commit/93fea6dd409b6c1384cd330c363e3fe6daf9c9a9"
+        },
+        "date": 1772458818530,
         "tool": "customBiggerIsBetter",
         "benches": [
           {
