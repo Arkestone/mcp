@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772465384511,
+  "lastUpdate": 1772465779819,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Test Coverage": [
@@ -632,6 +632,35 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/3a4ca923f84e9eab55a9e8497866a3b9ea582050"
         },
         "date": 1772465383517,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Total Coverage",
+            "value": 84.2,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "c539af17b28f6f92de6cfb7805ef8fb5cc21b46f",
+          "message": "fix(release): delete entire release on re-run, not just assets\n\nDeleting individual assets is insufficient because goreleaser uploads archives\nin parallel and retries failed uploads, causing 422 already_exists errors for\nassets that were already successfully uploaded in the same run.\n\nDeleting the entire release before goreleaser runs gives it a clean slate to\nrecreate the release and upload all assets without conflicts.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T16:35:41+01:00",
+          "tree_id": "36422c1b7bd2db12d329b300f8bad0c85027a3ca",
+          "url": "https://github.com/Arkestone/mcp/commit/c539af17b28f6f92de6cfb7805ef8fb5cc21b46f"
+        },
+        "date": 1772465778841,
         "tool": "customBiggerIsBetter",
         "benches": [
           {
