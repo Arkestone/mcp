@@ -1,0 +1,84 @@
+name: Smoke Test
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Monday 09:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CGO_ENABLED: '0'
+  GOFLAGS: '-buildvcs=false'
+
+jobs:
+  smoke:
+    name: Smoke — ${{ matrix.server }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        server:
+          - mcp-instructions
+          - mcp-skills
+          - mcp-adr
+          - mcp-memory
+          - mcp-prompts
+          - mcp-graph
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Build ${{ matrix.server }}
+        run: go build -o /tmp/${{ matrix.server }} ./servers/${{ matrix.server }}/cmd/${{ matrix.server }}
+
+      - name: Smoke test ${{ matrix.server }}
+        run: |
+          PORT=$(python3 -c "import socket; s=socket.socket(); s.bind(('',0)); print(s.getsockname()[1]); s.close()")
+          TMPDIR=$(mktemp -d)
+          /tmp/${{ matrix.server }} --transport http --addr ":${PORT}" --dirs "${TMPDIR}" &
+          SERVER_PID=$!
+
+          # Wait for server to start (up to 10 s)
+          STARTED=0
+          for i in $(seq 1 10); do
+            if curl -sf "http://localhost:${PORT}/healthz" > /dev/null 2>&1; then
+              echo "✓ Server started on port ${PORT} (attempt ${i})"
+              STARTED=1
+              break
+            fi
+            sleep 1
+          done
+
+          if [ "${STARTED}" -eq 0 ]; then
+            echo "✗ Server did not start within 10 seconds"
+            kill "${SERVER_PID}" 2>/dev/null || true
+            exit 1
+          fi
+
+          # Verify healthz response
+          RESPONSE=$(curl -sf "http://localhost:${PORT}/healthz")
+          echo "Health response: ${RESPONSE}"
+
+          kill "${SERVER_PID}" 2>/dev/null || true
+          wait "${SERVER_PID}" 2>/dev/null || true
+          echo "✓ ${{ matrix.server }} smoke test passed"
+
+  summary:
+    name: Smoke Test Summary
+    if: always()
+    needs: smoke
+    runs-on: ubuntu-latest
+    steps:
+      - name: Result
+        run: |
+          if [ "${{ needs.smoke.result }}" = "success" ]; then
+            echo "✅ All smoke tests passed"
+          else
+            echo "❌ One or more smoke tests failed"
+            exit 1
+          fi

@@ -1,0 +1,87 @@
+name: Changelog Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  check:
+    name: Changelog Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for CHANGELOG update
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const title = pr.title || '';
+            const labels = pr.labels.map(l => l.name);
+            const marker = '<!-- changelog-check -->';
+
+            // Only enforce on feat/fix PRs (by title prefix or label)
+            const isFeatOrFix =
+              /^(feat|fix)[\(:]/i.test(title) ||
+              labels.includes('enhancement') ||
+              labels.includes('bug');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+            });
+            const existing = comments.find(c => c.body.includes(marker));
+
+            if (!isFeatOrFix) {
+              // Remove any existing warning if PR no longer qualifies
+              if (existing) {
+                await github.rest.issues.deleteComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: existing.id,
+                });
+              }
+              console.log('Not a feat/fix PR — skipping changelog check');
+              return;
+            }
+
+            // Get changed files
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              per_page: 100,
+            });
+
+            const hasChangelog = files.some(f => f.filename.endsWith('CHANGELOG.md'));
+            const prType = /^fix[\(:]/.test(title) ? 'fix' : 'feat';
+
+            if (!hasChangelog) {
+              const body = `${marker}\n📋 **Changelog reminder**: This \`${prType}:\` PR doesn't update any \`CHANGELOG.md\`.\n\nPlease add an entry to the relevant server's changelog (e.g. \`servers/mcp-*/CHANGELOG.md\`) or the root \`CHANGELOG.md\`.`;
+              if (existing) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: existing.id,
+                  body,
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  body,
+                });
+              }
+              core.warning('feat/fix PR is missing a CHANGELOG.md update');
+            } else if (existing) {
+              await github.rest.issues.deleteComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+              });
+              console.log('CHANGELOG updated — removed reminder comment');
+            }

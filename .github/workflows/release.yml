@@ -12,6 +12,7 @@ on:
 permissions:
   contents: write
   packages: write
+  id-token: write  # Required for Cosign OIDC keyless signing
 
 env:
   CGO_ENABLED: '0'
@@ -63,3 +64,36 @@ jobs:
               -f visibility=public \
               --silent && echo "✓ $pkg → public" || echo "⚠ $pkg: API call failed"
           done
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3
+
+      - name: Sign Docker images (keyless OIDC)
+        env:
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+        run: |
+          for server in mcp-instructions mcp-skills mcp-adr mcp-memory mcp-prompts mcp-graph; do
+            IMAGE="ghcr.io/arkestone/${server}"
+            DIGEST=$(docker buildx imagetools inspect "${IMAGE}:${RELEASE_TAG}" \
+              --format '{{.Manifest.Digest}}' 2>/dev/null || true)
+            if [ -n "${DIGEST}" ]; then
+              cosign sign --yes "${IMAGE}@${DIGEST}"
+              echo "✓ Signed ${IMAGE}@${DIGEST}"
+            else
+              echo "⚠ Could not get digest for ${IMAGE}:${RELEASE_TAG} — skipping"
+            fi
+          done
+
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          path: dist/
+          format: spdx-json
+          artifact-name: sbom-binaries.spdx.json
+          output-file: sbom-binaries.spdx.json
+
+      - name: Attach SBOM to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+        run: gh release upload "${RELEASE_TAG}" sbom-binaries.spdx.json --clobber
