@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772465379769,
+  "lastUpdate": 1772465773616,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Binary Sizes": [
@@ -1157,6 +1157,60 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/3a4ca923f84e9eab55a9e8497866a3b9ea582050"
         },
         "date": 1772465379157,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "mcp-instructions",
+            "value": 8.274,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-skills",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-adr",
+            "value": 8.602,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-memory",
+            "value": 8.285,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-prompts",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-graph",
+            "value": 7.914,
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "c539af17b28f6f92de6cfb7805ef8fb5cc21b46f",
+          "message": "fix(release): delete entire release on re-run, not just assets\n\nDeleting individual assets is insufficient because goreleaser uploads archives\nin parallel and retries failed uploads, causing 422 already_exists errors for\nassets that were already successfully uploaded in the same run.\n\nDeleting the entire release before goreleaser runs gives it a clean slate to\nrecreate the release and upload all assets without conflicts.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T16:35:41+01:00",
+          "tree_id": "36422c1b7bd2db12d329b300f8bad0c85027a3ca",
+          "url": "https://github.com/Arkestone/mcp/commit/c539af17b28f6f92de6cfb7805ef8fb5cc21b46f"
+        },
+        "date": 1772465772608,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
