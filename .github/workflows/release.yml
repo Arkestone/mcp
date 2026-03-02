@@ -49,16 +49,24 @@ jobs:
           TAG: ${{ inputs.tag }}
         run: |
           echo "Cleaning up existing assets for ${TAG} to allow goreleaser to re-upload…"
-          ASSET_IDS=$(gh release view "${TAG}" --repo "${{ github.repository }}" \
-            --json assets --jq '.assets[].apiUrl | split("/") | last' 2>/dev/null || true)
-          if [ -z "${ASSET_IDS}" ]; then
-            echo "No existing assets found"
+          # Use --paginate to handle releases with many assets (>30)
+          RELEASE_ID=$(gh api "/repos/${{ github.repository }}/releases/tags/${TAG}" --jq '.id' 2>/dev/null || true)
+          if [ -z "${RELEASE_ID}" ]; then
+            echo "No existing release found for ${TAG}"
           else
-            while IFS= read -r id; do
-              [ -z "$id" ] && continue
-              gh api --method DELETE "/repos/${{ github.repository }}/releases/assets/${id}" --silent
-              echo "  Deleted asset ${id}"
-            done <<< "${ASSET_IDS}"
+            ASSET_IDS=$(gh api --paginate "/repos/${{ github.repository }}/releases/${RELEASE_ID}/assets" \
+              --jq '.[].id' 2>/dev/null || true)
+            if [ -z "${ASSET_IDS}" ]; then
+              echo "No existing assets found"
+            else
+              COUNT=0
+              while IFS= read -r id; do
+                [ -z "$id" ] && continue
+                gh api --method DELETE "/repos/${{ github.repository }}/releases/assets/${id}" --silent
+                COUNT=$((COUNT + 1))
+              done <<< "${ASSET_IDS}"
+              echo "  Deleted ${COUNT} assets"
+            fi
           fi
 
       - name: Run GoReleaser
