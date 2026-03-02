@@ -37,3 +37,13 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Make GHCR packages public
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          for pkg in mcp-instructions mcp-skills mcp-prompts mcp-adr mcp-memory mcp-graph; do
+            gh api --method PATCH \
+              /orgs/Arkestone/packages/container/$pkg \
+              -f visibility=public \
+              --silent && echo "✓ $pkg → public" || echo "⚠ $pkg skipped (may not exist yet)"
+          done
