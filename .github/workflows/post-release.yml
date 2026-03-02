@@ -35,7 +35,7 @@ jobs:
           FAILED=0
 
           # Fetch asset list
-          ASSETS=$(gh release view "${TAG}" --repo Arkestone/mcp --json assets --jq '[.assets[].name]')
+          ASSETS=$(gh release view "${TAG}" --repo "${{ github.repository }}" --json assets --jq '[.assets[].name]')
           echo "Assets found: $ASSETS"
 
           check_asset() {
