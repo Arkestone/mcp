@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772490862493,
+  "lastUpdate": 1772492182818,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Test Coverage": [
@@ -1125,6 +1125,35 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/a7f8955ad3bea6a0c3c54fb92cb5be83d4b96b21"
         },
         "date": 1772490861386,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Total Coverage",
+            "value": 85.8,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "7735fd0df42f854d4ecf27eb15eab711617efbc2",
+          "message": "fix: distinguish rate-limit 403 from private-repo 403 in GitHub client\n\nWhen calling the GitHub API without a token, public repos that exceed\nthe 60 req/hr unauthenticated rate limit also return HTTP 403. The\nprevious error message was misleading: 'is this a private repo?'.\n\nNow httpError reads the response body (JSON) and the X-RateLimit-Remaining\nheader to detect rate-limit errors and returns a clear message:\n  'HTTP 403 for <path>: rate limit exceeded — set GITHUB_TOKEN to increase\n   the rate limit (5000 req/hr vs 60 req/hr)'\n\nAuth/private-repo 403s (body does not mention 'rate limit') still produce\nthe original 'no GITHUB_TOKEN set — is this a private repo?' hint.\n\nAdded tests: TestFetchDir_HTTP403RateLimitViaBody,\nTestFetchDir_HTTP403RateLimitViaHeader, TestFetchFile_HTTP403RateLimitViaBody\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T23:55:49+01:00",
+          "tree_id": "45344908c493139cd195484b94f544736ba01f41",
+          "url": "https://github.com/Arkestone/mcp/commit/7735fd0df42f854d4ecf27eb15eab711617efbc2"
+        },
+        "date": 1772492181975,
         "tool": "customBiggerIsBetter",
         "benches": [
           {
