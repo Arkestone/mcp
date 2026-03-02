@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772465779819,
+  "lastUpdate": 1772466106318,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Test Coverage": [
@@ -661,6 +661,35 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/c539af17b28f6f92de6cfb7805ef8fb5cc21b46f"
         },
         "date": 1772465778841,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Total Coverage",
+            "value": 84.2,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "73547b9676237d3bbe4eb049e182734c53d8ee0c",
+          "message": "fix(release): add concurrency control to prevent parallel release runs\n\nForce-pushing a tag while also triggering workflow_dispatch caused two\nrelease runs to execute in parallel, both trying to create/update the same\nGitHub release. Adding concurrency group cancels the older run automatically.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T16:41:10+01:00",
+          "tree_id": "6211facf094c1f87ee57bfbdfac41eed4f918d37",
+          "url": "https://github.com/Arkestone/mcp/commit/73547b9676237d3bbe4eb049e182734c53d8ee0c"
+        },
+        "date": 1772466105413,
         "tool": "customBiggerIsBetter",
         "benches": [
           {
