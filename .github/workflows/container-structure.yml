@@ -64,9 +64,12 @@ jobs:
             - name: "CA certificates present"
               path: "/etc/ssl/certs/ca-certificates.crt"
               shouldExist: true
-          metadataTests:
-            - user: "nonroot"
-              entrypoint: ["/${{ matrix.server }}"]
+            - name: "No shell (distroless)"
+              path: "/bin/sh"
+              shouldExist: false
+          metadataTest:
+            user: "nonroot"
+            entrypoint: ["/${{ matrix.server }}"]
           EOF
 
       - name: Run structure tests

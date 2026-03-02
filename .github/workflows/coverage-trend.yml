@@ -42,6 +42,19 @@ jobs:
           echo "Coverage total: ${TOTAL}%"
           printf '[{"name":"Total Coverage","unit":"%%","value":%s}]\n' "${TOTAL}" > coverage-result.json
 
+      - name: Bootstrap gh-pages if missing
+        run: |
+          if ! git ls-remote --exit-code --heads origin gh-pages > /dev/null 2>&1; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            HEAD=$(git rev-parse HEAD)
+            git checkout --orphan gh-pages
+            git rm -rf . > /dev/null 2>&1 || true
+            git commit --allow-empty -m "chore: initialize gh-pages branch"
+            git push origin gh-pages
+            git checkout "$HEAD"
+          fi
+
       - name: Store coverage trend
         uses: benchmark-action/github-action-benchmark@v1
         with:

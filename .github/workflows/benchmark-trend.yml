@@ -40,6 +40,19 @@ jobs:
             echo "No benchmark functions found — trend storage skipped"
           fi
 
+      - name: Bootstrap gh-pages if missing
+        run: |
+          if ! git ls-remote --exit-code --heads origin gh-pages > /dev/null 2>&1; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            HEAD=$(git rev-parse HEAD)
+            git checkout --orphan gh-pages
+            git rm -rf . > /dev/null 2>&1 || true
+            git commit --allow-empty -m "chore: initialize gh-pages branch"
+            git push origin gh-pages
+            git checkout "$HEAD"
+          fi
+
       - name: Store benchmark result
         if: steps.check.outputs.has_benchmarks == 'true'
         uses: benchmark-action/github-action-benchmark@v1
