@@ -88,6 +88,10 @@ jobs:
     name: Integration Tests
     needs: [lint, test]
     runs-on: ubuntu-latest
+    env:
+      LLM_ENDPOINT: ${{ secrets.LLM_ENDPOINT }}
+      LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+      LLM_MODEL: ${{ secrets.LLM_MODEL }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -97,12 +101,8 @@ jobs:
       - name: Run integration tests
         run: go test -tags integration -count=1 ./...
       - name: Run LLM integration tests
-        if: ${{ secrets.LLM_ENDPOINT != '' }}
+        if: ${{ env.LLM_ENDPOINT != '' }}
         run: go test -tags integration -v -run TestLLMEndpointIntegration -count=1 ./pkg/optimizer/
-        env:
-          LLM_ENDPOINT: ${{ secrets.LLM_ENDPOINT }}
-          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
-          LLM_MODEL: ${{ secrets.LLM_MODEL }}
 
   build:
     name: Build

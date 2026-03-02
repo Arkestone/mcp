@@ -45,10 +45,13 @@ jobs:
         # Requires a PAT with write:packages scope stored as PACKAGES_TOKEN org secret.
         # GITHUB_TOKEN cannot change org package visibility.
         # To create manually: https://github.com/orgs/Arkestone/packages
-        if: ${{ secrets.PACKAGES_TOKEN != '' }}
         env:
           GH_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
         run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "PACKAGES_TOKEN not configured, skipping visibility update"
+            exit 0
+          fi
           for pkg in mcp-instructions mcp-skills mcp-prompts mcp-adr mcp-memory mcp-graph; do
             gh api --method PATCH \
               /orgs/Arkestone/packages/container/$pkg \
