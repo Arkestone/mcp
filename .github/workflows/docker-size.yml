@@ -1,0 +1,70 @@
+name: Docker Image Size
+
+on:
+  schedule:
+    - cron: '0 5 * * 1'  # Weekly on Monday at 05:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  size:
+    name: Size (${{ matrix.server }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        server:
+          - mcp-instructions
+          - mcp-skills
+          - mcp-adr
+          - mcp-memory
+          - mcp-prompts
+          - mcp-graph
+
+    env:
+      MAX_MB: '20'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build ${{ matrix.server }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: servers/${{ matrix.server }}/Dockerfile
+          push: false
+          load: true
+          tags: ${{ matrix.server }}:audit
+          platforms: linux/amd64
+          cache-from: type=gha,scope=${{ matrix.server }}-size
+          cache-to: type=gha,mode=max,scope=${{ matrix.server }}-size
+
+      - name: Check image size
+        run: |
+          size=$(docker image inspect "${{ matrix.server }}:audit" --format='{{.Size}}')
+          size_mb=$(echo "scale=2; $size / 1048576" | bc)
+          compressed_bytes=$(docker save "${{ matrix.server }}:audit" | gzip | wc -c)
+          compressed_mb=$(echo "scale=2; $compressed_bytes / 1048576" | bc)
+
+          echo "### ${{ matrix.server }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Metric | Size |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|--------|------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Uncompressed | **${size_mb} MB** |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Compressed   | **${compressed_mb} MB** |" >> "$GITHUB_STEP_SUMMARY"
+
+          echo "Uncompressed: ${size_mb} MB"
+          echo "Compressed:   ${compressed_mb} MB (limit: ${MAX_MB} MB)"
+
+          if awk "BEGIN { exit !(${compressed_mb} + 0 > ${MAX_MB} + 0) }"; then
+            echo "::error title=Image Too Large::${{ matrix.server }} compressed size ${compressed_mb} MB exceeds ${MAX_MB} MB limit"
+            echo "| Status | ❌ Exceeds limit (${MAX_MB} MB) |" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
+          echo "✅ ${{ matrix.server }}: ${compressed_mb} MB ≤ ${MAX_MB} MB"
+          echo "| Status | ✅ Within limit |" >> "$GITHUB_STEP_SUMMARY"
