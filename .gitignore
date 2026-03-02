@@ -655,3 +655,12 @@ FodyWeavers.xsd
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/linux,macos,windows,archives,virtualenv,visualstudio,jetbrains+all,visualstudiocode,compressedarchive,go
+# GoReleaser build output
+dist/
+
+# Local tools
+actionlint
+
+# Coverage reports
+cover.out
+coverage.out
