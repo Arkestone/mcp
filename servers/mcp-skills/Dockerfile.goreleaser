@@ -1,14 +1,10 @@
-FROM alpine:3.21
+FROM gcr.io/distroless/static-debian12:nonroot
 
 LABEL org.opencontainers.image.title="mcp-skills" \
       org.opencontainers.image.description="MCP server for Copilot skills" \
       org.opencontainers.image.source="https://github.com/Arkestone/mcp" \
       org.opencontainers.image.license="MIT"
 
-RUN apk add --no-cache ca-certificates && \
-    adduser -D -u 1000 mcp
-
-USER mcp
 ARG TARGETPLATFORM
-COPY $TARGETPLATFORM/mcp-skills /usr/local/bin/mcp-skills
-ENTRYPOINT ["mcp-skills"]
+COPY $TARGETPLATFORM/mcp-skills /mcp-skills
+ENTRYPOINT ["/mcp-skills"]

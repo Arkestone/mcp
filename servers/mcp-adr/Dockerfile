@@ -11,16 +11,12 @@ ARG TARGETOS TARGETARCH
 RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
     go build -ldflags="-s -w" -o /mcp-adr ./servers/mcp-adr/cmd/mcp-adr
 
-FROM alpine:3.21
+FROM gcr.io/distroless/static-debian12:nonroot
 
 LABEL org.opencontainers.image.title="mcp-adr" \
       org.opencontainers.image.description="MCP server for Architecture Decision Records" \
       org.opencontainers.image.source="https://github.com/Arkestone/mcp" \
       org.opencontainers.image.license="MIT"
 
-RUN apk add --no-cache ca-certificates && \
-    adduser -D -u 1000 mcp
-
-USER mcp
-COPY --from=build /mcp-adr /usr/local/bin/mcp-adr
-ENTRYPOINT ["mcp-adr"]
+COPY --from=build /mcp-adr /mcp-adr
+ENTRYPOINT ["/mcp-adr"]

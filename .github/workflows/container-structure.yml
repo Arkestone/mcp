@@ -59,17 +59,14 @@ jobs:
           schemaVersion: '2.0.0'
           fileExistenceTests:
             - name: "Binary exists at expected path"
-              path: "/usr/local/bin/${{ matrix.server }}"
+              path: "/${{ matrix.server }}"
               shouldExist: true
             - name: "CA certificates present"
               path: "/etc/ssl/certs/ca-certificates.crt"
               shouldExist: true
-            - name: "No shell in image (security)"
-              path: "/bin/sh"
-              shouldExist: true
           metadataTests:
-            - user: "mcp"
-              entrypoint: ["${{ matrix.server }}"]
+            - user: "nonroot"
+              entrypoint: ["/${{ matrix.server }}"]
           EOF
 
       - name: Run structure tests

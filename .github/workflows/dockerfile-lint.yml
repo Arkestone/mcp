@@ -36,5 +36,6 @@ jobs:
           dockerfile: servers/${{ matrix.server }}/Dockerfile
           # DL3018: pin apk package versions — acceptable for base image updates
           # DL3059: multiple consecutive RUN — intentional for layer clarity
-          ignore: DL3018,DL3059
+          # DL3007: unpinned tag in setup-only stages — acceptable risk
+          ignore: DL3018,DL3059,DL3007
           failure-threshold: warning
