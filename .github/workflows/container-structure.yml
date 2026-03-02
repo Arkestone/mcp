@@ -68,7 +68,7 @@ jobs:
               path: "/bin/sh"
               shouldExist: false
           metadataTest:
-            user: "nonroot"
+            user: "65532"
             entrypoint: ["/${{ matrix.server }}"]
           EOF
 
