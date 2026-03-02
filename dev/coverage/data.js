@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772473404682,
+  "lastUpdate": 1772476305468,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Test Coverage": [
@@ -840,6 +840,35 @@ window.BENCHMARK_DATA = {
           {
             "name": "Total Coverage",
             "value": 84.2,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "db67dd9b51486fd5ef35b1b3eacc3630f82ec839",
+          "message": "feat: dynamic context loading with get-context tool and relevance filtering\n\nAdd context-aware filtering architecture across all three MCP servers\nso agents can load only the most relevant items without flooding the\ncontext window.\n\n## New: get-context (PRIMARY AGENT TOOL) on each server\n\n- mcp-instructions: get-context(file_path) → returns all applicable\n  instructions as a merged ready-to-inject block. Uses applyTo glob\n  patterns to include only relevant instructions; global instructions\n  (no applyTo) are always included.\n\n- mcp-skills: get-context(query, limit=5) → returns top-N most relevant\n  skills with full content and references, ranked by keyword match\n  (name ×3, description ×2, tags ×1). Default limit=5 to cap context use.\n\n- mcp-prompts: get-context(query, limit=5, type?) → same scoring model\n  for prompts and chatmodes; optional type filter.\n\n## New: pkg/glob — ** and {a,b} glob matching\n\nImplements VS Code-style applyTo patterns (e.g. **/*.go, **/*.{js,ts})\nwithout external dependencies using path.Match + custom ** recursion.\n\n## Improved filtering everywhere\n\n- list-instructions: file_path + source filters; returns total+matched\n- list-skills: query + source filters; returns total+matched\n- list-prompts: query + source + type filters; returns total+matched\n- optimize-instructions: now respects file_path filter before merging\n- optimize-skills: now respects query filter before merging\n- optimize-prompts: now respects query filter before merging\n\n## Full-tree discovery (loader/scanner rewrites)\n\n- All three servers now walk the entire directory tree (filepath.Walk)\n  finding instruction/skill/prompt files anywhere, including in hidden\n  subdirectories (.github/, etc.)\n- GitHub sync updated to use FetchDirRecursive (BFS) so remote repos\n  are fetched completely regardless of directory structure\n- Instruction applyTo supports both string and []string YAML formats\n\n## Agent workflow\n\n1. list-* with query/file_path → discover what exists (metadata only)\n2. get-context → load relevant content in one call\n3. get-skill / get-prompt → fetch specific item by name/URI if needed\n4. optimize-* → LLM-merge a filtered subset\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T19:31:05+01:00",
+          "tree_id": "c24417dc85b9d82a6477f38e8c7ef9244475ffd0",
+          "url": "https://github.com/Arkestone/mcp/commit/db67dd9b51486fd5ef35b1b3eacc3630f82ec839"
+        },
+        "date": 1772476303487,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Total Coverage",
+            "value": 79,
             "unit": "%"
           }
         ]
