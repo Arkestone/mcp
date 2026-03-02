@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772459561237,
+  "lastUpdate": 1772459665991,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Binary Sizes": [
@@ -347,6 +347,60 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/8c89c23aa16bff03cf794fe4f4192a082b274af4"
         },
         "date": 1772459560843,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "mcp-instructions",
+            "value": 8.274,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-skills",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-adr",
+            "value": 8.602,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-memory",
+            "value": 8.285,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-prompts",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-graph",
+            "value": 7.914,
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "371c2468e5d59a19d066d4e8c9253973062fff3a",
+          "message": "fix(link-check): replace invalid regex '^/docs/' with '^file://'\n\nLychee uses Rust regex; the '^/docs/' pattern caused a regex parse error\n('repetition operator missing expression'). Replaced with '^file://' to\nexclude file:// local links, which was the actual intent.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T14:53:55+01:00",
+          "tree_id": "8e27534179af10715440dd519c3842208798f81e",
+          "url": "https://github.com/Arkestone/mcp/commit/371c2468e5d59a19d066d4e8c9253973062fff3a"
+        },
+        "date": 1772459664875,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
