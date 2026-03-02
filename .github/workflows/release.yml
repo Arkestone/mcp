@@ -38,12 +38,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Make GHCR packages public
+        # Requires a PAT with write:packages + org:admin scope stored as PACKAGES_TOKEN.
+        # GITHUB_TOKEN cannot change org package visibility (insufficient permissions).
+        # To configure: Settings → Secrets → Actions → New secret: PACKAGES_TOKEN
+        # To do it manually: https://github.com/orgs/Arkestone/packages
+        if: ${{ secrets.PACKAGES_TOKEN != '' }}
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
         run: |
           for pkg in mcp-instructions mcp-skills mcp-prompts mcp-adr mcp-memory mcp-graph; do
             gh api --method PATCH \
               /orgs/Arkestone/packages/container/$pkg \
               -f visibility=public \
-              --silent && echo "✓ $pkg → public" || echo "⚠ $pkg skipped (may not exist yet)"
+              --silent && echo "✓ $pkg → public" || echo "⚠ $pkg: $?"
           done
