@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772469852468,
+  "lastUpdate": 1772473398284,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Binary Sizes": [
@@ -1481,6 +1481,60 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/404c7ff5faf6d613ee453a8bf6f399412fca23f5"
         },
         "date": 1772469852145,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "mcp-instructions",
+            "value": 8.274,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-skills",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-adr",
+            "value": 8.602,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-memory",
+            "value": 8.285,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-prompts",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-graph",
+            "value": 7.914,
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "2d0d26772ef7934f0335bb509bd57d96a603b281",
+          "message": "docs: add awesome-copilot configuration example\n\nShows how to configure mcp-instructions with github/awesome-copilot\nas a remote instruction source, covering:\n- VS Code mcp.json (stdio, Docker, HTTP)\n- Claude Desktop config\n- GitHub token for rate-limit protection\n- Pinning to a specific commit\n- URI reference table for available instructions\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T18:42:48+01:00",
+          "tree_id": "ecd1651bdb4370c2aad3ed902a8ad6dc2884ef46",
+          "url": "https://github.com/Arkestone/mcp/commit/2d0d26772ef7934f0335bb509bd57d96a603b281"
+        },
+        "date": 1772473397386,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
