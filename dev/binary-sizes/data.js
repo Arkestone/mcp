@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772464739759,
+  "lastUpdate": 1772464936818,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Binary Sizes": [
@@ -1049,6 +1049,60 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/fb06d5929fd883a8b6c0923da67e1fb6d7905da4"
         },
         "date": 1772464739232,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "mcp-instructions",
+            "value": 8.274,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-skills",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-adr",
+            "value": 8.602,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-memory",
+            "value": 8.285,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-prompts",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-graph",
+            "value": 7.914,
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "234c1746810ccef067337a0d2e2c4a05b0b20de1",
+          "message": "fix(post-release): add docker logs on smoke test failure, increase timeout\n\nAdd docker logs output when smoke test fails to diagnose container crashes.\nIncrease wait from 15s to 20s for container startup.\nUse explicit STARTED flag to distinguish timeout from success.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T16:21:49+01:00",
+          "tree_id": "79f59d9c72172df66e43d8c466281e6b94695034",
+          "url": "https://github.com/Arkestone/mcp/commit/234c1746810ccef067337a0d2e2c4a05b0b20de1"
+        },
+        "date": 1772464936425,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
