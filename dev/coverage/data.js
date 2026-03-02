@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772461490178,
+  "lastUpdate": 1772461811151,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Test Coverage": [
@@ -371,6 +371,35 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/be22141f3d36eb8aac9d0838c72fa35420aef7aa"
         },
         "date": 1772461489275,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Total Coverage",
+            "value": 84.2,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "67b352c82de50cefd849c2f0d504480993808e5b",
+          "message": "fix(release): use replace_existing_artifacts for re-run support\n\nReplace the invalid --overwrite flag with goreleaser's config option\nreplace_existing_artifacts: true. This allows workflow_dispatch re-runs\non an existing release tag to overwrite previously uploaded artifacts\n(e.g., to push missing Docker images after a failed release).\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T15:29:41+01:00",
+          "tree_id": "617ed00986a61a9ebb71388901ae485c655c16e2",
+          "url": "https://github.com/Arkestone/mcp/commit/67b352c82de50cefd849c2f0d504480993808e5b"
+        },
+        "date": 1772461810872,
         "tool": "customBiggerIsBetter",
         "benches": [
           {
