@@ -1,5 +1,12 @@
 # mcp-instructions
 
+<!-- install-badges -->
+| Transport | VS Code | VS Code Insiders |
+|-----------|---------|-----------------|
+| stdio | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=mcp-instructions&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22mcp-instructions%22%2C%20%22args%22%3A%20%5B%22--dirs%22%2C%20%22%24%7BworkspaceFolder%7D%22%5D%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-instructions&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22mcp-instructions%22%2C%20%22args%22%3A%20%5B%22--dirs%22%2C%20%22%24%7BworkspaceFolder%7D%22%5D%7D) |
+| HTTP  | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=mcp-instructions&config=%7B%22type%22%3A%20%22http%22%2C%20%22url%22%3A%20%22http%3A%2F%2Flocalhost%3A8080%2Fmcp%22%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-instructions&config=%7B%22type%22%3A%20%22http%22%2C%20%22url%22%3A%20%22http%3A%2F%2Flocalhost%3A8080%2Fmcp%22%7D) |
+<!-- /install-badges -->
+
 An MCP server that dynamically serves [GitHub Copilot custom instructions](https://docs.github.com/en/copilot/customize-github-copilot/adding-custom-instructions-for-github-copilot) from local directories and GitHub repositories.
 
 It discovers `.github/copilot-instructions.md` and `.github/instructions/**/*.instructions.md` files from configured sources and exposes them via the [Model Context Protocol](https://modelcontextprotocol.io).

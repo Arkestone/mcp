@@ -1,5 +1,12 @@
 # mcp-memory
 
+<!-- install-badges -->
+| Transport | VS Code | VS Code Insiders |
+|-----------|---------|-----------------|
+| stdio | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=mcp-memory&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22mcp-memory%22%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-memory&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22mcp-memory%22%7D) |
+| HTTP  | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=mcp-memory&config=%7B%22type%22%3A%20%22http%22%2C%20%22url%22%3A%20%22http%3A%2F%2Flocalhost%3A8084%2Fmcp%22%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mcp-memory&config=%7B%22type%22%3A%20%22http%22%2C%20%22url%22%3A%20%22http%3A%2F%2Flocalhost%3A8084%2Fmcp%22%7D) |
+<!-- /install-badges -->
+
 An MCP server that provides persistent, searchable memory storage for AI assistants. Memories are stored as Markdown files on disk and can be retrieved by text query or tag.
 
 ## Features
