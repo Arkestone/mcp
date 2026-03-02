@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772461811151,
+  "lastUpdate": 1772462217208,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Test Coverage": [
@@ -400,6 +400,35 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/67b352c82de50cefd849c2f0d504480993808e5b"
         },
         "date": 1772461810872,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Total Coverage",
+            "value": 84.2,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "d93aecd3a02022c9b06994cc011029bdba4010a9",
+          "message": "fix(release): delete existing assets before goreleaser re-run on workflow_dispatch\n\nThe replace_existing_artifacts goreleaser option doesn't work when assets\nalready exist (GitHub returns 422). Add an explicit cleanup step that runs\nonly on workflow_dispatch (re-run case) to delete all existing release\nassets before goreleaser uploads fresh ones.\n\nThis allows re-running the release workflow to repair a failed release\n(e.g., Docker images never pushed) without triggering a new release tag.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T15:36:20+01:00",
+          "tree_id": "fcae3a439b4d2bddb9e7439684343b5fed8c912c",
+          "url": "https://github.com/Arkestone/mcp/commit/d93aecd3a02022c9b06994cc011029bdba4010a9"
+        },
+        "date": 1772462216239,
         "tool": "customBiggerIsBetter",
         "benches": [
           {
