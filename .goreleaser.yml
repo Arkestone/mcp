@@ -208,4 +208,5 @@ release:
   draft: false
   prerelease: auto
   mode: append
+  replace_existing_artifacts: true
   make_latest: true
