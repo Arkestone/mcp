@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772486202943,
+  "lastUpdate": 1772490857104,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Binary Sizes": [
@@ -2046,6 +2046,60 @@ window.BENCHMARK_DATA = {
           {
             "name": "mcp-prompts",
             "value": 8.668,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-graph",
+            "value": 7.914,
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "a7f8955ad3bea6a0c3c54fb92cb5be83d4b96b21",
+          "message": "chore: update changelogs for v1.1.0\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T23:33:46+01:00",
+          "tree_id": "dc626441666a1d8f9759a8fd79b118ae84fce21c",
+          "url": "https://github.com/Arkestone/mcp/commit/a7f8955ad3bea6a0c3c54fb92cb5be83d4b96b21"
+        },
+        "date": 1772490856177,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "mcp-instructions",
+            "value": 8.637,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-skills",
+            "value": 8.672,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-adr",
+            "value": 8.602,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-memory",
+            "value": 8.285,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-prompts",
+            "value": 8.672,
             "unit": "MB"
           },
           {
