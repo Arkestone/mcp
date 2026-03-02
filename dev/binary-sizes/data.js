@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772460625506,
+  "lastUpdate": 1772461063865,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Binary Sizes": [
@@ -509,6 +509,60 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/72a35992198bf38247ea3072496094056cfa8b82"
         },
         "date": 1772460623879,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "mcp-instructions",
+            "value": 8.274,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-skills",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-adr",
+            "value": 8.602,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-memory",
+            "value": 8.285,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-prompts",
+            "value": 8.61,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-graph",
+            "value": 7.914,
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "a0fd025b8f56dae72f7ee7e31e5912a009c1616f",
+          "message": "fix(release): remove dist/ build artifacts from git tracking\n\nThe dist/ directory was accidentally committed with goreleaser build outputs.\nThis caused goreleaser --clean to make the git tree dirty (staged deletions),\nfailing the release workflow immediately.\n\ndist/ is already in .gitignore — this commit only removes tracked files.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-02T15:17:15+01:00",
+          "tree_id": "4b183d9ca6dbde8f3431dcab6d98437075eacae2",
+          "url": "https://github.com/Arkestone/mcp/commit/a0fd025b8f56dae72f7ee7e31e5912a009c1616f"
+        },
+        "date": 1772461063532,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
