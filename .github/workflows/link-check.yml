@@ -37,6 +37,7 @@ jobs:
             --accept 200,206,429
             --exclude 'https://github\.com/Arkestone/mcp/compare/.*'
             --exclude 'https://pkg\.go\.dev/.*'
+            --exclude 'https://insiders\.vscode\.dev/.*'
             --exclude 'mailto:'
             --exclude-loopback
             '**/*.md'

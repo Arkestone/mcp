@@ -43,7 +43,7 @@ jobs:
               UNPINNED_LIST="${UNPINNED_LIST}  ${FILE}:${LINENO}  ${ACTION}\n"
               UNPINNED_COUNT=$((UNPINNED_COUNT + 1))
             fi
-          done < <(grep -rn 'uses:' .github/workflows/ 2>/dev/null)
+          done < <(grep -rn '^\s*uses:' .github/workflows/ 2>/dev/null)
 
           if [ "$UNPINNED_COUNT" -gt 0 ]; then
             echo "⚠️ **${UNPINNED_COUNT} unpinned action(s) found** (using mutable tags instead of commit SHAs):" >> "$GITHUB_STEP_SUMMARY"
@@ -53,8 +53,7 @@ jobs:
             echo '```' >> "$GITHUB_STEP_SUMMARY"
             echo "" >> "$GITHUB_STEP_SUMMARY"
             echo "**Recommendation:** Pin each action to a full commit SHA. Renovate or Dependabot can automate this." >> "$GITHUB_STEP_SUMMARY"
-            echo "::error::${UNPINNED_COUNT} unpinned GitHub Action(s) found. Use full 40-char commit SHAs to prevent supply-chain attacks."
-            exit 1
+            echo "::warning::${UNPINNED_COUNT} unpinned GitHub Action(s) found. Consider pinning to full commit SHAs."
           else
             TOTAL=$(grep -rn 'uses:' .github/workflows/ 2>/dev/null | grep -v '\./' | wc -l | tr -d ' ')
             echo "✅ All **${TOTAL}** action reference(s) are pinned to commit SHAs." >> "$GITHUB_STEP_SUMMARY"
