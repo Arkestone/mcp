@@ -1,0 +1,51 @@
+name: Coverage Trend
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  CGO_ENABLED: '0'
+  GOFLAGS: '-buildvcs=false'
+
+jobs:
+  trend:
+    name: Coverage Trend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Run tests with coverage
+        run: go test -coverprofile=coverage.out -covermode=atomic ./...
+
+      - name: Extract coverage percentage
+        id: cov
+        run: |
+          TOTAL=$(go tool cover -func=coverage.out | grep '^total:' | awk '{print $3}' | tr -d '%')
+          echo "total=${TOTAL}" >> "$GITHUB_OUTPUT"
+          echo "Coverage total: ${TOTAL}%"
+          printf '[{"name":"Total Coverage","unit":"%%","value":%s}]\n' "${TOTAL}" > coverage-result.json
+
+      - name: Store coverage trend
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: Test Coverage
+          tool: customBiggerIsBetter
+          output-file-path: coverage-result.json
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: true
+          alert-threshold: '97%'
+          comment-on-alert: true
+          fail-on-alert: false
+          benchmark-data-dir-path: dev/coverage
+
+      - name: Coverage summary
+        run: echo "### 📊 Coverage ${{ steps.cov.outputs.total }}%" >> "$GITHUB_STEP_SUMMARY"

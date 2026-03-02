@@ -1,0 +1,70 @@
+name: Fuzz Tests
+
+on:
+  schedule:
+    - cron: '0 4 * * 0'  # Sunday 04:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CGO_ENABLED: '0'
+  GOFLAGS: '-buildvcs=false'
+
+jobs:
+  fuzz:
+    name: Fuzz
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Discover and run fuzz targets
+        run: |
+          # Find all Go source files containing fuzz functions
+          FUZZ_FILES=$(grep -rl '^func Fuzz' --include="*.go" . 2>/dev/null || true)
+
+          if [ -z "${FUZZ_FILES}" ]; then
+            echo "No fuzz targets found in the repository — skipping"
+            exit 0
+          fi
+
+          FAILED=0
+          while IFS= read -r FILE; do
+            PKG_DIR=$(dirname "${FILE}")
+            # Derive the Go package import path
+            PKG="./${PKG_DIR#./}"
+            # Extract fuzz function names from this file
+            FUNCS=$(grep '^func Fuzz' "${FILE}" | sed 's/func \(Fuzz[^(]*\).*/\1/')
+            for FUNC in ${FUNCS}; do
+              echo "▶ Fuzzing ${FUNC} in ${PKG} for 60s..."
+              if ! go test -fuzz="${FUNC}" -fuzztime=60s "${PKG}"; then
+                echo "✗ ${FUNC} found a failure"
+                FAILED=1
+              else
+                echo "✓ ${FUNC} passed"
+              fi
+            done
+          done <<< "${FUZZ_FILES}"
+
+          exit ${FAILED}
+
+      - name: Upload failing corpus
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuzz-corpus-failures
+          path: |
+            **/testdata/fuzz/**/
+          retention-days: 30
+
+      - name: Summary
+        if: always()
+        run: |
+          FUZZ_COUNT=$(grep -rl '^func Fuzz' --include="*.go" . 2>/dev/null | wc -l || echo 0)
+          echo "### 🔬 Fuzz Test Results" >> "$GITHUB_STEP_SUMMARY"
+          echo "Files with fuzz targets: ${FUZZ_COUNT}" >> "$GITHUB_STEP_SUMMARY"
