@@ -1,0 +1,48 @@
+mcp-instructions:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'servers/mcp-instructions/**'
+
+mcp-skills:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'servers/mcp-skills/**'
+
+mcp-adr:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'servers/mcp-adr/**'
+
+mcp-memory:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'servers/mcp-memory/**'
+
+mcp-prompts:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'servers/mcp-prompts/**'
+
+mcp-graph:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'servers/mcp-graph/**'
+
+shared:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'pkg/**'
+      - 'go.mod'
+      - 'go.sum'
+
+ci:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.github/**'
+
+documentation:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '*.md'
+      - 'docs/**'
+      - 'website/**'

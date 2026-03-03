@@ -1,0 +1,211 @@
+version: 2
+
+project_name: mcp
+
+builds:
+  - id: mcp-instructions
+    main: ./servers/mcp-instructions/cmd/mcp-instructions
+    binary: mcp-instructions
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+  - id: mcp-skills
+    main: ./servers/mcp-skills/cmd/mcp-skills
+    binary: mcp-skills
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+  - id: mcp-adr
+    main: ./servers/mcp-adr/cmd/mcp-adr
+    binary: mcp-adr
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+  - id: mcp-memory
+    main: ./servers/mcp-memory/cmd/mcp-memory
+    binary: mcp-memory
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+  - id: mcp-prompts
+    main: ./servers/mcp-prompts/cmd/mcp-prompts
+    binary: mcp-prompts
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+  - id: mcp-graph
+    main: ./servers/mcp-graph/cmd/mcp-graph
+    binary: mcp-graph
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+
+archives:
+  - id: archive-mcp-instructions
+    ids: [mcp-instructions]
+    formats: [tar.gz]
+    name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+  - id: archive-mcp-skills
+    ids: [mcp-skills]
+    formats: [tar.gz]
+    name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+  - id: archive-mcp-adr
+    ids: [mcp-adr]
+    formats: [tar.gz]
+    name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+  - id: archive-mcp-memory
+    ids: [mcp-memory]
+    formats: [tar.gz]
+    name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+  - id: archive-mcp-prompts
+    ids: [mcp-prompts]
+    formats: [tar.gz]
+    name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+  - id: archive-mcp-graph
+    ids: [mcp-graph]
+    formats: [tar.gz]
+    name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+
+checksum:
+  name_template: checksums.txt
+  algorithm: sha256
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^chore"
+      - "^docs"
+      - "^style"
+
+dockers_v2:
+  - id: mcp-instructions
+    ids: [mcp-instructions]
+    images:
+      - ghcr.io/arkestone/mcp-instructions
+    tags:
+      - "{{ .Version }}"
+      - "{{ if not .IsSnapshot }}latest{{ end }}"
+    dockerfile: servers/mcp-instructions/Dockerfile.goreleaser
+    platforms: [linux/amd64, linux/arm64]
+  - id: mcp-skills
+    ids: [mcp-skills]
+    images:
+      - ghcr.io/arkestone/mcp-skills
+    tags:
+      - "{{ .Version }}"
+      - "{{ if not .IsSnapshot }}latest{{ end }}"
+    dockerfile: servers/mcp-skills/Dockerfile.goreleaser
+    platforms: [linux/amd64, linux/arm64]
+  - id: mcp-prompts
+    ids: [mcp-prompts]
+    images:
+      - ghcr.io/arkestone/mcp-prompts
+    tags:
+      - "{{ .Version }}"
+      - "{{ if not .IsSnapshot }}latest{{ end }}"
+    dockerfile: servers/mcp-prompts/Dockerfile.goreleaser
+    platforms: [linux/amd64, linux/arm64]
+  - id: mcp-adr
+    ids: [mcp-adr]
+    images:
+      - ghcr.io/arkestone/mcp-adr
+    tags:
+      - "{{ .Version }}"
+      - "{{ if not .IsSnapshot }}latest{{ end }}"
+    dockerfile: servers/mcp-adr/Dockerfile.goreleaser
+    platforms: [linux/amd64, linux/arm64]
+  - id: mcp-memory
+    ids: [mcp-memory]
+    images:
+      - ghcr.io/arkestone/mcp-memory
+    tags:
+      - "{{ .Version }}"
+      - "{{ if not .IsSnapshot }}latest{{ end }}"
+    dockerfile: servers/mcp-memory/Dockerfile.goreleaser
+    platforms: [linux/amd64, linux/arm64]
+  - id: mcp-graph
+    ids: [mcp-graph]
+    images:
+      - ghcr.io/arkestone/mcp-graph
+    tags:
+      - "{{ .Version }}"
+      - "{{ if not .IsSnapshot }}latest{{ end }}"
+    dockerfile: servers/mcp-graph/Dockerfile.goreleaser
+    platforms: [linux/amd64, linux/arm64]
+
+
+release:
+  github:
+    owner: Arkestone
+    name: mcp
+  draft: false
+  prerelease: auto
+  mode: append
+  make_latest: true

@@ -1,0 +1,128 @@
+name: Reliability Testing
+
+on:
+  schedule:
+    - cron: '0 4 * * 0'  # Sunday 04:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CGO_ENABLED: '0'
+  GOFLAGS: '-buildvcs=false'
+
+jobs:
+  fuzz:
+    name: Fuzz
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Discover and run fuzz targets
+        run: |
+          FUZZ_FILES=$(grep -rl '^func Fuzz' --include="*.go" . 2>/dev/null || true)
+
+          if [ -z "${FUZZ_FILES}" ]; then
+            echo "No fuzz targets found — skipping"
+            exit 0
+          fi
+
+          FAILED=0
+          while IFS= read -r FILE; do
+            PKG="./${$(dirname "${FILE}")#./}"
+            FUNCS=$(grep '^func Fuzz' "${FILE}" | sed 's/func \(Fuzz[^(]*\).*/\1/')
+            for FUNC in ${FUNCS}; do
+              echo "▶ Fuzzing ${FUNC} in ${PKG} for 60s..."
+              if ! go test -fuzz="${FUNC}" -fuzztime=60s "${PKG}"; then
+                echo "✗ ${FUNC} found a failure"
+                FAILED=1
+              else
+                echo "✓ ${FUNC} passed"
+              fi
+            done
+          done <<< "${FUZZ_FILES}"
+
+          exit ${FAILED}
+
+      - name: Upload failing corpus
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuzz-corpus-failures
+          path: '**/testdata/fuzz/**/'
+          retention-days: 30
+
+      - name: Summary
+        if: always()
+        run: |
+          FUZZ_COUNT=$(grep -rl '^func Fuzz' --include="*.go" . 2>/dev/null | wc -l || echo 0)
+          echo "### 🔬 Fuzz Test Results" >> "$GITHUB_STEP_SUMMARY"
+          echo "Files with fuzz targets: ${FUZZ_COUNT}" >> "$GITHUB_STEP_SUMMARY"
+
+  flaky-detection:
+    name: Flaky Detection — Run ${{ matrix.run }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        run: [1, 2, 3, 4, 5]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Install gotestsum
+        run: go install gotest.tools/gotestsum@latest
+      - name: Run test suite (attempt ${{ matrix.run }})
+        run: gotestsum --junitfile=test-results-${{ matrix.run }}.xml -- -count=1 ./...
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flaky-results-${{ matrix.run }}
+          path: test-results-${{ matrix.run }}.xml
+          retention-days: 7
+
+  flaky-analysis:
+    name: Flaky Analysis
+    if: always()
+    needs: flaky-detection
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all results
+        if: always()
+        uses: actions/download-artifact@v4
+        with:
+          pattern: flaky-results-*
+          merge-multiple: true
+
+      - name: Analyse for flaky tests
+        if: always()
+        run: |
+          PASS=0
+          FAIL=0
+          for f in test-results-*.xml; do
+            [ -f "$f" ] || continue
+            if grep -q 'failures="0"' "$f" && grep -q 'errors="0"' "$f"; then
+              PASS=$((PASS+1))
+            else
+              FAIL=$((FAIL+1))
+            fi
+          done
+          echo "### 🎲 Flaky Test Detection Results" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Passed runs: ${PASS}/5" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Failed runs: ${FAIL}/5" >> "$GITHUB_STEP_SUMMARY"
+          if [ "${FAIL}" -gt 0 ] && [ "${PASS}" -gt 0 ]; then
+            echo "⚠️ **Flaky tests detected** — results varied across runs" >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning::Flaky tests detected: ${FAIL}/5 runs failed"
+          elif [ "${FAIL}" -eq 5 ]; then
+            echo "❌ All runs failed — consistent failure, not flaky" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "✅ Tests are stable across all runs" >> "$GITHUB_STEP_SUMMARY"
+          fi

@@ -1,0 +1,13 @@
+# mcp-graph configuration example
+# Precedence: YAML < environment variables < CLI flags
+
+# HTTP listen address (used when transport = http)
+addr: ":8085"
+
+# Transport: stdio (default, for MCP clients) or http
+transport: "stdio"
+
+# Data directory where graph.json is stored
+sources:
+  dirs:
+    - "~/.local/share/mcp-graph"

@@ -1,0 +1,77 @@
+name: Outdated Dependencies
+
+on:
+  schedule:
+    - cron: '0 7 * * 1'  # Monday 07:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CGO_ENABLED: '0'
+  GOFLAGS: '-buildvcs=false'
+
+jobs:
+  outdated:
+    name: Check Outdated Go Modules
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: List available module updates
+        id: updates
+        run: |
+          echo "## 📦 Outdated Go Dependencies" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          # go list -u -m all shows current version and latest available version.
+          # The [vX.Y.Z] suffix indicates an available update.
+          updates=$(go list -u -m all 2>/dev/null | grep '\[' || true)
+
+          if [ -z "$updates" ]; then
+            echo "✅ All dependencies are up to date." >> "$GITHUB_STEP_SUMMARY"
+            echo "has_updates=false" >> "$GITHUB_OUTPUT"
+          else
+            count=$(echo "$updates" | wc -l | tr -d ' ')
+            echo "Found **${count}** module(s) with available updates:" >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "| Module | Current | Latest |" >> "$GITHUB_STEP_SUMMARY"
+            echo "|--------|---------|--------|" >> "$GITHUB_STEP_SUMMARY"
+
+            echo "$updates" | while read -r line; do
+              module=$(echo "$line" | awk '{print $1}')
+              current=$(echo "$line" | awk '{print $2}')
+              latest=$(echo "$line" | grep -o '\[[^]]*\]' | tr -d '[]')
+              echo "| \`${module}\` | ${current} | **${latest}** |" >> "$GITHUB_STEP_SUMMARY"
+            done
+
+            echo "has_updates=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Verify module checksums
+        run: |
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "### 🔒 Module Verification" >> "$GITHUB_STEP_SUMMARY"
+          if go mod verify 2>&1; then
+            echo "✅ \`go mod verify\` — all module checksums OK" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "❌ \`go mod verify\` — checksum mismatch detected!" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
+      - name: Check for go.sum tidiness
+        run: |
+          cp go.sum go.sum.bak
+          go mod tidy
+          if ! diff -q go.sum go.sum.bak > /dev/null 2>&1; then
+            echo "⚠️ \`go mod tidy\` would change go.sum — run \`go mod tidy\` and commit." >> "$GITHUB_STEP_SUMMARY"
+            diff go.sum.bak go.sum || true
+          else
+            echo "✅ \`go mod tidy\` — no changes needed" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          mv go.sum.bak go.sum

@@ -1,0 +1,61 @@
+name: Action Pinning Audit
+
+on:
+  schedule:
+    - cron: '0 8 * * 2'  # Tuesday 08:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: Audit Unpinned Actions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect unpinned action references
+        run: |
+          echo "### 🔒 Action Pinning Audit" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          UNPINNED_COUNT=0
+          UNPINNED_LIST=""
+
+          while IFS= read -r match; do
+            FILE=$(echo "$match" | cut -d: -f1)
+            LINENO=$(echo "$match" | cut -d: -f2)
+            CONTENT=$(echo "$match" | cut -d: -f3-)
+
+            # Skip comment lines and local actions
+            trimmed=$(echo "$CONTENT" | sed 's/^[[:space:]]*//')
+            [[ "$trimmed" == \#* ]] && continue
+            echo "$CONTENT" | grep -q 'uses:[[:space:]]*\./' && continue
+
+            # Extract the ref after @
+            REF=$(echo "$CONTENT" | sed -E 's/.*@([a-zA-Z0-9._-]+).*/\1/')
+
+            # A pinned SHA is exactly 40 lowercase hex characters
+            if ! echo "$REF" | grep -qE '^[0-9a-f]{40}$'; then
+              ACTION=$(echo "$CONTENT" | sed -E 's/.*uses:[[:space:]]+([a-zA-Z0-9._/-]+@[a-zA-Z0-9._-]+).*/\1/')
+              echo "::warning file=${FILE},line=${LINENO}::Not pinned to SHA: ${ACTION}"
+              UNPINNED_LIST="${UNPINNED_LIST}  ${FILE}:${LINENO}  ${ACTION}\n"
+              UNPINNED_COUNT=$((UNPINNED_COUNT + 1))
+            fi
+          done < <(grep -rn '^\s*uses:' .github/workflows/ 2>/dev/null)
+
+          if [ "$UNPINNED_COUNT" -gt 0 ]; then
+            echo "⚠️ **${UNPINNED_COUNT} unpinned action(s) found** (using mutable tags instead of commit SHAs):" >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            printf '%b' "$UNPINNED_LIST" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "**Recommendation:** Pin each action to a full commit SHA. Renovate or Dependabot can automate this." >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning::${UNPINNED_COUNT} unpinned GitHub Action(s) found. Consider pinning to full commit SHAs."
+          else
+            TOTAL=$(grep -rn 'uses:' .github/workflows/ 2>/dev/null | grep -v '\./' | wc -l | tr -d ' ')
+            echo "✅ All **${TOTAL}** action reference(s) are pinned to commit SHAs." >> "$GITHUB_STEP_SUMMARY"
+            echo "All actions are pinned to SHAs"
+          fi

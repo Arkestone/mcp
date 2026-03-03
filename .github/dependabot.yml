@@ -1,0 +1,91 @@
+version: 2
+updates:
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps):"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps):"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "npm"
+    directory: "/website"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps):"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "docker"
+    directory: "/servers/mcp-instructions"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps):"
+    open-pull-requests-limit: 3
+
+  - package-ecosystem: "docker"
+    directory: "/servers/mcp-skills"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps):"
+    open-pull-requests-limit: 3
+
+  - package-ecosystem: "docker"
+    directory: "/servers/mcp-adr"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps):"
+    open-pull-requests-limit: 3
+
+  - package-ecosystem: "docker"
+    directory: "/servers/mcp-memory"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps):"
+    open-pull-requests-limit: 3
+
+  - package-ecosystem: "docker"
+    directory: "/servers/mcp-prompts"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps):"
+    open-pull-requests-limit: 3
+
+  - package-ecosystem: "docker"
+    directory: "/servers/mcp-graph"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps):"
+    open-pull-requests-limit: 3

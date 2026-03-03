@@ -1,0 +1,75 @@
+name: Dead Code
+
+on:
+  schedule:
+    - cron: '0 7 * * 1'  # Weekly on Monday at 07:00 UTC
+  pull_request:
+    paths:
+      - '**/*.go'
+  workflow_dispatch:
+
+concurrency:
+  group: deadcode-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CGO_ENABLED: '0'
+  GOFLAGS: '-buildvcs=false'
+
+jobs:
+  deadcode:
+    name: Dead Code Detection
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Install deadcode
+        run: go install golang.org/x/tools/cmd/deadcode@latest
+
+      - name: Run deadcode for each server
+        id: scan
+        run: |
+          echo "## Dead Code Report" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          found_any=false
+
+          for server in mcp-instructions mcp-skills mcp-adr mcp-memory mcp-prompts mcp-graph; do
+            entrypoint="./servers/${server}/cmd/${server}"
+            echo "Scanning ${server}..."
+
+            # deadcode exits 0 even with results; capture output
+            result=$(deadcode -test "${entrypoint}" 2>&1 || true)
+
+            # Filter out test helpers and expected dead code patterns
+            filtered=$(echo "$result" \
+              | grep -v "_test\.go" \
+              | grep -v "testutil" \
+              | grep -v "^$" || true)
+
+            echo "### \`${server}\`" >> "$GITHUB_STEP_SUMMARY"
+            if [ -z "$filtered" ]; then
+              echo "✅ No dead code found." >> "$GITHUB_STEP_SUMMARY"
+            else
+              found_any=true
+              echo '```' >> "$GITHUB_STEP_SUMMARY"
+              echo "$filtered" >> "$GITHUB_STEP_SUMMARY"
+              echo '```' >> "$GITHUB_STEP_SUMMARY"
+            fi
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+          done
+
+          echo "found_any=$found_any" >> "$GITHUB_OUTPUT"
+
+      - name: Annotate dead code (PR only)
+        if: steps.scan.outputs.found_any == 'true' && github.event_name == 'pull_request'
+        run: |
+          echo "::warning title=Dead Code Detected::Dead code was found in one or more servers. See the job summary for details."

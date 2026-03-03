@@ -1,0 +1,258 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'website/**'
+      - 'examples/**'
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write  # Required for test result annotations
+
+env:
+  CGO_ENABLED: '0'
+  GOFLAGS: '-buildvcs=false'
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: go mod tidy check
+        run: |
+          go mod tidy
+          git diff --exit-code go.mod go.sum
+      - name: go generate check
+        run: |
+          go generate ./...
+          if ! git diff --quiet; then
+            echo "::error::go generate produced uncommitted changes. Run 'go generate ./...' and commit the result."
+            git diff --name-only
+            exit 1
+          fi
+          echo "✅ Generated files are up to date"
+      - name: Check formatting
+        run: |
+          if [ -n "$(gofmt -l .)" ]; then
+            echo "Files not formatted:"
+            gofmt -l .
+            exit 1
+          fi
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.64.8
+      - name: GoReleaser config check
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          version: '~> v2'
+          args: check
+
+  test:
+    name: Test (${{ matrix.os }} / Go ${{ matrix.go-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        go-version: ['1.24.x', 'stable']
+        os: [ubuntu-latest]
+        include:
+          # Cross-platform smoke test: run stable tests on macOS too.
+          - os: macos-latest
+            go-version: 'stable'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+          cache: true
+      - name: Install gotestsum
+        run: go install gotest.tools/gotestsum@latest
+      - name: Run tests
+        run: gotestsum --junitfile=test-results.xml -- -count=1 -coverprofile=coverage.out -covermode=atomic ./...
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
+        if: always() && matrix.go-version == 'stable' && matrix.os == 'ubuntu-latest'
+        with:
+          name: Go Test Results
+          path: test-results.xml
+          reporter: java-junit
+          fail-on-error: false
+      - name: Check coverage threshold
+        id: coverage
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          total=$(go tool cover -func=coverage.out | grep ^total | awk '{print $3}')
+          echo "total=$total" >> "$GITHUB_OUTPUT"
+          pct=${total%\%}
+          echo "## Coverage: $total" >> "$GITHUB_STEP_SUMMARY"
+          go tool cover -func=coverage.out | grep -v "100.0%" | grep -v "^total" >> "$GITHUB_STEP_SUMMARY" || true
+          if awk "BEGIN { exit !($pct < 84) }"; then
+            echo "::error title=Coverage Below Threshold::Coverage is $total (minimum 84%)"
+            exit 1
+          fi
+          echo "✅ Coverage is $total (≥ 84%)"
+      - name: Post coverage comment on PR
+        if: github.event_name == 'pull_request' && matrix.go-version == 'stable' && matrix.os == 'ubuntu-latest'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const total = '${{ steps.coverage.outputs.total }}';
+            const pct = parseFloat(total);
+            const icon = pct >= 84 ? '✅' : '❌';
+            const body = [
+              `## ${icon} Coverage Report`,
+              '',
+              `**Total coverage: ${total}** (threshold: 84%)`,
+              '',
+              `> Go version: \`stable\` | Run \`go tool cover -html=coverage.out\` locally for details.`,
+            ].join('\n');
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c => c.body.includes('Coverage Report') && c.user.login === 'github-actions[bot]');
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+      - name: Upload coverage
+        if: matrix.go-version == 'stable' && matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.out
+          retention-days: 7
+      - name: Upload to Codecov
+        if: matrix.go-version == 'stable' && matrix.os == 'ubuntu-latest'
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage.out
+          flags: unittests
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  test-integration:
+    name: Integration Tests
+    needs: [test]
+    runs-on: ubuntu-latest
+    env:
+      LLM_ENDPOINT: ${{ secrets.LLM_ENDPOINT }}
+      LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+      LLM_MODEL: ${{ secrets.LLM_MODEL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Run integration tests
+        run: go test -tags integration -count=1 ./...
+      - name: Run LLM integration tests
+        if: ${{ env.LLM_ENDPOINT != '' }}
+        run: go test -tags integration -v -run TestLLMEndpointIntegration -count=1 ./pkg/optimizer/
+
+  build:
+    name: Build
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Build all servers
+        run: |
+          for server in mcp-instructions mcp-skills mcp-adr mcp-memory mcp-prompts mcp-graph; do
+            echo "Building $server..."
+            go build -o "dist/$server" "./servers/$server/cmd/$server"
+          done
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: binaries
+          path: dist/
+          retention-days: 1
+
+  docker:
+    name: Docker (${{ matrix.server }})
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        server:
+          - mcp-instructions
+          - mcp-skills
+          - mcp-adr
+          - mcp-memory
+          - mcp-prompts
+          - mcp-graph
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build ${{ matrix.server }} (multi-arch, no push)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: servers/${{ matrix.server }}/Dockerfile
+          push: false
+          platforms: linux/amd64,linux/arm64
+          tags: ghcr.io/arkestone/${{ matrix.server }}:ci
+          cache-from: type=gha,scope=${{ matrix.server }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.server }}
+
+
+  build-cross:
+    name: Build (${{ matrix.os }})
+    needs: [lint]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Build all servers
+        shell: bash
+        run: |
+          for server in mcp-instructions mcp-skills mcp-adr mcp-memory mcp-prompts mcp-graph; do
+            echo "Building $server..."
+            go build ./servers/$server/cmd/$server
+          done

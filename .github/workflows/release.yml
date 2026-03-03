@@ -1,0 +1,138 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to release (must already exist)'
+        required: true
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  packages: write       # write:packages scope — allows pushing images AND changing visibility
+  id-token: write       # Required for Cosign OIDC keyless signing
+  attestations: write   # Required for SLSA provenance attestation
+
+env:
+  CGO_ENABLED: '0'
+  GOFLAGS: '-buildvcs=false'
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Delete existing release (re-run only)
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          # Delete the entire release so goreleaser creates a fresh one.
+          # This avoids 422 already_exists errors when goreleaser retries parallel uploads.
+          RELEASE_ID=$(gh api "/repos/${{ github.repository }}/releases/tags/${TAG}" --jq '.id' 2>/dev/null || true)
+          if [ -z "${RELEASE_ID}" ]; then
+            echo "No existing release found for ${TAG}, goreleaser will create it"
+          else
+            gh api --method DELETE "/repos/${{ github.repository }}/releases/${RELEASE_ID}" --silent
+            echo "Deleted release ${RELEASE_ID} for ${TAG} — goreleaser will recreate it"
+          fi
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          version: '~> v2'
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Make GHCR packages public
+        # The workflow's 'packages: write' permission grants write:packages scope to
+        # GITHUB_TOKEN, which is sufficient to update package visibility via the API.
+        # If PACKAGES_TOKEN (PAT with write:packages + read:org) is configured as an
+        # org secret it will be preferred, as it works for all org-level operations.
+        env:
+          GH_TOKEN: ${{ secrets.PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          FAILED=0
+          for pkg in mcp-instructions mcp-skills mcp-prompts mcp-adr mcp-memory mcp-graph; do
+            HTTP_STATUS=$(gh api --method PATCH \
+              "/orgs/${{ github.repository_owner }}/packages/container/${pkg}" \
+              -f visibility=public \
+              --silent -i 2>&1 | head -1 | grep -oE '[0-9]{3}' | head -1 || echo "000")
+            case "${HTTP_STATUS}" in
+              200) echo "✓ ${pkg} → public" ;;
+              204) echo "✓ ${pkg} → public" ;;
+              404) echo "⚠ ${pkg}: package not found (may not have been pushed yet)" ;;
+              *)   echo "::warning::${pkg}: visibility update returned HTTP ${HTTP_STATUS}" ; FAILED=1 ;;
+            esac
+          done
+          if [ "${FAILED}" -eq 1 ]; then
+            echo "::warning::Some packages could not be made public. If this persists, set a PACKAGES_TOKEN org secret (PAT with write:packages + read:org scopes)."
+          fi
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3
+
+      - name: Sign Docker images (keyless OIDC)
+        env:
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+        run: |
+          # Goreleaser strips the 'v' prefix — tag is '1.0.0', not 'v1.0.0'
+          DOCKER_TAG="${RELEASE_TAG#v}"
+          for server in mcp-instructions mcp-skills mcp-adr mcp-memory mcp-prompts mcp-graph; do
+            IMAGE="ghcr.io/arkestone/${server}:${DOCKER_TAG}"
+            # Verify image is accessible before signing
+            if ! docker buildx imagetools inspect "${IMAGE}" --format '{{.Manifest.MediaType}}' 2>/dev/null | grep -q 'manifest'; then
+              echo "::error::Image ${IMAGE} not found or not accessible after goreleaser"
+              exit 1
+            fi
+            # Sign by tag — cosign resolves digest internally, works with multi-arch OCI indexes
+            cosign sign --yes "${IMAGE}"
+            echo "✓ Signed ${IMAGE}"
+          done
+
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          path: dist/
+          format: spdx-json
+          artifact-name: sbom-binaries.spdx.json
+          output-file: sbom-binaries.spdx.json
+
+      - name: Attach SBOM to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+        run: gh release upload "${RELEASE_TAG}" sbom-binaries.spdx.json --clobber
+
+      - name: Attest build provenance (SLSA L3)
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            dist/*.tar.gz
+            dist/*.zip
+            dist/checksums.txt

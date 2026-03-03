@@ -1,0 +1,29 @@
+# Configuration example for mcp-instructions with LLM optimization.
+# Any OpenAI-compatible endpoint is supported (OpenAI, Ollama, LM Studio, etc.).
+#
+# Required environment variables:
+#   LLM_API_KEY  – bearer token for the LLM API
+#
+# Or set via CLI flag:
+#   mcp-instructions --llm-api-key "$LLM_API_KEY"
+
+sources:
+  dirs:
+    - /path/to/local/repo
+
+cache:
+  dir: ~/.cache/mcp-instructions
+  sync_interval: 5m
+
+llm:
+  # Any OpenAI-compatible endpoint:
+  #   OpenAI:    https://api.openai.com/v1
+  #   Ollama:    http://localhost:11434/v1
+  #   LM Studio: http://localhost:1234/v1
+  endpoint: https://api.openai.com/v1
+  model: gpt-4o-mini
+  enabled: true
+  # API key is read from LLM_API_KEY env var at runtime (never put secrets here)
+
+transport: stdio
+addr: ":8080"

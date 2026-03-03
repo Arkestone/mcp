@@ -1,0 +1,107 @@
+name: Docker Quality
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'servers/*/Dockerfile'
+      - 'servers/**/Dockerfile*'
+  pull_request:
+    paths:
+      - 'servers/*/Dockerfile'
+      - 'servers/**/Dockerfile*'
+      - '.github/workflows/docker-quality.yml'
+  schedule:
+    - cron: '0 7 * * 1'  # Monday 07:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  hadolint:
+    name: Lint — ${{ matrix.server }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        server:
+          - mcp-instructions
+          - mcp-skills
+          - mcp-adr
+          - mcp-memory
+          - mcp-prompts
+          - mcp-graph
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint ${{ matrix.server }}/Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: servers/${{ matrix.server }}/Dockerfile
+          # DL3018: pin apk package versions — acceptable for base image updates
+          # DL3059: multiple consecutive RUN — intentional for layer clarity
+          # DL3007: unpinned tag in setup-only stages — acceptable risk
+          ignore: DL3018,DL3059,DL3007
+          failure-threshold: warning
+
+  structure:
+    name: Structure — ${{ matrix.server }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        server:
+          - mcp-instructions
+          - mcp-skills
+          - mcp-adr
+          - mcp-memory
+          - mcp-prompts
+          - mcp-graph
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image locally
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: servers/${{ matrix.server }}/Dockerfile
+          push: false
+          load: true
+          tags: local/${{ matrix.server }}:test
+          cache-from: type=gha,scope=${{ matrix.server }}-structure
+          cache-to: type=gha,mode=max,scope=${{ matrix.server }}-structure
+
+      - name: Install container-structure-test
+        run: |
+          curl -fsSLo /usr/local/bin/container-structure-test \
+            https://storage.googleapis.com/container-structure-test/latest/container-structure-test-linux-amd64
+          chmod +x /usr/local/bin/container-structure-test
+
+      - name: Generate structure test config
+        run: |
+          cat > structure-test.yml << 'YAML'
+          schemaVersion: '2.0.0'
+          fileExistenceTests:
+            - name: "Binary exists at expected path"
+              path: "/${{ matrix.server }}"
+              shouldExist: true
+            - name: "CA certificates present"
+              path: "/etc/ssl/certs/ca-certificates.crt"
+              shouldExist: true
+            - name: "No shell (distroless)"
+              path: "/bin/sh"
+              shouldExist: false
+          metadataTest:
+            user: "65532"
+            entrypoint: ["/${{ matrix.server }}"]
+          YAML
+
+      - name: Run structure tests
+        run: |
+          container-structure-test test \
+            --image local/${{ matrix.server }}:test \
+            --config structure-test.yml \
+            --output text

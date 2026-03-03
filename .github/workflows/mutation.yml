@@ -1,0 +1,72 @@
+name: Mutation Testing
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**.go'
+      - 'go.mod'
+      - 'go.sum'
+  schedule:
+    - cron: '0 3 * * 1'  # Weekly on Monday at 03:00 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: mutation-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CGO_ENABLED: '0'
+  GOFLAGS: '-buildvcs=false'
+
+jobs:
+  mutation:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: mcp-memory/store
+            package: ./servers/mcp-memory/internal/store
+          - name: mcp-graph/graph
+            package: ./servers/mcp-graph/internal/graph
+          - name: mcp-skills/scanner
+            package: ./servers/mcp-skills/internal/scanner
+          - name: mcp-prompts/loader
+            package: ./servers/mcp-prompts/internal/loader
+          - name: mcp-adr/scanner
+            package: ./servers/mcp-adr/internal/scanner
+          - name: mcp-instructions/loader
+            package: ./servers/mcp-instructions/internal/loader
+          - name: pkg/optimizer
+            package: ./pkg/optimizer
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+          cache-dependency-path: go.sum
+
+      - name: Install gremlins
+        run: go install github.com/go-gremlins/gremlins/cmd/gremlins@latest
+
+      - name: Run mutation tests — ${{ matrix.name }}
+        run: |
+          gremlins unleash --timeout-coefficient 5 \
+            --output mutation-report.json \
+            ${{ matrix.package }}
+
+      - name: Upload mutation report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mutation-${{ matrix.name }}
+          path: mutation-report.json
+          retention-days: 30

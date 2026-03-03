@@ -1,0 +1,129 @@
+name: Nightly
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # 02:00 UTC every day
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CGO_ENABLED: '0'
+  GOFLAGS: '-buildvcs=false'
+
+jobs:
+  fuzz:
+    name: Fuzz Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Run fuzz tests
+        # Each fuzz target runs for 30 seconds. New corpus entries are kept as
+        # artifacts so they can be committed if they trigger failures.
+        run: |
+          echo "## 🔀 Fuzz Tests" >> "$GITHUB_STEP_SUMMARY"
+          failed=0
+
+          for pkg in $(go list ./...); do
+            # Collect fuzz function names in this package
+            funcs=$(go test -list 'Fuzz.*' "$pkg" 2>/dev/null | grep '^Fuzz' || true)
+            for fn in $funcs; do
+              echo "Running $fn in $pkg for 30s..."
+              if go test -fuzz="^${fn}$" -fuzztime=30s "$pkg" 2>&1; then
+                echo "- ✅ \`${fn}\` (${pkg})" >> "$GITHUB_STEP_SUMMARY"
+              else
+                echo "- ❌ \`${fn}\` (${pkg}) — **FAILED**" >> "$GITHUB_STEP_SUMMARY"
+                failed=1
+              fi
+            done
+          done
+
+          if [ "$failed" -eq 1 ]; then
+            echo "::error::One or more fuzz targets failed — check logs above"
+            exit 1
+          fi
+
+          if ! grep -q "Fuzz" "$GITHUB_STEP_SUMMARY"; then
+            echo "_No fuzz targets found in this repository._" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  memory-profile:
+    name: Memory Profile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Build with pprof support
+        run: go build -buildvcs=false ./...
+
+      - name: Run tests with memory profile
+        run: |
+          mkdir -p profiles
+          go test -count=1 -memprofile=profiles/mem.prof \
+            -memprofilerate=1 ./... 2>&1 | tee profiles/test-output.txt
+
+      - name: Analyse memory allocations
+        run: |
+          echo "## 🧠 Memory Allocations (top 20 by cumulative)" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          go tool pprof -top -cum -nodecount=20 profiles/mem.prof 2>/dev/null \
+            >> "$GITHUB_STEP_SUMMARY" || echo "(no profile data)" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload profiles
+        uses: actions/upload-artifact@v4
+        with:
+          name: memory-profiles-${{ github.sha }}
+          path: profiles/
+          retention-days: 14
+
+  coverage-deep:
+    name: Deep Coverage Report
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Run tests with full coverage
+        run: |
+          go test -count=1 -coverprofile=coverage.out -covermode=atomic ./...
+          go tool cover -func=coverage.out | tee coverage-func.txt
+
+      - name: Generate HTML coverage report
+        run: go tool cover -html=coverage.out -o coverage.html
+
+      - name: Coverage summary
+        run: |
+          total=$(grep ^total coverage-func.txt | awk '{print $3}')
+          echo "## 📊 Nightly Coverage: ${total}" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Packages below 80%" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          awk '/^github/ && $3 != "100.0%" {
+            pct=$3; sub(/%/,"",pct);
+            if (pct+0 < 80) print $0
+          }' coverage-func.txt >> "$GITHUB_STEP_SUMMARY" || echo "(none)" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-${{ github.sha }}
+          path: |
+            coverage.out
+            coverage.html
+            coverage-func.txt
+          retention-days: 30

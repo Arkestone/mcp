@@ -1,0 +1,16 @@
+# Use a minimal setup stage to pre-create the data directory with correct ownership
+FROM busybox:musl AS setup
+RUN mkdir -p /home/nonroot/.local/share/mcp-graph && \
+    chown 65532:65532 /home/nonroot/.local/share/mcp-graph
+
+FROM gcr.io/distroless/static-debian12:nonroot
+
+LABEL org.opencontainers.image.title="mcp-graph" \
+      org.opencontainers.image.description="MCP server for knowledge graph associations" \
+      org.opencontainers.image.source="https://github.com/Arkestone/mcp" \
+      org.opencontainers.image.license="MIT"
+
+COPY --from=setup /home/nonroot/.local/share/mcp-graph /home/nonroot/.local/share/mcp-graph
+ARG TARGETPLATFORM
+COPY $TARGETPLATFORM/mcp-graph /mcp-graph
+ENTRYPOINT ["/mcp-graph"]

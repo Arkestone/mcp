@@ -1,0 +1,16 @@
+# Use a minimal setup stage to pre-create the data directory with correct ownership
+FROM busybox:musl AS setup
+RUN mkdir -p /home/nonroot/.local/share/mcp-memory && \
+    chown 65532:65532 /home/nonroot/.local/share/mcp-memory
+
+FROM gcr.io/distroless/static-debian12:nonroot
+
+LABEL org.opencontainers.image.title="mcp-memory" \
+      org.opencontainers.image.description="MCP server for persistent memory storage" \
+      org.opencontainers.image.source="https://github.com/Arkestone/mcp" \
+      org.opencontainers.image.license="MIT"
+
+COPY --from=setup /home/nonroot/.local/share/mcp-memory /home/nonroot/.local/share/mcp-memory
+ARG TARGETPLATFORM
+COPY $TARGETPLATFORM/mcp-memory /mcp-memory
+ENTRYPOINT ["/mcp-memory"]

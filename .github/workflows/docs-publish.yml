@@ -1,0 +1,112 @@
+name: Docs Publish
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'website/**'
+      - 'docs/**'
+      - 'README.md'
+      - '**/README.md'
+      - 'CHANGELOG.md'
+      - 'CONTRIBUTING.md'
+      - 'SECURITY.md'
+      - 'servers/*/CHANGELOG.md'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build-pages:
+    name: Build GitHub Pages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - name: Install dependencies
+        working-directory: website
+        run: npm ci
+
+      - name: Build
+        working-directory: website
+        run: npm run build
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: website/build
+
+  deploy-pages:
+    name: Deploy GitHub Pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build-pages
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+  wiki-sync:
+    name: Sync Wiki
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Clone wiki
+        id: clone
+        run: |
+          if git clone "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git" wiki 2>/dev/null; then
+            echo "wiki_exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::GitHub Wiki is not enabled or has no pages yet. Skipping sync."
+            echo "wiki_exists=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sync pages
+        if: steps.clone.outputs.wiki_exists == 'true'
+        run: |
+          cd wiki
+
+          [ -f "../README.md" ] && cp ../README.md Home.md
+
+          for server in mcp-instructions mcp-skills mcp-adr mcp-memory mcp-prompts mcp-graph; do
+            [ -f "../servers/${server}/README.md" ]   && cp "../servers/${server}/README.md"   "${server}.md"
+            [ -f "../servers/${server}/CHANGELOG.md" ] && cp "../servers/${server}/CHANGELOG.md" "${server}-changelog.md"
+          done
+
+          if [ -d "../docs" ]; then
+            for f in ../docs/*.md; do
+              [ -f "$f" ] && cp "$f" "$(basename "$f")"
+            done
+          fi
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No wiki changes to commit."
+          else
+            git commit -m "docs: sync from main @ ${GITHUB_SHA:0:7}"
+            git push
+            echo "✅ Wiki updated successfully."
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

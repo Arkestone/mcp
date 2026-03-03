@@ -1,0 +1,134 @@
+name: API Compatibility
+
+on:
+  pull_request:
+    paths:
+      - 'pkg/**'
+
+concurrency:
+  group: api-compat-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  CGO_ENABLED: '0'
+  GOFLAGS: '-buildvcs=false'
+
+jobs:
+  apidiff:
+    name: API Compatibility Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          path: pr
+
+      - name: Checkout base branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
+          path: base
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: pr/go.mod
+          cache: true
+
+      - name: Install apidiff
+        run: go install golang.org/x/tools/cmd/apidiff@latest
+
+      - name: Capture base API snapshots
+        working-directory: base
+        run: |
+          mkdir -p /tmp/oldapi
+          for pkg in $(go list ./pkg/... | grep -v testutil); do
+            safe=$(echo "$pkg" | tr '/.' '__' | tr '-' '_')
+            apidiff -w "/tmp/oldapi/${safe}" "$pkg" 2>/dev/null || true
+          done
+          echo "Captured $(ls /tmp/oldapi | wc -l) package snapshots"
+
+      - name: Check API compatibility
+        id: check
+        working-directory: pr
+        run: |
+          report=""
+          incompatible=false
+
+          for pkg in $(go list ./pkg/... | grep -v testutil); do
+            safe=$(echo "$pkg" | tr '/.' '__' | tr '-' '_')
+            if [ ! -f "/tmp/oldapi/${safe}" ]; then
+              continue
+            fi
+            result=$(apidiff "/tmp/oldapi/${safe}" "$pkg" 2>/dev/null || true)
+            if [ -z "$result" ]; then
+              continue
+            fi
+            report="${report}### \`${pkg}\`\n\`\`\`\n${result}\n\`\`\`\n\n"
+            if echo "$result" | grep -q "^Incompatible"; then
+              incompatible=true
+            fi
+          done
+
+          if [ -n "$report" ]; then
+            printf "%b" "$report" > /tmp/compat-report.txt
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          echo "incompatible=$incompatible" >> "$GITHUB_OUTPUT"
+
+      - name: Post API diff comment
+        if: steps.check.outputs.has_changes == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const incompatible = '${{ steps.check.outputs.incompatible }}' === 'true';
+            const report = fs.readFileSync('/tmp/compat-report.txt', 'utf8');
+            const icon = incompatible ? '❌' : 'ℹ️';
+            const severity = incompatible
+              ? '**Breaking changes detected** — this PR modifies the exported API in a backward-incompatible way.'
+              : 'Compatible API changes detected (additions only).';
+
+            const body = [
+              `## ${icon} API Compatibility Report`,
+              '',
+              severity,
+              '',
+              report.trim(),
+            ].join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c =>
+              c.body.includes('API Compatibility Report') && c.user.login === 'github-actions[bot]'
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+      - name: Fail on incompatible changes
+        if: steps.check.outputs.incompatible == 'true'
+        run: |
+          echo "::error title=Breaking API Change::Incompatible changes detected in pkg/. See PR comment for details."
+          exit 1

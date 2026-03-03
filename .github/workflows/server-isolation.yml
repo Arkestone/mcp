@@ -1,0 +1,73 @@
+name: Server Isolation
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'website/**'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'website/**'
+
+concurrency:
+  group: isolation-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CGO_ENABLED: '0'
+  GOFLAGS: '-buildvcs=false'
+
+jobs:
+  isolate:
+    name: Isolate (${{ matrix.server }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        server:
+          - mcp-instructions
+          - mcp-skills
+          - mcp-adr
+          - mcp-memory
+          - mcp-prompts
+          - mcp-graph
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Build ${{ matrix.server }}
+        run: go build ./servers/${{ matrix.server }}/...
+
+      - name: Test ${{ matrix.server }}
+        run: go test -count=1 ./servers/${{ matrix.server }}/...
+
+      - name: Check for cross-server imports
+        run: |
+          server="${{ matrix.server }}"
+          # List all dependencies of this server
+          deps=$(go list -deps ./servers/${server}/... 2>/dev/null || true)
+          violations=""
+          for other in mcp-instructions mcp-skills mcp-adr mcp-memory mcp-prompts mcp-graph; do
+            if [ "$other" = "$server" ]; then continue; fi
+            if echo "$deps" | grep -q "servers/${other}"; then
+              violations="${violations}\n  ❌ servers/${other}"
+            fi
+          done
+          if [ -n "$violations" ]; then
+            echo "::error::${server} imports other server packages:"
+            printf "%b\n" "$violations"
+            exit 1
+          fi
+          echo "✅ No cross-server imports detected"

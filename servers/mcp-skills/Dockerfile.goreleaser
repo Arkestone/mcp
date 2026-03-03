@@ -1,0 +1,10 @@
+FROM gcr.io/distroless/static-debian12:nonroot
+
+LABEL org.opencontainers.image.title="mcp-skills" \
+      org.opencontainers.image.description="MCP server for Copilot skills" \
+      org.opencontainers.image.source="https://github.com/Arkestone/mcp" \
+      org.opencontainers.image.license="MIT"
+
+ARG TARGETPLATFORM
+COPY $TARGETPLATFORM/mcp-skills /mcp-skills
+ENTRYPOINT ["/mcp-skills"]

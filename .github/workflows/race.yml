@@ -1,0 +1,37 @@
+name: Race Detector
+
+on:
+  schedule:
+    - cron: '0 5 * * 0'  # Sunday 05:00 UTC
+  pull_request:
+    paths:
+      - '**/*.go'
+      - 'go.mod'
+      - 'go.sum'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  # CGO must be enabled for the race detector (it is C-based)
+  CGO_ENABLED: '1'
+  GOFLAGS: '-buildvcs=false'
+
+jobs:
+  race:
+    name: Race Detector
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Run tests with race detector
+        run: go test -race -count=1 -timeout=5m ./...
+
+      - name: Summary
+        if: success()
+        run: echo "✅ No race conditions detected" >> "$GITHUB_STEP_SUMMARY"
