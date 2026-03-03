@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772526641253,
+  "lastUpdate": 1772526850976,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Binary Sizes": [
@@ -2291,6 +2291,60 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/3017a7ef7dc2c4b82cfcc99c5f3bb7bfd94fec29"
         },
         "date": 1772526640704,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "mcp-instructions",
+            "value": 8.738,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-skills",
+            "value": 8.778,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-adr",
+            "value": 8.653,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-memory",
+            "value": 8.285,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-prompts",
+            "value": 8.778,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-graph",
+            "value": 7.914,
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "a0932949970a410592e367c4d50955fcfd813179",
+          "message": "docs: remove all Co-authored-by references from instructions",
+          "timestamp": "2026-03-03T09:33:40+01:00",
+          "tree_id": "b98b7018dc2d5167839def446d03482483e6f507",
+          "url": "https://github.com/Arkestone/mcp/commit/a0932949970a410592e367c4d50955fcfd813179"
+        },
+        "date": 1772526849995,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
