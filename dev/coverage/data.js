@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772526261083,
+  "lastUpdate": 1772526852079,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Test Coverage": [
@@ -1212,6 +1212,35 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/1ef541574f4281e2b9ada1b71413ea9aa3a80d55"
         },
         "date": 1772526260779,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Total Coverage",
+            "value": 85.6,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "a0932949970a410592e367c4d50955fcfd813179",
+          "message": "docs: remove all Co-authored-by references from instructions",
+          "timestamp": "2026-03-03T09:33:40+01:00",
+          "tree_id": "b98b7018dc2d5167839def446d03482483e6f507",
+          "url": "https://github.com/Arkestone/mcp/commit/a0932949970a410592e367c4d50955fcfd813179"
+        },
+        "date": 1772526851577,
         "tool": "customBiggerIsBetter",
         "benches": [
           {
