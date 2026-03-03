@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772526850976,
+  "lastUpdate": 1772526881833,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Binary Sizes": [
@@ -2345,6 +2345,60 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/a0932949970a410592e367c4d50955fcfd813179"
         },
         "date": 1772526849995,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "mcp-instructions",
+            "value": 8.738,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-skills",
+            "value": 8.778,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-adr",
+            "value": 8.653,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-memory",
+            "value": 8.285,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-prompts",
+            "value": 8.778,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-graph",
+            "value": 7.914,
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "5b3d1e5017daa9956701632baf5420f6413a367a",
+          "message": "docs: clarify mandatory rule — forbid Copilot co-author trailers",
+          "timestamp": "2026-03-03T09:34:15+01:00",
+          "tree_id": "1c08bd80896847f48f2363976e68c4e8e5b43972",
+          "url": "https://github.com/Arkestone/mcp/commit/5b3d1e5017daa9956701632baf5420f6413a367a"
+        },
+        "date": 1772526881124,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
