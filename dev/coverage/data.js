@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772526852079,
+  "lastUpdate": 1772526886792,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Test Coverage": [
@@ -1241,6 +1241,35 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/a0932949970a410592e367c4d50955fcfd813179"
         },
         "date": 1772526851577,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Total Coverage",
+            "value": 85.6,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "5b3d1e5017daa9956701632baf5420f6413a367a",
+          "message": "docs: clarify mandatory rule — forbid Copilot co-author trailers",
+          "timestamp": "2026-03-03T09:34:15+01:00",
+          "tree_id": "1c08bd80896847f48f2363976e68c4e8e5b43972",
+          "url": "https://github.com/Arkestone/mcp/commit/5b3d1e5017daa9956701632baf5420f6413a367a"
+        },
+        "date": 1772526885914,
         "tool": "customBiggerIsBetter",
         "benches": [
           {
