@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772527132919,
+  "lastUpdate": 1772527295442,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Binary Sizes": [
@@ -2453,6 +2453,60 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/3de03a9f965e55a1d84062e8ec655946791c00c3"
         },
         "date": 1772527132049,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "mcp-instructions",
+            "value": 8.738,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-skills",
+            "value": 8.778,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-adr",
+            "value": 8.653,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-memory",
+            "value": 8.285,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-prompts",
+            "value": 8.778,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-graph",
+            "value": 7.914,
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "32e5478c2b2691b6969d5ec6cbc53c3c176b6ca4",
+          "message": "feat: initial release",
+          "timestamp": "2026-03-03T09:40:44+01:00",
+          "tree_id": "1c08bd80896847f48f2363976e68c4e8e5b43972",
+          "url": "https://github.com/Arkestone/mcp/commit/32e5478c2b2691b6969d5ec6cbc53c3c176b6ca4"
+        },
+        "date": 1772527295067,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
