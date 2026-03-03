@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772526262200,
+  "lastUpdate": 1772526641253,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Binary Sizes": [
@@ -2237,6 +2237,60 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/1ef541574f4281e2b9ada1b71413ea9aa3a80d55"
         },
         "date": 1772526260376,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "mcp-instructions",
+            "value": 8.738,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-skills",
+            "value": 8.778,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-adr",
+            "value": 8.653,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-memory",
+            "value": 8.285,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-prompts",
+            "value": 8.778,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-graph",
+            "value": 7.914,
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "3017a7ef7dc2c4b82cfcc99c5f3bb7bfd94fec29",
+          "message": "docs: MANDATORY RULE — never add Co-authored-by trailers to commits",
+          "timestamp": "2026-03-03T09:30:08+01:00",
+          "tree_id": "d5def8ea0cac6222720aa5b7c087742b52de2628",
+          "url": "https://github.com/Arkestone/mcp/commit/3017a7ef7dc2c4b82cfcc99c5f3bb7bfd94fec29"
+        },
+        "date": 1772526640704,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
