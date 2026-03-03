@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772492957493,
+  "lastUpdate": 1772526261083,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Test Coverage": [
@@ -1188,6 +1188,35 @@ window.BENCHMARK_DATA = {
           {
             "name": "Total Coverage",
             "value": 85.8,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "1ef541574f4281e2b9ada1b71413ea9aa3a80d55",
+          "message": "chore: release v1.2.0\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-03T09:23:24+01:00",
+          "tree_id": "fd20a68f28959d50094f812ea954576c17226f14",
+          "url": "https://github.com/Arkestone/mcp/commit/1ef541574f4281e2b9ada1b71413ea9aa3a80d55"
+        },
+        "date": 1772526260779,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Total Coverage",
+            "value": 85.6,
             "unit": "%"
           }
         ]
