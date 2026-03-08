@@ -86,7 +86,7 @@ jobs:
       - name: Run tests
         run: gotestsum --junitfile=test-results.xml -- -count=1 -coverprofile=coverage.out -covermode=atomic ./...
       - name: Publish test results
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v2
         if: always() && matrix.go-version == 'stable' && matrix.os == 'ubuntu-latest'
         with:
           name: Go Test Results
