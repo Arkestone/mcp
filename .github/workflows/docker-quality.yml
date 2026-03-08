@@ -35,7 +35,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Lint ${{ matrix.server }}/Dockerfile
-        uses: hadolint/hadolint-action@v3.1.0
+        uses: hadolint/hadolint-action@v3.3.0
         with:
           dockerfile: servers/${{ matrix.server }}/Dockerfile
           # DL3018: pin apk package versions — acceptable for base image updates
