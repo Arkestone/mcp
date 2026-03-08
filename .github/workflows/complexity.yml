@@ -59,7 +59,7 @@ jobs:
         if: github.event_name == 'pull_request' && steps.gocyclo.outputs.has_issues == 'true'
         env:
           GOCYCLO_OUTPUT: ${{ steps.gocyclo.outputs.output }}
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const marker = '<!-- complexity-check -->';
