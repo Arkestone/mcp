@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772527333469,
+  "lastUpdate": 1788179492249,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Test Coverage": [
@@ -1299,6 +1299,35 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/32e5478c2b2691b6969d5ec6cbc53c3c176b6ca4"
         },
         "date": 1772527332445,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Total Coverage",
+            "value": 85.6,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "Aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "Aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "7145f6a529ad057ed8b6cdc36a43e71f218b41ea",
+          "message": "docs: intégrer les exigences atomiques du portefeuille Arkestone\n\nAjoute docs/requirements/ (business case, FR/NFR atomiques, glossaire)\net docs/adr/ (adoption des standards transverses pertinents) issus du\nmono-dépôt de documentation Arkestone/projects (sous-projet Teikyō).\nNe modifie pas docs/network.md existant.",
+          "timestamp": "2026-08-31T12:31:01Z",
+          "tree_id": "987df60cbd1605ff3331c7dd2d8b96ce36fe10f7",
+          "url": "https://github.com/Arkestone/mcp/commit/7145f6a529ad057ed8b6cdc36a43e71f218b41ea"
+        },
+        "date": 1788179491083,
         "tool": "customBiggerIsBetter",
         "benches": [
           {
