@@ -1,6 +1,6 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1788179488584,
-  "repoUrl": "https://github.com/Arkestone/mcp",
+  "lastUpdate": 1788179654409,
+  "repoUrl": "https://github.com/Arkestone/teikyo",
   "entries": {
     "Binary Sizes": [
       {
@@ -2561,6 +2561,60 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/mcp/commit/7145f6a529ad057ed8b6cdc36a43e71f218b41ea"
         },
         "date": 1788179487859,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "mcp-instructions",
+            "value": 9.043,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-skills",
+            "value": 9.082,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-adr",
+            "value": 8.957,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-memory",
+            "value": 8.594,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-prompts",
+            "value": 9.078,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-graph",
+            "value": 8.223,
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "Aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "Aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "e149e8b7b123919d869845e89c00785df0335b63",
+          "message": "docs: ajouter le README de portefeuille (Pitch/Vision) sous docs/",
+          "timestamp": "2026-08-31T12:33:45Z",
+          "tree_id": "51c6c7a757492b377773c7731b2f11838c843631",
+          "url": "https://github.com/Arkestone/teikyo/commit/e149e8b7b123919d869845e89c00785df0335b63"
+        },
+        "date": 1788179652894,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
