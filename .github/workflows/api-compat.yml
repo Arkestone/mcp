@@ -33,7 +33,7 @@ jobs:
           ref: ${{ github.base_ref }}
           path: base
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version-file: pr/go.mod
           cache: true
