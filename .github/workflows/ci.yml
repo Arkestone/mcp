@@ -152,7 +152,7 @@ jobs:
           retention-days: 7
       - name: Upload to Codecov
         if: matrix.go-version == 'stable' && matrix.os == 'ubuntu-latest'
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           files: coverage.out
           flags: unittests
