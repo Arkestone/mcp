@@ -20,7 +20,7 @@ jobs:
       group: gh-pages-benchmarks
       cancel-in-progress: false  # Never cancel: would corrupt gh-pages history
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
@@ -73,7 +73,7 @@ jobs:
       group: gh-pages-binary-sizes
       cancel-in-progress: false  # Never cancel: would corrupt gh-pages history
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
@@ -145,7 +145,7 @@ jobs:
       group: gh-pages-coverage
       cancel-in-progress: false  # Never cancel: would corrupt gh-pages history
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
