@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772527295442,
+  "lastUpdate": 1788179488584,
   "repoUrl": "https://github.com/Arkestone/mcp",
   "entries": {
     "Binary Sizes": [
@@ -2537,6 +2537,60 @@ window.BENCHMARK_DATA = {
           {
             "name": "mcp-graph",
             "value": 7.914,
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "Aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "Aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "7145f6a529ad057ed8b6cdc36a43e71f218b41ea",
+          "message": "docs: intégrer les exigences atomiques du portefeuille Arkestone\n\nAjoute docs/requirements/ (business case, FR/NFR atomiques, glossaire)\net docs/adr/ (adoption des standards transverses pertinents) issus du\nmono-dépôt de documentation Arkestone/projects (sous-projet Teikyō).\nNe modifie pas docs/network.md existant.",
+          "timestamp": "2026-08-31T12:31:01Z",
+          "tree_id": "987df60cbd1605ff3331c7dd2d8b96ce36fe10f7",
+          "url": "https://github.com/Arkestone/mcp/commit/7145f6a529ad057ed8b6cdc36a43e71f218b41ea"
+        },
+        "date": 1788179487859,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "mcp-instructions",
+            "value": 9.043,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-skills",
+            "value": 9.082,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-adr",
+            "value": 8.957,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-memory",
+            "value": 8.594,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-prompts",
+            "value": 9.078,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-graph",
+            "value": 8.223,
             "unit": "MB"
           }
         ]
