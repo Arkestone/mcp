@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1788179654409,
+  "lastUpdate": 1788236794249,
   "repoUrl": "https://github.com/Arkestone/teikyo",
   "entries": {
     "Binary Sizes": [
@@ -2615,6 +2615,60 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/teikyo/commit/e149e8b7b123919d869845e89c00785df0335b63"
         },
         "date": 1788179652894,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "mcp-instructions",
+            "value": 9.043,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-skills",
+            "value": 9.082,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-adr",
+            "value": 8.957,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-memory",
+            "value": 8.594,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-prompts",
+            "value": 9.078,
+            "unit": "MB"
+          },
+          {
+            "name": "mcp-graph",
+            "value": 8.223,
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "cacb49b95b078e97eadc50d96faf57217c5d1f48",
+          "message": "chore: ignore .worktrees/ and .claude/worktrees/\n\nCo-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>",
+          "timestamp": "2026-09-01T04:26:06Z",
+          "tree_id": "6b10905b7bec6a88610fafe78a58e9aab2e6ae4f",
+          "url": "https://github.com/Arkestone/teikyo/commit/cacb49b95b078e97eadc50d96faf57217c5d1f48"
+        },
+        "date": 1788236793166,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
