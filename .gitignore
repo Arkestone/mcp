@@ -664,3 +664,7 @@ actionlint
 # Coverage reports
 cover.out
 coverage.out
+
+# Isolated git worktrees (session isolation)
+.worktrees/
+.claude/worktrees/
