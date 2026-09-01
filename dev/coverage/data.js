@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1788179652611,
+  "lastUpdate": 1788236797163,
   "repoUrl": "https://github.com/Arkestone/teikyo",
   "entries": {
     "Test Coverage": [
@@ -1357,6 +1357,35 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Arkestone/teikyo/commit/e149e8b7b123919d869845e89c00785df0335b63"
         },
         "date": 1788179651531,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Total Coverage",
+            "value": 85.6,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "committer": {
+            "email": "5368160+Aadryn@users.noreply.github.com",
+            "name": "aadryn",
+            "username": "Aadryn"
+          },
+          "distinct": true,
+          "id": "cacb49b95b078e97eadc50d96faf57217c5d1f48",
+          "message": "chore: ignore .worktrees/ and .claude/worktrees/\n\nCo-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>",
+          "timestamp": "2026-09-01T04:26:06Z",
+          "tree_id": "6b10905b7bec6a88610fafe78a58e9aab2e6ae4f",
+          "url": "https://github.com/Arkestone/teikyo/commit/cacb49b95b078e97eadc50d96faf57217c5d1f48"
+        },
+        "date": 1788236796156,
         "tool": "customBiggerIsBetter",
         "benches": [
           {
